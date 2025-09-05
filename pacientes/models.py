@@ -8,6 +8,10 @@ class AnalisisFuncional(models.Model):
 
     def __str__(self):
         return self.nombre_analisis
+    
+    class Meta:
+        verbose_name = 'Analisis funcional'
+        verbose_name_plural = 'Analisis funcionales'
 
 
 class Antecedentes(models.Model):
@@ -15,6 +19,10 @@ class Antecedentes(models.Model):
 
     def __str__(self):
         return self.nombre_ant
+    
+    class Meta:
+        verbose_name = 'Antecedente'
+        verbose_name_plural = 'Antecedentes'
 
 
 class Pacientes(models.Model):
@@ -31,6 +39,10 @@ class Pacientes(models.Model):
 
     def __str__(self):
         return f"{self.dni} {self.nombre} {self.apellido}"
+    
+    class Meta:
+        verbose_name = 'Paciente'
+        verbose_name_plural = 'Pacientes'
 
     # id_pac INT AUTO_INCREMENT,
     # nom_pac VARCHAR(50) NOT NULL,
