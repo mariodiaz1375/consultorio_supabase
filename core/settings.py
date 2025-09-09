@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os 
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--(%$ovz#^)jv8s-3nlpyl6abc4z42v8$i!ure&n_%dcefe0e&8'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
@@ -82,16 +86,49 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'consultorio',
-        'USER': 'root',
-        'PASSWORD': 'Hl21375',
-        'HOST': 'localhost',
-        'PORT': '3306'
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',  # nombre de tu base de datos
+        'USER': 'postgres.phhgnjvwunwuyflzzdih',
+        'PASSWORD': os.environ.get("SUPABASE_PASS"),
+        'HOST': os.environ.get("SUPABASE_HOST"),
+        'PORT': '6543',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
+
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres.phhgnjvwunwuyflzzdih',
+#         'PASSWORD': os.environ.get("SUPABASE_PASS"),
+#         'HOST': os.environ.get("SUPABASE_HOST"),
+#         'PORT': '6543',
+#         'OPTIONS': {
+#             'sslmode': "verify-full",
+#             'sslrootcert': os.path.join(BASE_DIR, 'prod-ca-2021.crt')
+#         }
+#     }
+# }
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'consultorio',
+#         'USER': 'root',
+#         'PASSWORD': '1375',
+#         'HOST': 'localhost',
+#         'PORT': '3306'
+#     }
+# }
 
 
 # Password validation

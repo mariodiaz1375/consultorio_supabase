@@ -7,6 +7,9 @@ filelock==3.19.1
 mysql==0.0.3
 mysqlclient==2.2.7
 platformdirs==4.4.0
+psycopg2==2.9.10
+psycopg2-binary==2.9.10
+python-dotenv==1.1.1
 sqlparse==0.5.3
 tzdata==2025.2
 virtualenv==20.34.0
