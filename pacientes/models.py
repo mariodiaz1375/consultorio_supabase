@@ -33,8 +33,16 @@ class Pacientes(models.Model):
     domicilio = models.CharField(max_length=255)
     telefono = models.CharField(max_length=255)
     email = models.EmailField(max_length=255)
-    antecedentes = models.ManyToManyField(Antecedentes, related_name='pacientes')
-    analisis_funcional = models.ManyToManyField(AnalisisFuncional, related_name='pacientes')
+    antecedentes = models.ManyToManyField(
+        Antecedentes, 
+        related_name='pacientes',
+        blank=True
+        )
+    analisis_funcional = models.ManyToManyField(
+        AnalisisFuncional, 
+        related_name='pacientes',
+        blank=True
+        )
     activo = models.BooleanField(default=True)
 
     def __str__(self):

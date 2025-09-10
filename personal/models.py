@@ -45,10 +45,17 @@ class Personal(models.Model):
     domicilio = models.CharField(max_length=255)
     telefono = models.CharField(max_length=255)
     email = models.EmailField(max_length=255)
-    matricula = models.CharField(max_length=255)
+    matricula = models.CharField(max_length=255, default='-')
     activo = models.BooleanField(default=True)
-    puestos = models.ManyToManyField(Puestos, related_name='personal')
-    especialidades = models.ManyToManyField(Especialidades, related_name='personal')
+    puestos = models.ManyToManyField(
+        Puestos, 
+        related_name='personal'
+        )
+    especialidades = models.ManyToManyField(
+        Especialidades, 
+        related_name='personal',
+        blank=True
+        )
 
     def __str__(self):
         return f"{self.dni} {self.nombre} {self.apellido}"
