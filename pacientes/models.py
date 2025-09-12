@@ -24,6 +24,16 @@ class Antecedentes(models.Model):
         verbose_name = 'Antecedente'
         verbose_name_plural = 'Antecedentes'
 
+class Generos(models.Model):
+    nombre_ge = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.nombre_ge
+    
+    class Meta:
+        verbose_name = 'Genero'
+        verbose_name_plural = 'Generos'
+
 
 class Pacientes(models.Model):
     nombre = models.CharField(max_length=255)
@@ -43,10 +53,17 @@ class Pacientes(models.Model):
         related_name='pacientes',
         blank=True
         )
+    genero = models.ForeignKey(Generos, on_delete=models.PROTECT, default=3)
     activo = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.dni} {self.nombre} {self.apellido}"
+    
+    def calcular_edad(self):
+        from datetime import date
+        hoy = date.today()
+        edad = hoy.year - self.fecha_nacimiento.year - ((hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day))
+        return edad
     
     class Meta:
         verbose_name = 'Paciente'
