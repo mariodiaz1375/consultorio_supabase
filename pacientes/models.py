@@ -59,7 +59,8 @@ class Pacientes(models.Model):
     def __str__(self):
         return f"{self.dni} {self.nombre} {self.apellido}"
     
-    def calcular_edad(self):
+    @property
+    def edad(self):
         from datetime import date
         hoy = date.today()
         edad = hoy.year - self.fecha_nacimiento.year - ((hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day))
