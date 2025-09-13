@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'pacientes',
     'personal',
+    'historias_clinicas',
+    'turnos',
 ]
 
 MIDDLEWARE = [
