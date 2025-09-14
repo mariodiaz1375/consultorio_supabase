@@ -25,7 +25,7 @@ class CarasDentales(models.Model):
         verbose_name = 'Cara Dental'
         verbose_name_plural = 'Caras Dentales'
 
-class Trtamientos(models.Model):
+class Tratamientos(models.Model):
     nombre_trat = models.CharField(max_length=50)
 
     def __str__(self):
@@ -61,7 +61,7 @@ class HistoriasClinicas(models.Model):
 
 
 class DetallesHC(models.Model):
-    tratamiento = models.ForeignKey(Trtamientos, 
+    tratamiento = models.ForeignKey(Tratamientos, 
                                     on_delete=models.PROTECT)
     cara_dental = models.ForeignKey(CarasDentales, 
                                     on_delete=models.PROTECT)
