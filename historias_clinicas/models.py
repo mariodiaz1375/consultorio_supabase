@@ -40,13 +40,13 @@ class HistoriasClinicas(models.Model):
                                  on_delete=models.PROTECT)
     odontologo = models.ForeignKey(Personal, 
                                  on_delete=models.PROTECT)
-    desc_hc = models.CharField(max_length=200)
+    desc_hc = models.TextField(max_length=200)
     fecha_inicio = models.DateTimeField(auto_now_add=True)
     fecha_fin = models.DateTimeField(null=True, blank=True)
     finalizado = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.dni} {self.nombre} {self.apellido}"
+        return f"{self.paciente.dni} {self.paciente.nombre} {self.fecha_inicio} {self.finalizado}"
     
     def save(self, *args, **kwargs):
         if self.finalizado and not self.fecha_fin:
@@ -81,7 +81,7 @@ class DetallesHC(models.Model):
 class SeguimientoHC(models.Model):
     hist_clin = models.ForeignKey(HistoriasClinicas, 
                                     on_delete=models.PROTECT)
-    descripcion = models.CharField(max_length=100)
+    descripcion = models.TextField(max_length=100)
     fecha = models.DateTimeField(auto_now_add=True)
 
     # def __str__(self):
