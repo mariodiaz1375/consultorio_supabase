@@ -5,3 +5,8 @@ class PagosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pagos
         fields = '__all__'
+
+class PagoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pagos
+        fields = [Pagos.__str__(), 'pagado']

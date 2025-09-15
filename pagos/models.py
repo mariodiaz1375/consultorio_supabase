@@ -8,8 +8,16 @@ from dateutil.relativedelta import relativedelta
 class Entregas(models.Model):
     nombre_ent = models.CharField(max_length=20)
 
+    class Meta:
+        verbose_name = 'Entrega'
+        verbose_name_plural = 'Entregas'
+
 class Cuotas(models.Model):
     nombre_cuota = models.CharField(max_length=20)
+
+    class Meta:
+        verbose_name = 'Cuota'
+        verbose_name_plural = 'Cuotas'
 
 class Pagos(models.Model):
     entrega = models.ForeignKey(Entregas, 
@@ -43,6 +51,9 @@ class Pagos(models.Model):
     def __str__(self):
         return self.hist_clin.paciente
 
+    class Meta:
+        verbose_name = 'Pago'
+        verbose_name_plural = 'Pagos'
 
 
 
