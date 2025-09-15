@@ -9,4 +9,4 @@ class PagosSerializer(serializers.ModelSerializer):
 class PagoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pagos
-        fields = [Pagos.__str__(), 'pagado']
+        fields = [Pagos.__str__, 'pagado']
