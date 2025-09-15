@@ -38,8 +38,10 @@ class Pagos(models.Model):
             self.fecha_fin = timezone.now()
         elif not self.finalizado:
             self.fecha_fin = None  # Opcional: Limpia la fecha_fin si se desmarca
-        super(HistoriasClinicas, self).save(*args, **kwargs)
+        super(Pagos, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return self.hist_clin.paciente
 
 
 
