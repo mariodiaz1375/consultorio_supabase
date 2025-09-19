@@ -34,6 +34,16 @@ class Generos(models.Model):
         verbose_name = 'Genero'
         verbose_name_plural = 'Generos'
 
+class ObrasSociales(models.Model):
+    nombre_os = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.nombre_os
+    
+    class Meta:
+        verbose_name = 'Obra Social'
+        verbose_name_plural = 'Obras Sociales'
+
 
 class Pacientes(models.Model):
     nombre = models.CharField(max_length=255)
@@ -69,6 +79,21 @@ class Pacientes(models.Model):
     class Meta:
         verbose_name = 'Paciente'
         verbose_name_plural = 'Pacientes'
+
+class OsPacientes(models.Model):
+    paciente = models.ForeignKey(Pacientes, 
+                              on_delete=models.PROTECT)
+    os = models.ForeignKey(ObrasSociales, 
+                              on_delete=models.CASCADE)
+    num_afiliado = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.paciente} {self.os}"
+    
+    class Meta:
+        verbose_name = 'Obra Social x Paciente'
+        verbose_name_plural = 'Obras Sociales X Pacientes'
+    
 
     # id_pac INT AUTO_INCREMENT,
     # nom_pac VARCHAR(50) NOT NULL,

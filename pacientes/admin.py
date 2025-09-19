@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Pacientes, Antecedentes, AnalisisFuncional, Generos
+from .models import Pacientes, Antecedentes, AnalisisFuncional, Generos, ObrasSociales, OsPacientes
 
 # Register your models here.
 
@@ -11,3 +11,5 @@ admin.site.register(Pacientes, PacientesAdmin)
 admin.site.register(Antecedentes)
 admin.site.register(AnalisisFuncional)
 admin.site.register(Generos)
+admin.site.register(OsPacientes)
+admin.site.register(ObrasSociales)
