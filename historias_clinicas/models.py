@@ -77,6 +77,9 @@ class DetallesHC(models.Model):
         verbose_name = 'Detalle de historio clinica'
         verbose_name_plural = 'Detalles de historia clinica'
 
+    def __str__(self):
+        return f'{self.hist_clin.paciente} {self.tratamiento.nombre_trat} {self.pieza_dental.codigo_pd}'
+
 
 class SeguimientoHC(models.Model):
     hist_clin = models.ForeignKey(HistoriasClinicas, 
@@ -84,8 +87,8 @@ class SeguimientoHC(models.Model):
     descripcion = models.TextField(max_length=100)
     fecha = models.DateTimeField(auto_now_add=True)
 
-    # def __str__(self):
-    #     return self.nombre_trat
+    def __str__(self):
+        return f'{self.id} {self.hist_clin.id} {self.hist_clin.paciente} {self.fecha}'
     
     class Meta:
         verbose_name = 'Seguimiento de historia clinica'
