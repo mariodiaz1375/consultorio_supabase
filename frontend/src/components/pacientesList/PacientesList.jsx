@@ -8,12 +8,18 @@ export default function PacientesList() {
   useEffect(() => {
     const fetchPacientes = async () => {
       const data = await getPacientes()
+      console.log(data)
       setPacientes(data)
     }
     fetchPacientes()
   }, [])
-  
+
   return (
-    <div>PacientesList</div>
+    <div>
+      <h1>Lista de Pacientes</h1>
+      {pacientes.map(paciente => (
+        <PacienteCard key={paciente.id} paciente={paciente}/>
+      ))}
+    </div>
   )
 }

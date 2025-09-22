@@ -29,7 +29,7 @@ export const getPaciente = async (id) => {
 
 export const createPaciente = async (paciente) => {
     try {
-        const response = await pacientesApi.post('/', tarea);
+        const response = await pacientesApi.post('/', paciente);
         return response.data;
     } catch (error) {
         console.error('Error al registrar el paciente', error);
@@ -39,7 +39,7 @@ export const createPaciente = async (paciente) => {
 
 export const updatePaciente = async (id, paciente) => {
     try {
-        const response = await pacientesApi.put('/${id}/', tarea);
+        const response = await pacientesApi.put('/${id}/', paciente);
         return response.data;
     } catch (error) {
         console.error('Error al registrar el paciente', error);
