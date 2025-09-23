@@ -1,0 +1,60 @@
+.paciente-card {
+  /* Box model and layout */
+  background-color: #f7f9fc; /* Light background for a clean look */
+  border: 1px solid #e1e4e8; /* Subtle border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  display: flex; /* Flexbox for alignment */
+  flex-direction: block;
+  justify-content: center;
+  /* align-items: center; Align content to the left */
+  font-family: 'Arial', sans-serif; /* A clean, professional font */
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.paciente-card h1 {
+  /* Title styling */
+  color: #2c3e50; /* Darker text for readability */
+  font-size: 1.5em;
+  margin-top: auto; /* Remove top margin for a tighter look */
+  margin-bottom: auto;
+  text-transform: capitalize; /* Capitalize the name for consistency */
+  margin-right: auto;
+}
+
+.paciente-card .button-group {
+  /* Button container */
+  display: flex;
+  gap: 10px; /* Space between buttons */
+  margin-top: auto; /* Push buttons to the bottom of the card */
+  margin-bottom: auto;
+}
+
+.paciente-card button {
+  /* General button styling */
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer; /* Change cursor on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+}
+
+.paciente-card button:hover {
+  transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+.paciente-card .edit-button {
+  /* Specific style for the edit button */
+  background-color: #3498db; /* Blue for "Edit" */
+  color: white;
+}
+
+.paciente-card .delete-button {
+  /* Specific style for the delete button */
+  background-color: #e74c3c; /* Red for "Delete" */
+  color: white;
+}

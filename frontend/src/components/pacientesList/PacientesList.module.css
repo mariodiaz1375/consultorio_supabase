@@ -1,0 +1,52 @@
+/* PacientesList.module.css */
+
+.pacientes-list-container {
+  padding: 20px;
+  max-width: 1200px; /* Limita el ancho para una mejor lectura en pantallas grandes */
+  margin: 0 auto; /* Centra el contenedor */
+}
+
+.title {
+  color: #2c3e50; /* Color del texto del título */
+  text-align: center; /* Centra el título */
+  font-size: 2.5rem;
+  margin-bottom: 30px; /* Espacio debajo del título */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding-bottom: 10px;
+}
+
+.pacientes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Crea una cuadrícula adaptable */
+  gap: 20px; /* Espacio entre las tarjetas */
+  justify-content: center; /* Centra las tarjetas si hay menos de las que llenan una fila */
+}
+
+.register-button {
+  background-color: #27ae60; /* Un verde vibrante y amigable */
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para darle profundidad */
+  margin-bottom: 20px; /* Espacio debajo del botón */
+  display: block; /* Para que ocupe todo el ancho y se centre */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.register-button:hover {
+  background-color: #2ecc71; /* Un verde más claro al pasar el mouse */
+  transform: translateY(-2px); /* Efecto de "levantamiento" */
+}
+
+/* Un contenedor para el botón para mejor alineación */
+.boton-conteiner {
+  display: flex;
+  margin-bottom: 20px;
+}
+
