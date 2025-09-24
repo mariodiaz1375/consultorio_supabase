@@ -1,20 +1,9 @@
 from django.db import models
-
-# Create your models here.
-
-# CREATE TABLE personal(
-# 	id_pers INT AUTO_INCREMENT,
-#     nom_pers VARCHAR(50) NOT NULL,
-#     ape_pers VARCHAR(50) NOT NULL,
-#     dni_pers VARCHAR(12) NOT NULL,
-#     fec_nac_pers DATE,
-#     dom_pers VARCHAR(50) NOT NULL,
-#     tel_pers VARCHAR(40) NOT NULL,
-#     email_pers VARCHAR(50),
-#     matricula VARCHAR(20),
-#     activo BOOLEAN DEFAULT TRUE,
-#     CONSTRAINT pk_pers PRIMARY KEY(id_pers)
-# );
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand
+from django.contrib.auth.models import Group, Permission
 
 class Puestos(models.Model):
     nombre_puesto = models.CharField(max_length=50)
@@ -47,15 +36,13 @@ class Personal(models.Model):
     email = models.EmailField(max_length=255)
     matricula = models.CharField(max_length=255, default='-')
     activo = models.BooleanField(default=True)
-    puestos = models.ManyToManyField(
-        Puestos, 
-        related_name='personal'
-        )
+    puesto = models.ForeignKey(Puestos, on_delete=models.PROTECT, default=3)
     especialidades = models.ManyToManyField(
         Especialidades, 
         related_name='personal',
         blank=True
         )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.dni} {self.nombre} {self.apellido}"
@@ -63,3 +50,17 @@ class Personal(models.Model):
     class Meta:
         verbose_name = 'Personal'
         verbose_name_plural = 'Personal'
+
+@receiver(post_save, sender=Personal)
+def create_user_for_personal(sender, instance, created, **kwargs):
+    if created and not instance.user:
+        username = f"{instance.nombre.lower()}.{instance.apellido.lower()}"
+        user = User.objects.create_user(
+            username=username,
+            email=instance.email if hasattr(instance, 'email') else '',
+            first_name=instance.nombre,
+            last_name=instance.apellido,
+            password=str(instance.dni)  # Contraseña inicial = DNI
+        )
+        instance.user = user
+        instance.save()
