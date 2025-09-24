@@ -1,11 +1,12 @@
 import logo from './logo.svg';
 import './App.css';
-import PacientesList from './components/pacientesList/PacientesList';
+// import PacientesList from './components/pacientesList/PacientesList';
+import PacientesPagina from './pages/pacientesPagina/PacientesPagina';
 
 function App() {
   return (
     <div className="App">
-      <PacientesList />
+      <PacientesPagina />
     </div>
   );
 }

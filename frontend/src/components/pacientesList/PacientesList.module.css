@@ -39,6 +39,15 @@
   margin-right: auto;
 }
 
+.encabezado {
+  display: flex;
+  flex-direction: block;
+  justify-content: space-between;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 20px;
+}
+
 .register-button:hover {
   background-color: #2ecc71; /* Un verde más claro al pasar el mouse */
   transform: translateY(-2px); /* Efecto de "levantamiento" */
@@ -47,6 +56,6 @@
 /* Un contenedor para el botón para mejor alineación */
 .boton-conteiner {
   display: flex;
-  margin-bottom: 20px;
+  margin: 20px 0px 20px 20px;
 }
 
