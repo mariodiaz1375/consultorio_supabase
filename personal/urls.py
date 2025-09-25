@@ -5,9 +5,18 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+# urlpatterns = [
+#     path('', PersonalList.as_view(), name='personal_list'),
+#     path('<int:pk>/', PersonalDetail.as_view(), name='personal_detail'),
+#     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+#     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+# ]
+
 urlpatterns = [
     path('', PersonalList.as_view(), name='personal_list'),
     path('<int:pk>/', PersonalDetail.as_view(), name='personal_detail'),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # Rutas de autenticación
+    path('auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
