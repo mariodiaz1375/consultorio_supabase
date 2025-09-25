@@ -11,22 +11,9 @@ import Login from './components/Auth/Login';           // ✅
 import Dashboard from './components/Dashboard/Dashboard'; // ✅
 import ProtectedRoute from './components/Auth/ProtectedRoute'; // ✅
 import PacientesPagina from './pages/pacientesPagina/PacientesPagina';
+import PersonalPagina from './pages/personalPagina/PersonalPagina';
 
-// function App() {
-//   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-//   return (
-//     <div className="App">
-//       {isLoggedIn ? (
-//         <PacientesPagina />
-//       ) : (
-//         <LoginPagina onLoginSuccess={() => setIsLoggedIn(true)} />
-//       )}
-//     </div>
-//   );
-// }
-
-// export default App;
 function App() {
   return (
     <Router>
@@ -42,6 +29,11 @@ function App() {
             <PacientesPagina />
           </ProtectedRoute>
         } />
+        <Route path="/personal" element={
+          <ProtectedRoute>
+            <PersonalPagina />
+          </ProtectedRoute>
+        } />
         <Route path="/" element={<Login />} />
       </Routes>
     </Router>
@@ -49,3 +41,48 @@ function App() {
 }
 
 export default App;
+
+// import React from 'react';
+// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// import Login from './components/Auth/Login';           
+// import Dashboard from './components/Dashboard/Dashboard'; 
+// import ProtectedRoute from './components/Auth/ProtectedRoute'; 
+// import RoleProtectedRoute from './components/Auth/RoleProtectedRoute'; // 👈 Nuevo
+// import PacientesPagina from './pages/pacientesPagina/PacientesPagina';
+// import PersonalPagina from './pages/personalPagina/PersonalPagina';
+
+// function App() {
+//   return (
+//     <Router>
+//       <Routes>
+//         <Route path="/login" element={<Login />} />
+        
+//         <Route path="/dashboard" element={
+//           <ProtectedRoute>
+//             <Dashboard />
+//           </ProtectedRoute>
+//         } />
+        
+//         <Route path="/pacientes" element={
+//           <ProtectedRoute>
+//             <RoleProtectedRoute allowedRoles={['admin', 'secretario/a', 'odontólogo/a']}>
+//               <PacientesPagina />
+//             </RoleProtectedRoute>
+//           </ProtectedRoute>
+//         } />
+        
+//         <Route path="/personal" element={
+//           <ProtectedRoute>
+//             <RoleProtectedRoute allowedRoles={['admin']}>  {/* 👈 Solo admin */}
+//               <PersonalPagina />
+//             </RoleProtectedRoute>
+//           </ProtectedRoute>
+//         } />
+        
+//         <Route path="/" element={<Login />} />
+//       </Routes>
+//     </Router>
+//   );
+// }
+
+// export default App;

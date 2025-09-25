@@ -1,4 +1,4 @@
-.paciente-card {
+.personal-card {
   /* Box model and layout */
   background-color: #f7f9fc; /* Light background for a clean look */
   border: 1px solid #e1e4e8; /* Subtle border */
@@ -15,7 +15,7 @@
   margin-right: 10%;
 }
 
-.paciente-card h2 {
+.personal-card h2 {
   /* Title styling */
   color: #2c3e50; /* Darker text for readability */
   font-size: 1.2em;
@@ -25,7 +25,7 @@
   margin-right: auto;
 }
 
-.paciente-card .button-group {
+.personal-card .button-group {
   /* Button container */
   display: flex;
   gap: 10px; /* Space between buttons */
@@ -33,7 +33,7 @@
   margin-bottom: auto;
 }
 
-.paciente-card button {
+.personal-card button {
   /* General button styling */
   padding: 10px 15px;
   border: none;
@@ -43,17 +43,17 @@
   transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
 }
 
-.paciente-card button:hover {
+.personal-card button:hover {
   transform: translateY(-2px); /* Slight lift effect on hover */
 }
 
-.paciente-card .edit-button {
+.personal-card .edit-button {
   /* Specific style for the edit button */
   background-color: #3498db; /* Blue for "Edit" */
   color: white;
 }
 
-.paciente-card .delete-button {
+.personal-card .delete-button {
   /* Specific style for the delete button */
   background-color: #e74c3c; /* Red for "Delete" */
   color: white;

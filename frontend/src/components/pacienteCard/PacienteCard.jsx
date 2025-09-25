@@ -33,9 +33,9 @@ import styles from './PacienteCard.module.css'; // <-- Importa el objeto 'styles
 export default function PacienteCard({ paciente }) {
   return (
     <div className={styles['paciente-card']}>
-      <h1 className={styles.title}>
+      <h2 className={styles.title}>
         {paciente.dni} {paciente.nombre} {paciente.apellido}
-      </h1>
+      </h2>
       <div className={styles['button-group']}>
         <button className={styles['edit-button']}>Editar / Detalles</button>
         <button className={styles['delete-button']}>Eliminar</button>

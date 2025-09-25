@@ -1,10 +1,3 @@
-/* PacientesList.module.css */
-
-.pacientes-list-container {
-  padding: 100px;
-  max-width: 1200px; /* Limita el ancho para una mejor lectura en pantallas grandes */
-  margin: 0 auto; /* Centra el contenedor */
-}
 
 .title {
   color: #2c3e50; /* Color del texto del título */
@@ -58,4 +51,3 @@
   display: flex;
   margin: 20px 0px 20px 20px;
 }
-
