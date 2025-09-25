@@ -1,0 +1,91 @@
+.personal-form {
+    max-width: 600px;
+    margin: 40px auto; /* Más margen para destacar */
+    padding: 30px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    /* Sombra más marcada, similar al register-button */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Tipografía consistente */
+}
+
+/* Estilos para los encabezados */
+.personal-form h3 {
+    color: #2c3e50; /* Color principal de los títulos */
+    text-align: center;
+    font-size: 2rem; /* Tamaño de fuente grande, similar al .title */
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #27ae60; /* Línea decorativa verde */
+}
+
+.personal-form h4 {
+    color: #555;
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+/* Estilos para los campos de entrada (input) */
+.personal-form input[type="text"],
+.personal-form input[type="email"],
+.personal-form input[type="password"],
+.personal-form input[type="date"],
+.personal-form input[type="number"],
+.personal-form input[type="tel"],
+.personal-form input:not([type])
+{
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px; /* Bordes de 5px, como el botón */
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+/* Efecto al enfocar los campos */
+.personal-form input:focus {
+    border-color: #27ae60; /* Color verde del botón al enfocar */
+    outline: none;
+    box-shadow: 0 0 5px rgba(39, 174, 96, 0.4); /* Sombra suave verde */
+}
+
+/* Estilos para el botón de enviar (similar a .register-button) */
+.personal-form button[type="submit"] {
+    display: block;
+    width: 100%;
+    /* Estilos del .register-button */
+    background-color: #27ae60; /* Verde vibrante */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para profundidad */
+    margin-top: 20px; /* Espacio superior */
+}
+
+/* Efecto hover del botón (similar a .register-button:hover) */
+.personal-form button[type="submit"]:hover {
+    background-color: #2ecc71; /* Verde más claro */
+    transform: translateY(-2px); /* Efecto de "levantamiento" */
+}
+
+/* Estilo para el separador horizontal */
+.personal-form hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+}
+
+/* Diseño responsivo */
+@media (max-width: 768px) {
+    .personal-form {
+        margin: 20px 10px;
+        padding: 20px;
+    }
+}

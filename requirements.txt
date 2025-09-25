@@ -3,14 +3,17 @@ distlib==0.4.0
 Django==5.2.4
 django-cors-headers==4.7.0
 djangorestframework==3.16.1
+djangorestframework_simplejwt==5.5.1
 filelock==3.19.1
 mysql==0.0.3
 mysqlclient==2.2.7
 platformdirs==4.4.0
 psycopg2==2.9.10
 psycopg2-binary==2.9.10
+PyJWT==2.10.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
+rest-framework-simplejwt==0.0.2
 six==1.17.0
 sqlparse==0.5.3
 tzdata==2025.2
