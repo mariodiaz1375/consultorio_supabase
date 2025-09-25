@@ -1,6 +1,6 @@
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+# from django.db.models.signals import post_save
+# from django.dispatch import receiver
 from django.contrib.auth.models import User, Group, Permission
 
 class Puestos(models.Model):
@@ -51,75 +51,15 @@ class Personal(models.Model):
 
 
 
-def assign_user_group(personal_instance):
-    """Asigna grupo según el puesto del personal"""
-    user = personal_instance.user
-    puesto_nombre = personal_instance.puesto.nombre_puesto.lower()
-    
-    # Limpiar grupos anteriores
-    user.groups.clear()
-    
-    # Mapeo de puestos a grupos
-    puesto_grupo_map = {
-        'admin': 'Admin',
-        'odontólogo/a': 'Odontólogo/a', 
-        'secretario/a': 'Secretario/a',
-    }
-    
-    grupo_nombre = puesto_grupo_map.get(puesto_nombre)
-    if grupo_nombre:
-        try:
-            grupo = Group.objects.get(name=grupo_nombre)
-            user.groups.add(grupo)
-            print(f"Usuario {user.username} asignado al grupo {grupo_nombre}")
-        except Group.DoesNotExist:
-            print(f"Grupo '{grupo_nombre}' no existe en el sistema")
-
-@receiver(post_save, sender=Personal)
-def manage_user_for_personal(sender, instance, created, **kwargs):
-    """Crea usuario y asigna grupo al personal"""
-    # Crear usuario si es nuevo registro
-    if created and not instance.user:
-        username = f"{instance.nombre.lower()}.{instance.apellido.lower()}"
-        user = User.objects.create_user(
-            username=username,
-            email=instance.email,
-            first_name=instance.nombre,
-            last_name=instance.apellido,
-            password=str(instance.dni)
-        )
-        instance.user = user
-        instance.save()
-
-    # Asignar grupo (tanto para creación como actualización)
-    if instance.user:
-        assign_user_group(instance)
-
-# @receiver(post_save, sender=Personal)
-# def create_user_for_personal(sender, instance, created, **kwargs):
-#     if created and not instance.user:
-#         username = f"{instance.nombre.lower()}.{instance.apellido.lower()}"
-#         user = User.objects.create_user(
-#             username=username,
-#             email=instance.email if hasattr(instance, 'email') else '',
-#             first_name=instance.nombre,
-#             last_name=instance.apellido,
-#             password=str(instance.dni)  # Contraseña inicial = DNI
-#         )
-#         instance.user = user
-#         instance.save()
-
-#     if instance.user:
-#         assign_user_group(instance)
-
 # def assign_user_group(personal_instance):
-#     from django.contrib.auth.models import Group
-    
+#     """Asigna grupo según el puesto del personal"""
 #     user = personal_instance.user
 #     puesto_nombre = personal_instance.puesto.nombre_puesto.lower()
     
+#     # Limpiar grupos anteriores
 #     user.groups.clear()
     
+#     # Mapeo de puestos a grupos
 #     puesto_grupo_map = {
 #         'admin': 'Admin',
 #         'odontólogo/a': 'Odontólogo/a', 
@@ -131,12 +71,28 @@ def manage_user_for_personal(sender, instance, created, **kwargs):
 #         try:
 #             grupo = Group.objects.get(name=grupo_nombre)
 #             user.groups.add(grupo)
+#             print(f"Usuario {user.username} asignado al grupo {grupo_nombre}")
 #         except Group.DoesNotExist:
-#             pass
+#             print(f"Grupo '{grupo_nombre}' no existe en el sistema")
 
 # @receiver(post_save, sender=Personal)
-# def update_user_group_on_puesto_change(sender, instance, **kwargs):
-#     """Actualiza el grupo cuando cambia el puesto"""
-#     if instance.user and not kwargs.get('created', False):
+# def manage_user_for_personal(sender, instance, created, **kwargs):
+#     """Crea usuario y asigna grupo al personal"""
+#     # Crear usuario si es nuevo registro
+#     if created and not instance.user:
+#         username = f"{instance.nombre.lower()}.{instance.apellido.lower()}"
+#         user = User.objects.create_user(
+#             username=username,
+#             email=instance.email,
+#             first_name=instance.nombre,
+#             last_name=instance.apellido,
+#             password=str(instance.dni)
+#         )
+#         instance.user = user
+#         instance.save()
+
+#     # Asignar grupo (tanto para creación como actualización)
+#     if instance.user:
 #         assign_user_group(instance)
+
 
