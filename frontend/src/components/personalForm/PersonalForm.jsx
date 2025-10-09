@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import styles from './PersonalForm.module.css';
 
+// Usamos los nombres de campo que espera el Serializer de DRF (write_only)
 const initialFormData = {
     nombre: '',
     apellido: '',
@@ -12,72 +13,51 @@ const initialFormData = {
     telefono: '',
     email: '',
     matricula: '-',
-    puesto: 3, // ID por defecto, cambiar por un SELECT en la práctica
-    especialidades: [], // IDs de especialidades, cambiar por un SELECT/Multi-SELECT
-    username: '', // <-- Nuevo campo para el Usuario
-    password: '', // <-- Nuevo campo para la Contraseña
+    puesto_id: '',       // <-- CAMBIO CLAVE: Cambiado de 'puesto' a 'puesto_id' (string vacío para select)
+    especialidades_ids: [], // <-- CAMBIO CLAVE: Cambiado de 'especialidades' a 'especialidades_ids' (array vacío para multi-select)
+    username: '', 
+    password: '',
 };
 
-export default function PersonalForm({ onSubmit }) {
+// RECIBIR las listas de opciones como props
+export default function PersonalForm({ onSubmit, puestos = [], especialidades = [] }) {
     const [formData, setFormData] = useState(initialFormData);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, options } = e.target;
+        
+        let newValue = value;
+
+        // MANEJO ESPECIAL para Multi-Select de Especialidades
+        if (name === 'especialidades_ids' && type === 'select-multiple') {
+            // Recorre las opciones, filtra las seleccionadas y mapea sus valores a números (IDs)
+            newValue = Array.from(options)
+                .filter(option => option.selected)
+                .map(option => Number(option.value)); 
+        } 
+        // MANEJO ESPECIAL para Single-Select de Puesto
+        else if (name === 'puesto_id') {
+            newValue = Number(value); // Asegurar que es un número (ID)
+        }
+
         setFormData({
             ...formData,
-            [name]: value,
+            [name]: newValue,
         });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        // El campo fecha_nacimiento debe ser una cadena válida "YYYY-MM-DD"
-        // Los campos puesto y especialidades deben ser números/arrays de números (IDs)
-        
-        // Llamar a la función de envío que está en PersonalList
+        // formData ya tiene los campos puestos_id y especialidades_ids con el tipo de dato correcto
         onSubmit(formData);
     };
 
-    // return (
-    //     <form onSubmit={handleSubmit} style={{ 
-    //         padding: '20px', 
-    //         border: '1px solid #ccc', 
-    //         borderRadius: '5px',
-    //         marginBottom: '20px' 
-    //     }}>
-    //         <h3>Registrar Nuevo Miembro</h3>
-            
-    //         {/* Campos de Información Personal */}
-    //         <input name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Nombre" required />
-    //         <input name="apellido" value={formData.apellido} onChange={handleChange} placeholder="Apellido" required />
-    //         <input name="dni" value={formData.dni} onChange={handleChange} placeholder="DNI" required />
-    //         <input type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleChange} required />
-    //         <input name="domicilio" value={formData.domicilio} onChange={handleChange} placeholder="Domicilio" required />
-    //         <input name="telefono" value={formData.telefono} onChange={handleChange} placeholder="Teléfono" required />
-    //         <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
-    //         <input name="matricula" value={formData.matricula} onChange={handleChange} placeholder="Matrícula" />
-            
-    //         {/* Campos de Rol/Puesto (Aquí iría un SELECT real) */}
-    //         <input name="puesto" value={formData.puesto} onChange={handleChange} placeholder="ID Puesto (e.g. 1)" type="number" required />
-    //         {/* Las especialidades requerirán un manejo de array */}
-            
-    //         {/* Campos de Usuario y Contraseña (Clave para tu nuevo endpoint) */}
-    //         <hr style={{margin: '15px 0'}} />
-    //         <h4>Datos de Acceso (Usuario)</h4>
-    //         <input name="username" value={formData.username} onChange={handleChange} placeholder="Nombre de Usuario" required />
-    //         <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Contraseña" required />
-            
-    //         <button type="submit" style={{ marginTop: '10px' }}>Crear Personal y Usuario</button>
-    //     </form>
-    // );
-
     return (
-        // 2. REEMPLAZAR el 'style' inline por la clase CSS 'personal-form'
         <form onSubmit={handleSubmit} className={styles["personal-form"]}>
             <h3>Registrar Nuevo Miembro</h3>
             
-            {/* Campos de Información Personal */}
+            {/* CAMPOS DE TEXTO E INFORMACIÓN PERSONAL (sin cambios, solo estructura) */}
             Nombre
             <input name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Nombre" required />
             Apellido
@@ -94,12 +74,47 @@ export default function PersonalForm({ onSubmit }) {
             <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
             Matricula
             <input name="matricula" value={formData.matricula} onChange={handleChange} placeholder="Matrícula" />
-            {/* Campos de Rol/Puesto */}
-            Puesto
-            <input name="puesto" value={formData.puesto} onChange={handleChange} placeholder="ID Puesto (e.g. 1)" type="number" required />
             
+            {/* =================================================== */}
+            {/* CAMPO PUESTO (SELECT DINÁMICO) */}
+            Puesto
+            <select 
+                name="puesto_id" // Usar el nombre que espera el Serializer
+                value={formData.puesto_id} // Debe coincidir con el estado
+                onChange={handleChange} 
+                required
+            >
+                <option value="" disabled>Seleccionar Puesto</option>
+                {/* Mapear las opciones de la prop 'puestos' */}
+                {puestos.map(puesto => (
+                    // El 'value' es el ID numérico, y el texto es el nombre
+                    <option key={puesto.id} value={puesto.id}>
+                        {puesto.nombre_puesto}
+                    </option>
+                ))}
+            </select>
+            <br />
+            <br />
+            
+            {/* CAMPO ESPECIALIDADES (MULTI-SELECT DINÁMICO) */}
+            Especialidades (Ctrl/Cmd + Clic para seleccionar múltiples)
+            <br />
+            <select
+                name="especialidades_ids" // Usar el nombre que espera el Serializer
+                multiple // <-- Habilitar la selección múltiple
+                value={formData.especialidades_ids} // El valor debe ser un array de IDs
+                onChange={handleChange}
+            >
+                {/* Mapear las opciones de la prop 'especialidades' */}
+                {especialidades.map(esp => (
+                    <option key={esp.id} value={esp.id}>
+                        {esp.nombre_esp}
+                    </option>
+                ))}
+            </select>
+            {/* =================================================== */}
+
             {/* Campos de Usuario y Contraseña */}
-            {/* Reemplazamos el style inline del hr por la regla CSS global */}
             <hr /> 
             <h4>Datos de Acceso (Usuario)</h4>
             Usuario
@@ -107,7 +122,6 @@ export default function PersonalForm({ onSubmit }) {
             Contraseña
             <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Contraseña" required />
             
-            {/* Reemplazamos el style inline del botón por la regla CSS global */}
             <button type="submit">Registrar miembro</button>
         </form>
     );

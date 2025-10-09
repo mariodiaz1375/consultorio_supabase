@@ -1,125 +1,107 @@
-// import axios from 'axios'
-
-// const personalApi = axios.create({
-//     baseURL: 'http://localhost:8000/api/personal',
-//     headers: {
-//         'Content-Type': 'application/json'
-//     }
-// })
-
-// export const getPersonal = async () => {
-//     try {
-//         const response = await personalApi.get('/');
-//         return response.data;
-//     } catch (error) {
-//         console.error('Error al obtener los miembros del personal', error);
-//         throw error;
-//     }
-// }
-
-// export const getMiembro = async (id) => {
-//     try {
-//         const response = await personalApi.get('/${id}/');
-//         return response.data;
-//     } catch (error) {
-//         console.error('Error al obtener el miembro del personal', error);
-//         throw error;
-//     }
-// }
-
-// export const createMiembro = async (miembro) => {
-//     try {
-//         const response = await personalApi.post('/', miembro);
-//         return response.data;
-//     } catch (error) {
-//         console.error('Error al registrar el miembro del personal', error);
-//         throw error;
-//     }
-// }
-
-// export const updateMiembro = async (id, miembro) => {
-//     try {
-//         const response = await personalApi.put('/${id}/', miembro);
-//         return response.data;
-//     } catch (error) {
-//         console.error('Error al registrar el miembro del personal', error);
-//         throw error;
-//     }
-// }
-
-// export const deleteMiembro = async (id) => {
-//     try {
-//         const response = await personalApi.put('/${id}/');
-//         return response.data;
-//     } catch (error) {
-//         console.error('Error al eliminar el miembro del personal', error);
-//         throw error;
-//     }
-// }
-
 import axios from 'axios'
 
+// La baseURL ya apunta a 'http://localhost:8000/api/personal'
 const personalApi = axios.create({
-    baseURL: 'http://localhost:8000/api/personal',
-    headers: {
-        'Content-Type': 'application/json'
-    }
+    baseURL: 'http://localhost:8000/api/personal',
+    headers: {
+        'Content-Type': 'application/json'
+    }
 })
 
-// Esta función está bien
+// ==========================================================
+// 1. FUNCIONES PRINCIPALES DE PERSONAL
+// ==========================================================
+
+// Esta función está bien. Llama a: /
 export const getPersonal = async () => {
-    try {
-        const response = await personalApi.get('/');
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener los miembros del personal', error);
-        throw error;
-    }
+    try {
+        const response = await personalApi.get('/');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener los miembros del personal', error);
+        throw error;
+    }
 }
 
-// CORRECCIÓN 1: Usar backticks (`` ` ``) para template literals
+// CORRECCIÓN 1: Usar backticks (`/${id}/`) para template literals
+// Llama a: /{id}/
 export const getMiembro = async (id) => {
-    try {
-        const response = await personalApi.get(`/${id}/`); // Cambiado de '/${id}/' a `/${id}/`
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener el miembro del personal', error);
-        throw error;
-    }
+    try {
+        const response = await personalApi.get(`/${id}/`); 
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener el miembro del personal', error);
+        throw error;
+    }
 }
 
-// Esta función está bien. Es la que recibirá los campos username y password.
+// Llama a: /
 export const createMiembro = async (miembro) => {
-    try {
-        // 'miembro' debe incluir {..., username: '...', password: '...'}
-        const response = await personalApi.post('/', miembro);
-        return response.data;
-    } catch (error) {
-        console.error('Error al registrar el miembro del personal', error);
-        throw error;
-    }
+    try {
+        // Envía el cuerpo del miembro (incluyendo puesto_id y especialidades_ids)
+        const response = await personalApi.post('/', miembro);
+        return response.data;
+    } catch (error) {
+        console.error('Error al registrar el miembro del personal', error);
+        throw error;
+    }
 }
 
-// CORRECCIÓN 2: Usar backticks (`` ` ``) para template literals
+// CORRECCIÓN 2: Usar backticks (`/${id}/`) para template literals
+// Llama a: /{id}/
 export const updateMiembro = async (id, miembro) => {
-    try {
-        const response = await personalApi.put(`/${id}/`, miembro); // Cambiado de '/${id}/' a `/${id}/`
-        return response.data;
-    } catch (error) {
-        console.error('Error al registrar el miembro del personal', error);
-        throw error;
-    }
+    try {
+        const response = await personalApi.put(`/${id}/`, miembro); 
+        return response.data;
+    } catch (error) {
+        console.error('Error al actualizar el miembro del personal', error);
+        throw error;
+    }
 }
 
-// CORRECCIÓN 3: Aquí estabas usando .put() en lugar de .delete()
+// CORRECCIÓN 3: Usar `.delete()` y backticks (`/${id}/`)
+// Llama a: /{id}/
 export const deleteMiembro = async (id) => {
+    try {
+        const response = await personalApi.delete(`/${id}/`); 
+        return response.data; 
+    } catch (error) {
+        console.error('Error al eliminar el miembro del personal', error);
+        throw error;
+    }
+}
+
+
+// ==========================================================
+// 2. NUEVAS FUNCIONES PARA SELECTORES (PUESTOS Y ESPECIALIDADES)
+// ==========================================================
+
+/**
+ * Obtiene la lista completa de Puestos.
+ * Llama a: /puestos/
+ */
+export const getPuestos = async () => {
     try {
-        // CORRECCIÓN 3.1: Usar .delete() y backticks
-        const response = await personalApi.delete(`/${id}/`); // Cambiado de personalApi.put a .delete y de '/${id}/' a `/${id}/`
-        // Para DELETE, DRF a menudo devuelve un 204 No Content, por lo que la respuesta.data puede estar vacía.
-        return response.data; 
+        // Se concatena a la baseURL: http://localhost:8000/api/personal + puestos/
+        const response = await personalApi.get('puestos/'); 
+        return response.data;
     } catch (error) {
-        console.error('Error al eliminar el miembro del personal', error);
+        console.error("Error al obtener la lista de puestos:", error);
         throw error;
     }
-}
+};
+
+/**
+ * Obtiene la lista completa de Especialidades.
+ * Llama a: /especialidades/
+ */
+export const getEspecialidades = async () => {
+    try {
+        // Se concatena a la baseURL: http://localhost:8000/api/personal + especialidades/
+        const response = await personalApi.get('especialidades/'); 
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener la lista de especialidades:", error);
+        throw error;
+    }
+};

@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import PersonalList, PersonalDetail
+from .views import PersonalList, PersonalDetail, PuestosList, EspecialidadesList
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -15,6 +15,9 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('', PersonalList.as_view(), name='personal_list'),
     path('<int:pk>/', PersonalDetail.as_view(), name='personal_detail'),
+
+    path('puestos/', PuestosList.as_view(), name='puestos_list'),
+    path('especialidades/', EspecialidadesList.as_view(), name='especialidades_list'),
     
     # Rutas de autenticación
     path('auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

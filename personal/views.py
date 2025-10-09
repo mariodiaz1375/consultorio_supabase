@@ -2,6 +2,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Personal
 from .serializers import Personal1Serializer
+from rest_framework import generics # Importar para usar ListAPIView
+from .models import Puestos, Especialidades
+from .serializers import PuestosSerializer, EspecialidadesSerializer # Importar los nuevos serializers
+
 
 # Create your views here.
 
@@ -39,3 +43,16 @@ class PersonalDetail(APIView):
         personal = Personal.objects.get(pk=pk)
         personal.delete()
         return Response(status=204)
+    
+class PuestosList(generics.ListAPIView):
+    queryset = Puestos.objects.all()
+    serializer_class = PuestosSerializer
+    # Opcional: Proteger también esta lista si solo usuarios logueados pueden verla
+    # permission_classes = [IsAuthenticated] 
+
+# Vista para obtener la lista completa de Especialidades
+class EspecialidadesList(generics.ListAPIView):
+    queryset = Especialidades.objects.all()
+    serializer_class = EspecialidadesSerializer
+    # Opcional: Proteger también esta lista
+    # permission_classes = [IsAuthenticated]

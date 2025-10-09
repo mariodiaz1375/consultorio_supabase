@@ -5,7 +5,7 @@ export default function PersonalCard({ miembro }) {
   return (
     <div className={styles['personal-card']}>
       <h2 className={styles.title}>
-        {miembro.puesto} {miembro.nombre} {miembro.apellido}
+        {} {miembro.nombre} {miembro.apellido}
       </h2>
       <div className={styles['button-group']}>
         <button className={styles['edit-button']}>Editar / Detalles</button>
