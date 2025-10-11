@@ -1,0 +1,93 @@
+.pacientes-form { 
+    max-width: 600px;
+    margin: 40px auto; 
+    padding: 30px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Estilos para los encabezados */
+.pacientes-form h3 {
+    color: #2c3e50; 
+    text-align: center;
+    font-size: 2rem; 
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #27ae60;
+}
+
+.pacientes-form h4 {
+    color: #555;
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+/* Estilos para los campos de entrada (input) y select */
+.pacientes-form input[type="text"],
+.pacientes-form input[type="email"],
+.pacientes-form input[type="password"],
+.pacientes-form input[type="date"], /* <-- Se agrega el tipo 'date' */
+.pacientes-form input[type="tel"],
+.pacientes-form select { /* <-- Se agrega el selector para selects */
+    width: 100%;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px; 
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+/* Efecto al enfocar los campos */
+.pacientes-form input:focus,
+.pacientes-form select:focus { /* <-- Aplicar el efecto también al select */
+    border-color: #27ae60; 
+    outline: none;
+    box-shadow: 0 0 5px rgba(39, 174, 96, 0.4); 
+}
+
+/* Estilos para el botón de enviar */
+.pacientes-form button[type="submit"] {
+    display: block;
+    width: 100%;
+    background-color: #27ae60; 
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+    margin-top: 20px;
+}
+
+.pacientes-form button[type="submit"]:hover {
+    background-color: #2ecc71; /* Un verde más claro al pasar el ratón */
+    transform: translateY(-1px); /* Efecto de "levantamiento" */
+}
+
+.pacientes-form button[type="submit"]:active {
+    background-color: #1e8449; /* Verde oscuro al hacer clic */
+    transform: translateY(0);
+}
+
+/* Estilos para las etiquetas */
+.pacientes-form label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    color: #34495e; /* Color oscuro para legibilidad */
+    font-weight: 600;
+}
+
+/* Estilos para la línea divisoria */
+.pacientes-form hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+}
