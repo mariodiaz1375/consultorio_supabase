@@ -64,7 +64,7 @@ const Login = () => {
 
   const getUserInfo = async (token) => {
     try {
-      const response = await fetch('http://localhost:8000/api/auth/user/', {
+      const response = await fetch('http://localhost:8000/api/personal/me/', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import PersonalList, PersonalDetail, PuestosList, EspecialidadesList
+from .views import PersonalList, PersonalDetail, PuestosList, EspecialidadesList, PersonalMeView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -14,6 +14,7 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('', PersonalList.as_view(), name='personal_list'),
+    path('me/', PersonalMeView.as_view(), name='personal_me'), # El endpoint será: /api/personal/me/
     path('<int:pk>/', PersonalDetail.as_view(), name='personal_detail'),
 
     path('puestos/', PuestosList.as_view(), name='puestos_list'),

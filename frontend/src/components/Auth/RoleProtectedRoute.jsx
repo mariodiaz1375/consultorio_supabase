@@ -1,86 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react'; // Importar useCallback
+import { useNavigate } from 'react-router-dom';
 
-const RoleProtectedRoute = ({ children, allowedRoles = [], requirePermission = null }) => {
+const RoleProtectedRoute = ({ children, allowedRoles = [] }) => {
+  const navigate = useNavigate();
+  
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
 
-  useEffect(() => {
-    checkUserPermissions();
-  }, []);
-
-  const checkUserPermissions = async () => {
+  // 💥 FUNCIÓN CORREGIDA: Toda la lógica de verificación está aquí dentro
+  const checkAccess = useCallback(() => {
+    const token = localStorage.getItem('access_token');
+    const userInfoJson = localStorage.getItem('user_info');
+    
+    // 1. Verificar Autenticación (Token)
+    if (!token || !userInfoJson) {
+      // Si no hay token, redirigir a login
+      setHasAccess(false);
+      setLoading(false);
+      navigate('/login');
+      return;
+    }
+    
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        setHasAccess(false);
-        setLoading(false);
-        return;
-      }
+      const userInfo = JSON.parse(userInfoJson);
+      
+      // 2. Obtener el Rol (nombre del puesto)
+      const role = userInfo.puesto_info?.nombre_puesto?.toUpperCase() || 'SIN ROL';
+      setUserRole(role);
 
-      // Obtener información del personal actual
-      const response = await fetch('http://localhost:8000/api/personal/', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      // 3. Verificar si el Rol está permitido
+      // Si no se especifican roles (allowedRoles.length === 0), se permite el acceso por defecto.
+      const isRoleAllowed = allowedRoles.length === 0 || 
+                            allowedRoles.some(allowedRole => allowedRole.toUpperCase() === role);
 
-      if (response.ok) {
-        const personalData = await response.json();
-        const currentUserId = getCurrentUserId(token);
-        const currentPersonal = personalData.find(person => person.user === currentUserId);
+      setHasAccess(isRoleAllowed);
 
-        if (currentPersonal) {
-          const role = currentPersonal.puesto.nombre_puesto.toLowerCase();
-          setUserRole(role);
-
-          // Verificar si el rol está permitido
-          const roleAllowed = allowedRoles.length === 0 || 
-                             allowedRoles.some(allowedRole => 
-                               role.includes(allowedRole.toLowerCase())
-                             );
-
-          // Verificar permisos específicos si se requieren
-          let permissionAllowed = true;
-          if (requirePermission) {
-            permissionAllowed = await checkSpecificPermission(token, requirePermission);
-          }
-
-          setHasAccess(roleAllowed && permissionAllowed);
-        } else {
-          setHasAccess(false);
-        }
-      } else {
-        setHasAccess(false);
-      }
-    } catch (error) {
-      console.error('Error verificando permisos:', error);
+    } catch (e) {
+      console.error('Error al parsear user_info de localStorage:', e);
       setHasAccess(false);
     } finally {
+      // 4. Se usa 'finally' para asegurar que loading se ponga en false
       setLoading(false);
     }
-  };
 
-  const getCurrentUserId = (token) => {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.user_id;
-    } catch {
-      return null;
-    }
-  };
+  }, [allowedRoles, navigate]); // Cierre correcto de useCallback con sus dependencias
 
-  const checkSpecificPermission = async (token, permission) => {
-    try {
-      // Aquí puedes hacer una llamada a un endpoint que verifique permisos específicos
-      // Por ahora, usamos la lógica básica de roles
-      return true;
-    } catch {
-      return false;
-    }
-  };
+  useEffect(() => {
+    checkAccess();
+    
+    // Función de limpieza
+    return () => setLoading(false);
+  }, [checkAccess]); // Dependencia de la función memoizada
+
+  // -------------------------------------------------------------
+  // Renderizado
+  // -------------------------------------------------------------
 
   if (loading) {
     return (
@@ -104,7 +79,9 @@ const RoleProtectedRoute = ({ children, allowedRoles = [], requirePermission = n
     );
   }
 
+  // 4. Redirigir si no tiene acceso
   if (!hasAccess) {
+    // Si no está autorizado, mostrar mensaje
     return (
       <div style={{ 
         display: 'flex', 
@@ -119,7 +96,7 @@ const RoleProtectedRoute = ({ children, allowedRoles = [], requirePermission = n
         <p>No tienes permisos para acceder a esta sección.</p>
         <p><strong>Tu rol actual:</strong> {userRole}</p>
         <button 
-          onClick={() => window.history.back()}
+          onClick={() => navigate('/dashboard')}
           style={{
             padding: '10px 20px',
             backgroundColor: '#667eea',
@@ -130,12 +107,13 @@ const RoleProtectedRoute = ({ children, allowedRoles = [], requirePermission = n
             marginTop: '10px'
           }}
         >
-          Volver Atrás
+          Volver al Dashboard
         </button>
       </div>
     );
   }
 
+  // 5. Permitir el acceso
   return children;
 };
 

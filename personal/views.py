@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .models import Personal
 from .serializers import Personal1Serializer
 from rest_framework import generics # Importar para usar ListAPIView
@@ -56,3 +57,26 @@ class EspecialidadesList(generics.ListAPIView):
     serializer_class = EspecialidadesSerializer
     # Opcional: Proteger también esta lista
     # permission_classes = [IsAuthenticated]
+
+class PersonalMeView(generics.RetrieveAPIView):
+    """
+    Vista que devuelve la información del registro de Personal asociado 
+    al usuario que realiza la solicitud (usuario autenticado).
+    """
+    # 1. Requiere que el usuario esté autenticado con un token
+    permission_classes = [IsAuthenticated] 
+    
+    # 2. Especifica qué Serializer usar para dar formato a los datos
+    serializer_class = Personal1Serializer 
+
+    def get_object(self):
+        # 3. La lógica clave: filtra el modelo 'Personal' para encontrar 
+        #    el objeto cuyo campo 'user' (Foreign Key) coincida con el usuario 
+        #    actual de la solicitud (self.request.user).
+        try:
+            return Personal.objects.get(user=self.request.user)
+        except Personal.DoesNotExist:
+            # Puedes manejar el error si un usuario está logeado pero 
+            # no tiene un registro de Personal asociado
+            from rest_framework.exceptions import NotFound
+            raise NotFound("No se encontró un registro de Personal asociado a este usuario.")

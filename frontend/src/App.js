@@ -12,6 +12,7 @@ import Dashboard from './components/Dashboard/Dashboard'; // ✅
 import ProtectedRoute from './components/Auth/ProtectedRoute'; // ✅
 import PacientesPagina from './pages/pacientesPagina/PacientesPagina';
 import PersonalPagina from './pages/personalPagina/PersonalPagina';
+import RoleProtectedRoute from './components/Auth/RoleProtectedRoute';
 
 
 function App() {
@@ -21,7 +22,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={
           <ProtectedRoute>
+          
             <Dashboard />
+          
           </ProtectedRoute>
         } />
         <Route path="/pacientes" element={
@@ -31,7 +34,9 @@ function App() {
         } />
         <Route path="/personal" element={
           <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={['Admin']}>
             <PersonalPagina />
+          </RoleProtectedRoute>
           </ProtectedRoute>
         } />
         <Route path="/" element={<Login />} />
