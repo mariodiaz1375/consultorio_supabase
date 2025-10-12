@@ -86,7 +86,7 @@
 
 import React, { useEffect, useState } from 'react';
 // 🚨 Nota: Asegúrate de que las funciones getX existan en tu archivo API
-import { getPacientes, createPaciente, getGeneros, getAntecedentes, getAnalisisFuncional } from '../../api/pacientes.api'; 
+import { getPacientes, createPaciente, getGeneros, getAntecedentes, getAnalisisFuncional, getObrasSociales } from '../../api/pacientes.api'; 
 import styles from './PacientesList.module.css';
 import PacientesForm from '../pacientesForm/PacientesForm';
 import PacienteCard from '../pacienteCard/PacienteCard';
@@ -99,6 +99,7 @@ export default function PacientesList() {
   const [generos, setGeneros] = useState([]);
   const [antecedentesOptions, setAntecedentesOptions] = useState([]);
   const [analisisFuncionalOptions, setAnalisisFuncionalOptions] = useState([]);
+  const [obrasSocialesOptions, setObrasSocialesOptions] = useState([]);
 
   const fetchPacientes = async () => {
     try {
@@ -112,14 +113,16 @@ export default function PacientesList() {
   // 💥 NUEVA FUNCIÓN: Cargar todas las opciones del formulario
   const fetchOptions = async () => {
     try {
-        const [generosData, antecedentesData, analisisData] = await Promise.all([
+        const [generosData, antecedentesData, analisisData, obrasSocialesData] = await Promise.all([
             getGeneros(), 
             getAntecedentes(), 
-            getAnalisisFuncional() 
+            getAnalisisFuncional(),
+            getObrasSociales()
         ]);
         setGeneros(generosData);
         setAntecedentesOptions(antecedentesData);
         setAnalisisFuncionalOptions(analisisData);
+        setObrasSocialesOptions(obrasSocialesData);
     } catch (error) {
         console.error('Error al cargar las opciones del formulario:', error);
     }
@@ -167,6 +170,7 @@ export default function PacientesList() {
                   generos={generos}
                   antecedentes={antecedentesOptions}
                   analisisFuncional={analisisFuncionalOptions}
+                  obrasSociales={obrasSocialesOptions}
               />
           </div>
       )}

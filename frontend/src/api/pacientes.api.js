@@ -7,7 +7,7 @@ const pacientesApi = axios.create({
     }
 })
 
-const getToken = () => localStorage.getItem('access_token'); 
+// const getToken = () => localStorage.getItem('access_token'); 
 
 export const getPacientes = async () => {
     try {
@@ -21,7 +21,7 @@ export const getPacientes = async () => {
 
 export const getPaciente = async (id) => {
     try {
-        const response = await pacientesApi.get('/${id}/');
+        const response = await pacientesApi.get(`/${id}/`);
         return response.data;
     } catch (error) {
         console.error('Error al obtener el paciente', error);
@@ -41,7 +41,7 @@ export const createPaciente = async (paciente) => {
 
 export const updatePaciente = async (id, paciente) => {
     try {
-        const response = await pacientesApi.put('/${id}/', paciente);
+        const response = await pacientesApi.put(`/${id}/`, paciente);
         return response.data;
     } catch (error) {
         console.error('Error al registrar el paciente', error);
@@ -51,7 +51,7 @@ export const updatePaciente = async (id, paciente) => {
 
 export const deletePaciente = async (id) => {
     try {
-        const response = await pacientesApi.put('/${id}/');
+        const response = await pacientesApi.put(`/${id}/`);
         return response.data;
     } catch (error) {
         console.error('Error al eliminar el paciente', error);
@@ -123,3 +123,21 @@ export const getAnalisisFuncional = async () => {
         throw error;
     }
 };
+
+export const getObrasSociales = async () => {
+    try {
+        // Se concatena a la baseURL: http://localhost:8000/api/personal + puestos/
+        const response = await pacientesApi.get('obras-sociales/'); 
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener la lista de obras sociales:", error);
+        throw error;
+    }
+};
+
+// export const getObrasSociales = async () => {
+//     // Usamos la URL que definiste en tu urls.py de pacientes:
+//     // path('obras-sociales/', ObrasSocialesList.as_view(), ...) -> /api/pacientes/obras-sociales/
+//     const response = await api.get('/pacientes/obras-sociales/'); 
+//     return response.data;
+// };

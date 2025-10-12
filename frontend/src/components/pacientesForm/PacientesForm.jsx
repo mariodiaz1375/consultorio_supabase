@@ -1,9 +1,3 @@
-// src/components/personalForm/PersonalForm.jsx
-
-// 
-
-// src/components/pacientesForm/PacientesForm.jsx
-
 import React, { useState } from 'react';
 import styles from './PacientesForm.module.css';
 
@@ -16,9 +10,11 @@ const initialFormData = {
     telefono: '',
     email: '',
     // CAMPOS RELACIONADOS (ID o Array de IDs)
-    genero_id: '',               // <-- Foreign Key (simular el default=3 si se deja vacío)
-    antecedentes_ids: [],        // <-- Many-to-Many (multi-select)
-    analisis_funcional_ids: [],  // <-- Many-to-Many (multi-select)
+    genero_id: '',
+    antecedentes_ids: [],
+    analisis_funcional_ids: [],
+    // 🚨 CAMBIO CLAVE: Estructura anidada para Obra Social
+    os_pacientes_data: [], // Array de objetos: [{ os_id: N, num_afiliado: '' }]
 };
 
 // RECIBIR las listas de opciones como props
@@ -26,30 +22,78 @@ export default function PacientesForm({
     onSubmit, 
     generos = [], 
     antecedentes = [], 
-    analisisFuncional = [] 
+    analisisFuncional = [],
+    obrasSociales = [], // 🚨 NUEVA PROP: Lista de Obras Sociales disponibles
 }) {
     const [formData, setFormData] = useState(initialFormData);
+
+    // ==========================================================
+    // 🚨 FUNCIONES DE MANEJO DE OBRAS SOCIALES (Array Anidado) 🚨
+    // ==========================================================
+
+    const handleOsChange = (index, e) => {
+        const { name, value } = e.target;
+        
+        // 1. Crear una copia inmutable del array de Obras Sociales
+        const newOsData = [...formData.os_pacientes_data];
+        
+        if (name === 'os_id') {
+            // Convertir a número el ID si tiene valor (es lo que espera el Serializer anidado)
+            newOsData[index][name] = value ? Number(value) : '';
+        } else {
+            // Para el número de afiliado (CharField)
+            newOsData[index][name] = value;
+        }
+
+        // 2. Actualizar el estado con el nuevo array
+        setFormData(prevData => ({
+            ...prevData,
+            os_pacientes_data: newOsData,
+        }));
+    };
+
+    const handleAddOs = () => {
+        // Agregar un nuevo objeto de Obra Social al array
+        setFormData(prevData => ({
+            ...prevData,
+            os_pacientes_data: [
+                ...prevData.os_pacientes_data,
+                { os_id: '', num_afiliado: '' } // Objeto inicial
+            ]
+        }));
+    };
+
+    const handleRemoveOs = (index) => {
+        // Eliminar el objeto del array por índice
+        const newOsData = formData.os_pacientes_data.filter((_, i) => i !== index);
+        setFormData(prevData => ({
+            ...prevData,
+            os_pacientes_data: newOsData,
+        }));
+    };
+
+    // ==========================================================
+    // FUNCIONES DE MANEJO ESTÁNDAR (Datos básicos, FK, M2M)
+    // ==========================================================
 
     const handleChange = (e) => {
         const { name, value, type, options } = e.target;
         
         let newValue = value;
 
-        // 💥 Lógica para campos Many-to-Many (Multi-Select)
+        // Lógica para campos Many-to-Many (Multi-Select)
         if ( (name === 'antecedentes_ids' || name === 'analisis_funcional_ids') && type === 'select-multiple') {
             newValue = Array.from(options)
                         .filter(option => option.selected)
-                        // Asegurar que sean números, que es lo que espera el Serializer para IDs
                         .map(option => Number(option.value)); 
         } 
         
-        // 💥 Lógica para campo Foreign Key (Género)
+        // Lógica para campo Foreign Key (Género)
         else if (name === 'genero_id') {
-            // Asegurar que sea un número (ID) si tiene valor, si no, que sea string vacío.
             newValue = value ? Number(value) : ''; 
         }
 
-        // 3. Manejo estándar para el resto de los campos
+        // Manejo estándar para el resto de los campos
         setFormData(prevData => ({
             ...prevData,
             [name]: newValue
@@ -59,18 +103,16 @@ export default function PacientesForm({
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        // Asumiendo que el Serializer maneja el default=3 si genero_id es nulo, 
-        // pero es más seguro enviarlo si el usuario seleccionó algo.
+        // El formData ahora incluye el array os_pacientes_data listo para el Serializer
         onSubmit(formData);
         setFormData(initialFormData); 
     };
 
     return (
-        // 🚨 Usar la clase del módulo CSS corregido
         <form onSubmit={handleSubmit} className={styles['pacientes-form']}> 
             <h3>Registrar Nuevo Paciente</h3>
             
-            {/* ======================= DATOS BÁSICOS (CharField/DateField) ======================= */}
+            {/* ======================= DATOS BÁSICOS ======================= */}
             <label>Nombre</label>
             <input name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Nombre" required />
             
@@ -104,7 +146,6 @@ export default function PacientesForm({
                 value={formData.genero_id} 
                 onChange={handleChange}
             >
-                {/* Opción vacía para el placeholder */}
                 <option value="">Seleccione un Género</option>
                 {generos.map(g => (
                     <option key={g.id} value={g.id}>
@@ -142,6 +183,54 @@ export default function PacientesForm({
                     </option>
                 ))}
             </select>
+            
+            <hr /> 
+
+            {/* ======================= OBRAS SOCIALES (CAMPOS DINÁMICOS) ======================= */}
+            <h4>Obras Sociales y Afiliación</h4>
+
+            {formData.os_pacientes_data.map((osItem, index) => (
+                // Usamos la clase 'os-group' para estilizar cada bloque de OS
+                <div key={index} className={styles['os-group']}>
+                    
+                    <label>Obra Social #{index + 1}</label>
+                    <select
+                        name="os_id" 
+                        value={osItem.os_id} 
+                        onChange={(e) => handleOsChange(index, e)}
+                    >
+                        <option value="">Seleccione Obra Social</option>
+                        {obrasSociales.map(os => (
+                            <option key={os.id} value={os.id}>
+                                {os.nombre_os}
+                            </option>
+                        ))}
+                    </select>
+                    
+                    <label>Número de Afiliado</label>
+                    <input 
+                        type="text"
+                        name="num_afiliado"
+                        value={osItem.num_afiliado}
+                        onChange={(e) => handleOsChange(index, e)}
+                        placeholder="N° de Afiliado"
+                    />
+
+                    <button 
+                        type="button" 
+                        onClick={() => handleRemoveOs(index)}
+                        className={styles['remove-os-btn']}
+                    >
+                        Eliminar Obra Social
+                    </button>
+                    {/* Separador visual para bloques de OS */}
+                    {index < formData.os_pacientes_data.length - 1 && <hr className={styles['os-separator']}/>}
+                </div>
+            ))}
+
+            <button type="button" onClick={handleAddOs} className={styles['add-os-btn']}>
+                + Agregar Obra Social
+            </button>
             
             <button type="submit">Registrar Paciente</button>
         </form>
