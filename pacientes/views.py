@@ -11,7 +11,7 @@ from .serializers import (
     AntecedentesSerializer, 
     AnalisisFuncionalSerializer,
     # Asume que ObrasSocialesSerializer también existe
-    # ObrasSocialesSerializer, 
+    ObrasSocialesSerializer, 
 )
 
 # --- Vistas Principales (CRUD de Pacientes) ---
@@ -86,6 +86,8 @@ class AnalisisFuncionalList(generics.ListAPIView):
     queryset = AnalisisFuncional.objects.all()
     serializer_class = AnalisisFuncionalSerializer
 
-# class ObrasSocialesList(generics.ListAPIView):
-#     queryset = ObrasSociales.objects.all()
-#     serializer_class = ObrasSocialesSerializer
+# 🚨 NUEVA VISTA: Obras Sociales
+class ObrasSocialesList(generics.ListAPIView):
+    """Devuelve la lista de Obras Sociales para usar en selects/comboboxes."""
+    queryset = ObrasSociales.objects.all()
+    serializer_class = ObrasSocialesSerializer
