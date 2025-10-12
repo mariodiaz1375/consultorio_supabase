@@ -59,34 +59,67 @@ export const deletePaciente = async (id) => {
     }
 }
 // URL para Generos
+// export const getGeneros = async () => {
+//     // Aquí se llama a la función getToken() definida arriba
+//     const token = getToken(); 
+//     const response = await fetch('http://localhost:8000/api/generos/', {
+//         headers: { 'Authorization': `Bearer ${token}` }
+//     });
+//     if (!response.ok) throw new Error('Error al cargar géneros');
+//     return response.json();
+// };
+
 export const getGeneros = async () => {
-    // Aquí se llama a la función getToken() definida arriba
-    const token = getToken(); 
-    const response = await fetch('http://localhost:8000/api/generos/', {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (!response.ok) throw new Error('Error al cargar géneros');
-    return response.json();
+    try {
+        // Se concatena a la baseURL: http://localhost:8000/api/personal + puestos/
+        const response = await pacientesApi.get('generos/'); 
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener la lista de generos:", error);
+        throw error;
+    }
 };
 
 // URL para Antecedentes
+// export const getAntecedentes = async () => {
+//     // Aquí se llama a la función getToken()
+//     const token = getToken(); 
+//     const response = await fetch('http://localhost:8000/api/antecedentes/', {
+//         headers: { 'Authorization': `Bearer ${token}` }
+//     });
+//     if (!response.ok) throw new Error('Error al cargar antecedentes');
+//     return response.json();
+// };
+
 export const getAntecedentes = async () => {
-    // Aquí se llama a la función getToken()
-    const token = getToken(); 
-    const response = await fetch('http://localhost:8000/api/antecedentes/', {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (!response.ok) throw new Error('Error al cargar antecedentes');
-    return response.json();
+    try {
+        // Se concatena a la baseURL: http://localhost:8000/api/personal + puestos/
+        const response = await pacientesApi.get('antecedentes/'); 
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener la lista de antecedentes:", error);
+        throw error;
+    }
 };
 
 // URL para Análisis Funcional
+// export const getAnalisisFuncional = async () => {
+//     // Aquí se llama a la función getToken()
+//     const token = getToken();
+//     const response = await fetch('http://localhost:8000/api/analisis-funcional/', {
+//         headers: { 'Authorization': `Bearer ${token}` }
+//     });
+//     if (!response.ok) throw new Error('Error al cargar análisis funcional');
+//     return response.json();
+// };
+
 export const getAnalisisFuncional = async () => {
-    // Aquí se llama a la función getToken()
-    const token = getToken();
-    const response = await fetch('http://localhost:8000/api/analisis-funcional/', {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (!response.ok) throw new Error('Error al cargar análisis funcional');
-    return response.json();
+    try {
+        // Se concatena a la baseURL: http://localhost:8000/api/personal + puestos/
+        const response = await pacientesApi.get('analisis-funcional/'); 
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener la lista de antecedentes:", error);
+        throw error;
+    }
 };
