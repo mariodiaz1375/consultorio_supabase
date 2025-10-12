@@ -143,3 +143,54 @@ class PacientesSerializer(serializers.ModelSerializer):
             )
         
         return paciente
+    
+    def update(self, instance, validated_data):
+        
+        # 1. ACTUALIZAR RELACIONES MANY-TO-MANY (M2M)
+        # Extraer los IDs M2M usando pop()
+        antecedentes_data = validated_data.pop('antecedentes', None)
+        analisis_funcional_data = validated_data.pop('analisis_funcional', None)
+        
+        # 2. ACTUALIZAR RELACIÓN ANIDADA (OsPacientes)
+        # Extraer los datos anidados (array de objetos)
+        os_pacientes_data = validated_data.pop('os_pacientes_data', None)
+        
+        # 3. ACTUALIZAR CLAVE FORÁNEA (Foreign Key)
+        # Extraer el ID de la Foreign Key 'genero' (que viene con la clave 'genero')
+        genero_id = validated_data.pop('genero', None)
+
+        # A. Actualizar el objeto Pacientes principal (campos CharField, DateField, etc.)
+        # El ID de la FK se actualiza usando el sufijo '_id'
+        if genero_id is not None:
+            instance.genero_id = genero_id
+
+        # Actualizar el resto de los campos simples (nombre, dni, email, etc.)
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+
+        instance.save()
+        
+        # B. Actualizar relaciones M2M
+        # Usar .set() para reemplazar todas las relaciones existentes
+        if antecedentes_data is not None:
+            instance.antecedentes.set(antecedentes_data)
+        
+        if analisis_funcional_data is not None:
+            instance.analisis_funcional.set(analisis_funcional_data)
+
+        # C. LÓGICA DE ACTUALIZACIÓN PARA OsPacientes (Relación Anidada/Intermedia)
+        if os_pacientes_data is not None:
+            
+            # Opción 1: Borrar todas las relaciones OsPacientes antiguas y crear las nuevas
+            # Esto es lo más simple y común para arrays de objetos:
+            instance.ospacientes_set.all().delete()
+            
+            for os_paciente_item in os_pacientes_data:
+                # Crear los nuevos registros OsPacientes
+                OsPacientes.objects.create(
+                    paciente=instance, 
+                    os_id=os_paciente_item['os'], 
+                    num_afiliado=os_paciente_item['num_afiliado']
+                )
+
+        return instance
