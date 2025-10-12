@@ -30,14 +30,15 @@
 import React from 'react';
 import styles from './PacienteCard.module.css'; // <-- Importa el objeto 'styles'
 
-export default function PacienteCard({ paciente }) {
+export default function PacienteCard({ paciente, onEditStart }) {
   return (
     <div className={styles['paciente-card']}>
       <h2 className={styles.title}>
         {paciente.dni} {paciente.nombre} {paciente.apellido}
       </h2>
       <div className={styles['button-group']}>
-        <button className={styles['edit-button']}>Editar / Detalles</button>
+        <button className={styles['edit-button']} onClick={() => onEditStart(paciente)}>Editar</button>
+        <button className={styles['edit-button']}>Ver detalles</button>
         <button className={styles['delete-button']}>Eliminar</button>
       </div>
     </div>

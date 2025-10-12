@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './PacientesForm.module.css';
 
 const initialFormData = {
@@ -24,8 +24,40 @@ export default function PacientesForm({
     antecedentes = [], 
     analisisFuncional = [],
     obrasSociales = [], // 🚨 NUEVA PROP: Lista de Obras Sociales disponibles
+    initialData = null,
 }) {
-    const [formData, setFormData] = useState(initialFormData);
+
+    const getInitialState = (data) => {
+        if (!data) return initialFormData;
+
+        // Mapeo inverso de las propiedades de lectura a las de escritura
+        return {
+            ...data,
+            // 1. Foreign Key (Género): Viene como objeto, necesitamos solo el ID.
+            genero_id: data.genero ? data.genero.id : (data.genero_info ? data.genero_info.id : ''),
+            
+            // 2. Many-to-Many: Viene como array de objetos, necesitamos array de IDs.
+            antecedentes_ids: data.antecedentes_info ? data.antecedentes_info.map(a => a.id) : [],
+            analisis_funcional_ids: data.analisis_funcional_info ? data.analisis_funcional_info.map(a => a.id) : [],
+
+            // 3. Relación Anidada (OsPacientes): Viene como array de objetos, 
+            //    necesitamos transformar la Obra Social de objeto a ID.
+            os_pacientes_data: data.os_pacientes_info ? data.os_pacientes_info.map(item => ({
+                os_id: item.os_info.id,
+                num_afiliado: item.num_afiliado,
+            })) : [],
+            
+            // Sobreescribir campos que no usamos en el formulario de edición (como 'edad', 'activo')
+            // y asegurar que campos como fecha_nacimiento estén en formato YYYY-MM-DD
+            fecha_nacimiento: data.fecha_nacimiento.substring(0, 10), 
+        };
+    };
+
+    const [formData, setFormData] = useState(getInitialState(initialData));
+
+    useEffect(() => {
+        setFormData(getInitialState(initialData));
+    }, [initialData]);
 
     // ==========================================================
     // 🚨 FUNCIONES DE MANEJO DE OBRAS SOCIALES (Array Anidado) 🚨
@@ -105,7 +137,6 @@ export default function PacientesForm({
         
         // El formData ahora incluye el array os_pacientes_data listo para el Serializer
         onSubmit(formData);
-        setFormData(initialFormData); 
     };
 
     return (

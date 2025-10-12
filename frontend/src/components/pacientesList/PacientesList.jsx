@@ -86,7 +86,7 @@
 
 import React, { useEffect, useState } from 'react';
 // 🚨 Nota: Asegúrate de que las funciones getX existan en tu archivo API
-import { getPacientes, createPaciente, getGeneros, getAntecedentes, getAnalisisFuncional, getObrasSociales } from '../../api/pacientes.api'; 
+import { getPacientes, createPaciente, getGeneros, getAntecedentes, getAnalisisFuncional, getObrasSociales, updatePaciente } from '../../api/pacientes.api'; 
 import styles from './PacientesList.module.css';
 import PacientesForm from '../pacientesForm/PacientesForm';
 import PacienteCard from '../pacienteCard/PacienteCard';
@@ -100,6 +100,7 @@ export default function PacientesList() {
   const [antecedentesOptions, setAntecedentesOptions] = useState([]);
   const [analisisFuncionalOptions, setAnalisisFuncionalOptions] = useState([]);
   const [obrasSocialesOptions, setObrasSocialesOptions] = useState([]);
+  const [editingPaciente, setEditingPaciente] = useState(null);
 
   const fetchPacientes = async () => {
     try {
@@ -109,6 +110,14 @@ export default function PacientesList() {
         console.error('Error al cargar la lista de pacientes:', error);
     }
   }
+
+  const handleEditStart = (paciente) => {
+        // 1. Oculta la lista (si es necesario)
+        // 2. Carga los datos del paciente en el estado de edición
+        setEditingPaciente(paciente);
+        // 3. Muestra el formulario
+        setShowForm(true);
+  };
 
   // 💥 NUEVA FUNCIÓN: Cargar todas las opciones del formulario
   const fetchOptions = async () => {
@@ -133,19 +142,37 @@ export default function PacientesList() {
     fetchOptions(); // 👈 Cargar opciones al montar el componente
   }, []);
 
-  const handleFormSubmit = async (newPacienteData) => {
+  const handleFormSubmit = async (pacienteData) => {
       try {
-          const newPaciente = await createPaciente(newPacienteData); 
+          let result;
           
-          await fetchPacientes(); 
+          // 🚨 Determinar si es Edición (PUT) o Creación (POST)
+          if (editingPaciente) {
+              // Edición: usa el ID del paciente que se está editando
+              result = await updatePaciente(editingPaciente.id, pacienteData);
+              alert(`Paciente ${result.nombre} ${result.apellido} actualizado con éxito.`);
+          } else {
+              // Creación: Lógica existente
+              result = await createPaciente(pacienteData); 
+              alert(`Paciente ${result.nombre} ${result.apellido} creado con éxito.`);
+          }
           
+          await fetchPacientes(); // Recargar la lista
           setShowForm(false); 
-          alert(`Paciente ${newPaciente.nombre} ${newPaciente.apellido} creado con éxito.`);
+          setEditingPaciente(null); // Limpiar el estado de edición
           
       } catch (error) {
-          console.error('Error al crear el paciente:', error);
-          alert('Error al registrar el paciente. Revisa la consola para más detalles.');
+          console.error(`Error al ${editingPaciente ? 'actualizar' : 'crear'} el paciente:`, error);
+          alert('Error al registrar/actualizar el paciente. Revisa la consola para más detalles.');
       }
+  };
+
+  const handleToggleForm = () => {
+      // Limpia el estado de edición al cerrar o abrir para registrar uno nuevo
+      if (showForm) {
+          setEditingPaciente(null); // Cancelar la edición al cerrar
+      }
+      setShowForm(!showForm);
   };
 
   return (
@@ -155,9 +182,12 @@ export default function PacientesList() {
         <div className={styles['boton-conteiner']}>
             <button 
                 className={styles['register-button']}
-                onClick={() => setShowForm(!showForm)} 
+                onClick={handleToggleForm} 
             >
-                {showForm ? 'Cancelar Registro' : 'Registrar Paciente'}
+                {showForm 
+                    ? (editingPaciente ? 'Cancelar Edición' : 'Cancelar Registro') 
+                    : 'Registrar Paciente'
+                }
             </button>
         </div>
       </div>
@@ -171,6 +201,7 @@ export default function PacientesList() {
                   antecedentes={antecedentesOptions}
                   analisisFuncional={analisisFuncionalOptions}
                   obrasSociales={obrasSocialesOptions}
+                  initialData={editingPaciente}
               />
           </div>
       )}
@@ -178,9 +209,10 @@ export default function PacientesList() {
       {/* Listado... */}
       <div>
         {pacientes.map(paciente => (
-          <PacienteCard key={paciente.id} paciente={paciente}/>
+          <PacienteCard key={paciente.id} paciente={paciente} onEditStart={handleEditStart}/>
         ))}
       </div>
     </div>
   );
 }
+// initialData
