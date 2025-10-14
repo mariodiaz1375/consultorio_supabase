@@ -122,3 +122,27 @@
     overflow-y: auto; /* Permite desplazamiento si el formulario es largo */
 }
 
+.search-conteiner {
+  margin: 10px 0 20px 0;
+  text-align: center;
+}
+
+
+.search-input {
+  padding: 10px 150px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 20px; /* Bordes redondeados para un look moderno */
+  width: 350px; /* Un ancho razonable */
+  max-width: 100%; /* Asegura que no se desborde en móviles */
+  font-size: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none; /* Quitar el borde de foco por defecto */
+  border-color: #007bff; /* Color azul al enfocar */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+

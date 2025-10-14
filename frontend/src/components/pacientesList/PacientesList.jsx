@@ -16,6 +16,7 @@ export default function PacientesList() {
   const [analisisFuncionalOptions, setAnalisisFuncionalOptions] = useState([]);
   const [obrasSocialesOptions, setObrasSocialesOptions] = useState([]);
   const [editingPaciente, setEditingPaciente] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const isEditing = showForm && editingPaciente;
   const isCreating = showForm && !editingPaciente;
 
@@ -93,6 +94,19 @@ export default function PacientesList() {
       setShowForm(!showForm);
   };
 
+  const filteredPacientes = pacientes.filter(paciente => {
+    // Convierte el término de búsqueda y los campos del paciente a minúsculas para una comparación sin distinción de mayúsculas/minúsculas
+    const lowerSearchTerm = searchTerm.toLowerCase();
+
+    // Comprueba si el DNI o el nombre/apellido contienen el término de búsqueda
+    const matchesDni = paciente.dni ? paciente.dni.includes(lowerSearchTerm) : false;
+    const matchesNombre = paciente.nombre ? paciente.nombre.toLowerCase().includes(lowerSearchTerm) : false;
+    const matchesApellido = paciente.apellido ? paciente.apellido.toLowerCase().includes(lowerSearchTerm) : false;
+    
+    // Filtra si coincide con DNI, Nombre o Apellido
+    return matchesDni || matchesNombre || matchesApellido;
+  });
+
     const renderForm = (className) => (
       <div className={className}>
           <PacientesForm
@@ -124,6 +138,16 @@ export default function PacientesList() {
             </button>
         </div>
       </div>
+      <div className={styles['search-conteiner']}>
+        <input
+            type="text"
+            placeholder="Buscar por DNI, nombre o apellido..."
+            value={searchTerm}
+            // Actualiza el estado del término de búsqueda con cada cambio
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={styles['search-input']}
+        />
+      </div>
 
       {/* renderizado del formulario en modo creacion con las opciones */}
       {isCreating && (
@@ -145,7 +169,7 @@ export default function PacientesList() {
       
       {/* Listado... */}
       <div>
-        {pacientes.map(paciente => (
+        {filteredPacientes.map(paciente => (
           <PacienteCard key={paciente.id} paciente={paciente} onEditStart={handleEditStart}/>
         ))}
       </div>
