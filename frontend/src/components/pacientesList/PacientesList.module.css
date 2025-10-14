@@ -39,6 +39,23 @@
   margin-right: auto;
 }
 
+.cerrar {
+  background-color: #f35829; /* Un verde vibrante y amigable */
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  font-size: 2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para darle profundidad */
+  margin-bottom: 20px; /* Espacio debajo del botón */
+  display: block; /* Para que ocupe todo el ancho y se centre */
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .encabezado {
   display: flex;
   flex-direction: block;
@@ -53,9 +70,55 @@
   transform: translateY(-2px); /* Efecto de "levantamiento" */
 }
 
+.cerrar:hover {
+  background-color: #da7c57; /* Un verde más claro al pasar el mouse */
+  transform: translateY(-2px); /* Efecto de "levantamiento" */
+}
+
 /* Un contenedor para el botón para mejor alineación */
 .boton-conteiner {
   display: flex;
   margin: 20px 0px 20px 20px;
+}
+
+.cerrar-conteiner {
+  display: flex;
+  margin: 0px 0px 0px 0px;
+  padding-bottom: 50px;
+}
+
+.form-container {
+    margin-bottom: 20px;
+    padding: 15px;
+    /* ... (otros estilos de borde, fondo, etc.) ... */
+}
+
+/* 💥 NUEVOS ESTILOS PARA EDICIÓN (Sidebar/Flotante) 💥 */
+
+/* 1. Overlay (Fondo oscuro que cubre toda la pantalla) */
+.floating-overlay {
+    position: fixed; /* Fija la posición */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparente negro */
+    z-index: 1000; /* Asegura que esté por encima de todo */
+    display: flex; 
+    justify-content: flex-end; /* Alinea el sidebar a la derecha */
+    
+}
+
+/* 2. Contenedor del Formulario (La barra lateral) */
+.sidebar-form-container {
+    width: 500px; /* Ancho deseado para el panel */
+    height: 100%;
+    background-color: white; /* Color de fondo del panel */
+    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.3); /* Sombra para profundidad */
+    /* Para efecto de deslizado, empieza desde la derecha y se mueve a su posición final (0) */
+    transform: translateX(0); 
+    transition: transform 0.4s ease-out; /* Animación de deslizado */
+    padding: 20px; /* Relleno interno */
+    overflow-y: auto; /* Permite desplazamiento si el formulario es largo */
 }
 

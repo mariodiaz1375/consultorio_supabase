@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './PacientesForm.module.css';
 
+
 const initialFormData = {
     nombre: '',
     apellido: '',
@@ -13,7 +14,7 @@ const initialFormData = {
     genero_id: '',
     antecedentes_ids: [],
     analisis_funcional_ids: [],
-    // 🚨 CAMBIO CLAVE: Estructura anidada para Obra Social
+    // estructura anidada para Obra Social
     os_pacientes_data: [], // Array de objetos: [{ os_id: N, num_afiliado: '' }]
 };
 
@@ -23,8 +24,9 @@ export default function PacientesForm({
     generos = [], 
     antecedentes = [], 
     analisisFuncional = [],
-    obrasSociales = [], // 🚨 NUEVA PROP: Lista de Obras Sociales disponibles
+    obrasSociales = [], //  Lista de Obras Sociales disponibles
     initialData = null,
+    isEditing = false,
 }) {
 
     const getInitialState = (data) => {
@@ -141,7 +143,9 @@ export default function PacientesForm({
 
     return (
         <form onSubmit={handleSubmit} className={styles['pacientes-form']}> 
-            <h3>Registrar Nuevo Paciente</h3>
+            
+            
+            {isEditing? <h3>Editar Paciente</h3> : <h3>Registrar nuevo paciente</h3>}
             
             {/* ======================= DATOS BÁSICOS ======================= */}
             <label>Nombre</label>
@@ -263,7 +267,7 @@ export default function PacientesForm({
                 + Agregar Obra Social
             </button>
             
-            <button type="submit">Registrar Paciente</button>
+            <button type="submit">{isEditing? 'Guardar cambios' : 'Registrar paciente'}</button>
         </form>
     );
 }
