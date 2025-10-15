@@ -5,6 +5,7 @@ import { getPacientes, createPaciente, getGeneros, getAntecedentes, getAnalisisF
 import styles from './PacientesList.module.css';
 import PacientesForm from '../pacientesForm/PacientesForm';
 import PacienteCard from '../pacienteCard/PacienteCard';
+import PacienteDetail from '../pacienteDetail/PacienteDetail';
 
 export default function PacientesList() {
   const [pacientes, setPacientes] = useState([]);
@@ -19,6 +20,7 @@ export default function PacientesList() {
   const [searchTerm, setSearchTerm] = useState('');
   const isEditing = showForm && editingPaciente;
   const isCreating = showForm && !editingPaciente;
+  const [viewingDetail, setViewingDetail] = useState(null);
 
   const fetchPacientes = async () => {
     try {
@@ -35,6 +37,14 @@ export default function PacientesList() {
         setEditingPaciente(paciente);
         // 3. Muestra el formulario
         setShowForm(true);
+  };
+
+  const handleViewDetail = (paciente) => {
+    // Asegurarse de que el formulario esté cerrado
+    setShowForm(false);
+    setEditingPaciente(null); 
+    // Establecer el paciente para la vista de detalle
+    setViewingDetail(paciente); 
   };
 
   // cargar todas las opciones del formulario
@@ -107,6 +117,15 @@ export default function PacientesList() {
     return matchesDni || matchesNombre || matchesApellido;
   });
 
+  const handleBack = () => {
+      setViewingDetail(null);
+  }
+
+  // RENDERIZADO CONDICIONAL
+  if (viewingDetail) {
+      return <PacienteDetail paciente={viewingDetail} onBack={handleBack} />;
+  }
+
     const renderForm = (className) => (
       <div className={className}>
           <PacientesForm
@@ -170,7 +189,9 @@ export default function PacientesList() {
       {/* Listado... */}
       <div>
         {filteredPacientes.map(paciente => (
-          <PacienteCard key={paciente.id} paciente={paciente} onEditStart={handleEditStart}/>
+          <PacienteCard 
+          key={paciente.id} paciente={paciente} 
+          onEditStart={handleEditStart} onViewDetail={handleViewDetail}/>
         ))}
       </div>
     </div>

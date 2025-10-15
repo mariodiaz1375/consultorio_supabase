@@ -30,7 +30,7 @@
 import React from 'react';
 import styles from './PacienteCard.module.css'; // <-- Importa el objeto 'styles'
 
-export default function PacienteCard({ paciente, onEditStart }) {
+export default function PacienteCard({ paciente, onEditStart, onViewDetail }) {
   return (
     <div className={styles['paciente-card']}>
       <h2 className={styles.title}>
@@ -38,7 +38,7 @@ export default function PacienteCard({ paciente, onEditStart }) {
       </h2>
       <div className={styles['button-group']}>
         <button className={styles['edit-button']} onClick={() => onEditStart(paciente)}>Editar</button>
-        <button className={styles['edit-button']}>Ver detalles</button>
+        <button className={styles['edit-button']} onClick={() => onViewDetail(paciente)}>Ver detalles</button>
         <button className={styles['delete-button']}>Eliminar</button>
       </div>
     </div>
