@@ -21,6 +21,12 @@ export default function PacientesList() {
   const isEditing = showForm && editingPaciente;
   const isCreating = showForm && !editingPaciente;
   const [viewingDetail, setViewingDetail] = useState(null);
+  const [activo, setActivo] = useState(true);
+
+  const toggleSwitch = () => {
+    // Usamos el valor previo para invertirlo
+    setActivo(prevActivo => !prevActivo);
+  };
 
   const fetchPacientes = async () => {
     try {
@@ -104,18 +110,21 @@ export default function PacientesList() {
       setShowForm(!showForm);
   };
 
-  const filteredPacientes = pacientes.filter(paciente => {
-    // Convierte el término de búsqueda y los campos del paciente a minúsculas para una comparación sin distinción de mayúsculas/minúsculas
-    const lowerSearchTerm = searchTerm.toLowerCase();
+  const filteredPacientes = pacientes
+    // 1. PRIMER FILTRO: Por estado activo/inactivo (determinado por el switch)
+    .filter(paciente => paciente.activo === activo)
+    // 2. SEGUNDO FILTRO: Por término de búsqueda
+    .filter(paciente => {
+        const lowerSearchTerm = searchTerm.toLowerCase();
 
-    // Comprueba si el DNI o el nombre/apellido contienen el término de búsqueda
-    const matchesDni = paciente.dni ? paciente.dni.includes(lowerSearchTerm) : false;
-    const matchesNombre = paciente.nombre ? paciente.nombre.toLowerCase().includes(lowerSearchTerm) : false;
-    const matchesApellido = paciente.apellido ? paciente.apellido.toLowerCase().includes(lowerSearchTerm) : false;
-    
-    // Filtra si coincide con DNI, Nombre o Apellido
-    return matchesDni || matchesNombre || matchesApellido;
-  });
+        // Comprueba si el DNI o el nombre/apellido contienen el término de búsqueda
+        const matchesDni = paciente.dni ? paciente.dni.includes(lowerSearchTerm) : false;
+        const matchesNombre = paciente.nombre ? paciente.nombre.toLowerCase().includes(lowerSearchTerm) : false;
+        const matchesApellido = paciente.apellido ? paciente.apellido.toLowerCase().includes(lowerSearchTerm) : false;
+        
+        // Filtra si coincide con DNI, Nombre o Apellido
+        return matchesDni || matchesNombre || matchesApellido;
+    });
 
   const handleBack = () => {
       setViewingDetail(null);
@@ -139,6 +148,43 @@ export default function PacientesList() {
           />
       </div>
     );
+
+    // Dentro de PacientesList.jsx, antes del return:
+
+// ... (código existente, justo después de handleFormSubmit)
+
+  const handleToggleActivo = async (pacienteId, pacienteNombre, pacienteApellido, isActivoActual) => {
+      // 1. Determinar el nuevo estado objetivo
+      const nuevoEstado = !isActivoActual;
+      const accionTexto = nuevoEstado ? 'activar' : 'desactivar';
+
+      // 2. Confirmación
+      const confirmacion = window.confirm(`¿Estás seguro de que deseas ${accionTexto} al paciente ${pacienteNombre} ${pacienteApellido}?`);
+
+      if (!confirmacion) {
+        return;
+      }
+
+      try {
+          // 3. Payload con el nuevo estado
+          const updateData = {
+              activo: nuevoEstado // Usa la variable booleana calculada
+          };
+          
+          await updatePaciente(pacienteId, updateData);
+          alert(`Paciente ${pacienteNombre} ${pacienteApellido} ha sido ${accionTexto}do con éxito.`);
+          
+          // Recargar la lista
+          await fetchPacientes(); 
+          
+      } catch (error) {
+          console.error(`Error al ${accionTexto} el paciente:`, error);
+          alert(`Error al ${accionTexto} el paciente. Revisa la consola para más detalles.`);
+      }
+  };
+
+
+// ... (código restante de PacientesList, antes del return)
 
 
   return (
@@ -186,12 +232,31 @@ export default function PacientesList() {
         </div>  
       )}
       
+      <div className={styles["switch-container"]}>
+        {/* 3. La clase CSS se aplica condicionalmente según el estado 'isOn' */}
+          <button
+            // Si 'isOn' es true, la clase es 'on'; si es false, es 'off'
+            className={`${styles['switch-button']} ${activo ? styles.Activos : styles.Inactivos}`}
+            // className={`{switch-button} ${activo ? 'Activos' : 'Inactivos'}`}
+            onClick={toggleSwitch}
+            role="switch" // Rol de accesibilidad
+            aria-checked={activo} // Estado de accesibilidad
+          >
+            <span className={styles["switch-toggle"]}></span>
+          </button>
+          {/* Muestra el estado actual */}
+          <h2>{activo ? 'Pacientes activos' : 'Pacientes inactivos'}</h2>
+      </div>
+
+
       {/* Listado... */}
       <div>
         {filteredPacientes.map(paciente => (
-          <PacienteCard 
-          key={paciente.id} paciente={paciente} 
-          onEditStart={handleEditStart} onViewDetail={handleViewDetail}/>
+            <PacienteCard 
+            key={paciente.id} paciente={paciente} 
+            onEditStart={handleEditStart} onViewDetail={handleViewDetail}
+            onDelete={handleToggleActivo}
+            />
         ))}
       </div>
     </div>

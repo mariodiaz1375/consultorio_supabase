@@ -69,6 +69,16 @@ class PacientesDetail(APIView):
         paciente = self.get_object(pk)
         paciente.delete()
         return Response(status=204)
+    
+    def patch(self, request, pk, format=None):
+        paciente = self.get_object(pk)
+        # Usar partial=True para permitir actualizaciones de solo algunos campos
+        serializer = PacientesSerializer(paciente, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # --- Vistas para Listados de Opciones (Generics) ---

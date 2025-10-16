@@ -30,7 +30,11 @@
 import React from 'react';
 import styles from './PacienteCard.module.css'; // <-- Importa el objeto 'styles'
 
-export default function PacienteCard({ paciente, onEditStart, onViewDetail }) {
+export default function PacienteCard({ paciente, onEditStart, onViewDetail, onDelete }) {
+  const isActivo = paciente.activo
+  const buttonText = isActivo ? 'Desactivar' : 'Activar'; // 'Eliminar' en este contexto significa "Desactivar"
+  const buttonClass = isActivo ? styles['delete-button'] : styles['activate-button']; // Asigna una clase diferente para color/estilo
+
   return (
     <div className={styles['paciente-card']}>
       <h2 className={styles.title}>
@@ -39,7 +43,13 @@ export default function PacienteCard({ paciente, onEditStart, onViewDetail }) {
       <div className={styles['button-group']}>
         <button className={styles['edit-button']} onClick={() => onEditStart(paciente)}>Editar</button>
         <button className={styles['edit-button']} onClick={() => onViewDetail(paciente)}>Ver detalles</button>
-        <button className={styles['delete-button']}>Eliminar</button>
+        <button 
+          // Usa las variables definidas arriba
+          className={buttonClass} 
+          onClick={() => onDelete(paciente.id, paciente.nombre, paciente.apellido, isActivo)} 
+        >
+          {buttonText}
+        </button>
       </div>
     </div>
   );

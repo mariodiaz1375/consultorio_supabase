@@ -58,3 +58,9 @@
   background-color: #e74c3c; /* Red for "Delete" */
   color: white;
 }
+
+.paciente-card .activate-button {
+  /* Specific style for the delete button */
+  background-color: #4CAF50; /* Red for "Delete" */
+  color: white;
+}

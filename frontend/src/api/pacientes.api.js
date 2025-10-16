@@ -41,10 +41,11 @@ export const createPaciente = async (paciente) => {
 
 export const updatePaciente = async (id, paciente) => {
     try {
-        const response = await pacientesApi.put(`/${id}/`, paciente);
+        // con patch en lugar de put se puede hacer un cambio sin tener que recibir todos los campos
+        const response = await pacientesApi.patch(`/${id}/`, paciente);
         return response.data;
     } catch (error) {
-        console.error('Error al registrar el paciente', error);
+        console.error('Error al actualizar el paciente', error);
         throw error;
     }
 }

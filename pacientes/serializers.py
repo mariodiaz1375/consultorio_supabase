@@ -105,7 +105,7 @@ class PacientesSerializer(serializers.ModelSerializer):
             'os_pacientes_data',
         )
         # 'activo' y 'edad' son read_only
-        read_only_fields = ('activo', 'edad',) 
+        read_only_fields = ('edad',) 
 
     def create(self, validated_data):
         # 1. Extraer las listas de IDs M2M usando pop() 

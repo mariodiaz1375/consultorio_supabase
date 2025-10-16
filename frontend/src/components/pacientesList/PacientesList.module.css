@@ -146,3 +146,63 @@
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
+
+/* SwitchButton.css */
+
+.switch-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-family: sans-serif;
+  width: fit-content; 
+  margin: 0 auto;
+}
+
+.switch-button {
+  width: 60px; /* Ancho total del interruptor */
+  height: 34px; /* Alto total */
+  border-radius: 34px; /* Bordes redondeados */
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.4s; /* Transición suave del color */
+  position: relative;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Estilos cuando está APAGADO (clase .off) */
+.switch-button.off {
+  background-color: #ffffff; /* Fondo gris */
+  justify-content: flex-start; /* Mueve el "pulgar" a la izquierda */
+}
+
+/* Estilos cuando está ENCENDIDO (clase .on) */
+.switch-button.on {
+  background-color: #4CAF50; /* Fondo verde */
+  justify-content: flex-end; /* Mueve el "pulgar" a la derecha */
+}
+
+.switch-toggle {
+  /* El "pulgar" o bolita del switch */
+  width: 26px;
+  height: 26px;
+  background-color: white;
+  border-radius: 50%; /* Lo hace un círculo */
+  margin: 4px; /* Margen interno para que no toque los bordes */
+  transition: transform 0.4s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.Inactivos {
+  /* Estilos específicos para el estado "apagado" (Inactivos) */
+  background-color: #f32828;
+  justify-content: flex-start;
+}
+
+.Activos {
+  /* Estilos específicos para el estado "encendido" (Activos) */
+  background-color: #4CAF50;
+  justify-content: flex-end;
+}
