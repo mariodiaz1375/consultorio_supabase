@@ -20,6 +20,8 @@ const initialFormData = {
 
 const MIN_PHONE_LENGTH = 7; 
 
+const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
+
 // RECIBIR las listas de opciones como props
 export default function PacientesForm({ 
     onSubmit, 
@@ -29,6 +31,7 @@ export default function PacientesForm({
     obrasSociales = [], //  Lista de Obras Sociales disponibles
     initialData = null,
     isEditing = false,
+    checkDniUniqueness,
 }) {
 
     const getInitialState = (data) => {
@@ -68,6 +71,12 @@ export default function PacientesForm({
     const [emailError, setEmailError] = useState('');
 
     const tiempoActualMilisegundos = Date.now();
+
+    const [dniCheckLoading, setDniCheckLoading] = useState(false); 
+
+    const [nombreError, setNombreError] = useState('');
+    const [apellidoError, setApellidoError] = useState('');
+    const [generoIdError, setGeneroIdError] = useState('');
 
     // // 2. Crear un objeto Date a partir de los milisegundos
     // const fechaActual = new Date(tiempoActualMilisegundos);
@@ -196,44 +205,164 @@ export default function PacientesForm({
         }));
     };
 
-    const handleSubmit = (e) => {
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+        
+    //     // Validar Errores antes de enviar
+    //     let hasError = false;
+
+    //     // 1. Validación de DNI
+    //     const dniLength = formData.dni.length;
+    //     if (dniLength !== 7 && dniLength !== 8) {
+    //         setDniError('ERROR: El DNI debe tener 7 u 8 dígitos para continuar.');
+    //         hasError = true;
+    //     } else {
+    //         setDniError('');
+    //     }
+
+    //     // 2. Validación de Fecha de Nacimiento (comprobar si hay error en el estado)
+    //     if (fechaNacimientoError) {
+    //          // Si el error ya está seteado por handleChange, solo prevenimos el envío.
+    //          hasError = true;
+    //     } else if (!formData.fecha_nacimiento) {
+    //          setFechaNacimientoError('La fecha de nacimiento es obligatoria.');
+    //          hasError = true;
+    //     }
+
+    //     // 4. Validación de Email
+    //     const emailRegex = /^\S+@\S+\.\S+$/;
+    //     if (formData.email) {
+    //         if (!emailRegex.test(formData.email)) {
+    //             setEmailError('ERROR: Por favor, ingrese un formato de email válido.');
+    //             hasError = true;
+    //         } else {
+    //             setEmailError('');
+    //         }
+    //     }
+
+
+    //     if (hasError) {
+    //         return; // Detiene el envío del formulario si hay errores
+    //     }
+        
+    //     // Si no hay errores, enviar
+    //     onSubmit(formData);
+    // };
+
+    const handleSubmit = async (e) => { // Hacemos la función ASÍNCRONA
         e.preventDefault();
         
-        // Validar Errores antes de enviar
+        if (dniCheckLoading) return; // Evitar envíos múltiples mientras verifica DNI
+        
         let hasError = false;
+        let currentDniError = ''; 
+        let currentTelefonoError = '';
+        let currentFechaError = '';
+        let currentEmailError = '';
+        let currentNombreError = '';
+        let currentApellidoError = '';
+        let currentGeneroError = '';
 
-        // 1. Validación de DNI
-        const dniLength = formData.dni.length;
-        if (dniLength !== 7 && dniLength !== 8) {
-            setDniError('ERROR: El DNI debe tener 7 u 8 dígitos para continuar.');
+        // --- 1. VALIDACIONES DE CAMPOS OBLIGATORIOS Y SÍNCRONAS ---
+        
+        // Nombre
+        if (!formData.nombre.trim()) {
+            currentNombreError = 'El nombre es obligatorio.';
             hasError = true;
-        } else {
-            setDniError('');
         }
+        setNombreError(currentNombreError);
 
-        // 2. Validación de Fecha de Nacimiento (comprobar si hay error en el estado)
+        // Apellido
+        if (!formData.apellido.trim()) {
+            currentApellidoError = 'El apellido es obligatorio.';
+            hasError = true;
+        }
+        setApellidoError(currentApellidoError);
+        
+        // DNI (Requiere valor Y longitud correcta)
+        const dniLength = formData.dni.length;
+        if (dniLength === 0) {
+            currentDniError = 'El DNI es obligatorio.';
+            hasError = true;
+        } else if (dniLength !== 7 && dniLength !== 8) {
+            currentDniError = 'El DNI debe tener 7 u 8 dígitos para continuar.';
+            hasError = true;
+        } 
+        
+        // Teléfono (Ahora obligatorio)
+        const phoneDigits = formData.telefono.replace(/[^0-9]/g, '').length;
+        if (formData.telefono.length === 0) {
+             currentTelefonoError = 'El teléfono es obligatorio.';
+             hasError = true;
+        } else if (phoneDigits < MIN_PHONE_LENGTH) {
+            currentTelefonoError = `ERROR: El teléfono debe tener un mínimo de ${MIN_PHONE_LENGTH} dígitos.`;
+            hasError = true;
+        } 
+        setTelefonoError(currentTelefonoError);
+
+
+        // Género ID (Ahora obligatorio)
+        if (!formData.genero_id) {
+            currentGeneroError = 'El género es obligatorio.';
+            hasError = true;
+        } 
+        setGeneroIdError(currentGeneroError);
+
+
+        // Fecha de Nacimiento (comprobar si hay error en el estado O si está vacío)
         if (fechaNacimientoError) {
-             // Si el error ya está seteado por handleChange, solo prevenimos el envío.
-             hasError = true;
+             hasError = true; // Ya tiene un error de fecha futura
+             currentFechaError = fechaNacimientoError; // Mantener el error
         } else if (!formData.fecha_nacimiento) {
-             setFechaNacimientoError('La fecha de nacimiento es obligatoria.');
+             currentFechaError = 'La fecha de nacimiento es obligatoria.';
              hasError = true;
         }
+        setFechaNacimientoError(currentFechaError);
 
-        // 4. Validación de Email
-        const emailRegex = /^\S+@\S+\.\S+$/;
-        if (formData.email) {
-            if (!emailRegex.test(formData.email)) {
-                setEmailError('ERROR: Por favor, ingrese un formato de email válido.');
+        // Validación de Email (Solo si tiene valor, debe ser válido)
+        if (formData.email && !EMAIL_REGEX.test(formData.email)) {
+            currentEmailError = 'ERROR: Por favor, ingrese un formato de email válido.';
+            hasError = true;
+        }
+        setEmailError(currentEmailError);
+
+        // Si hay errores síncronos, detenemos aquí
+        if (hasError) {
+            setDniError(currentDniError); // Asegurar que el error de DNI se muestre si es síncrono
+            return;
+        }
+        
+        // --- 2. VALIDACIÓN ASÍNCRONA DE UNICIDAD DEL DNI ---
+        const originalDni = initialData ? initialData.dni : null;
+        const isDniChanged = formData.dni !== originalDni;
+        
+        // Solo verificamos unicidad si:
+        // a) Estamos creando un nuevo paciente (no isEditing)
+        // b) Estamos editando Y el DNI ha sido modificado
+        if ((!isEditing || isDniChanged) && checkDniUniqueness) {
+            setDniCheckLoading(true);
+            try {
+                // await la verificación asíncrona
+                const exists = await checkDniUniqueness(formData.dni); 
+                if (exists) {
+                    currentDniError = 'Ya existe un paciente registrado con este DNI.';
+                    hasError = true;
+                }
+            } catch (error) {
+                console.error("Error al verificar la unicidad del DNI:", error);
+                currentDniError = 'Error al verificar la unicidad del DNI. Intente de nuevo.';
                 hasError = true;
-            } else {
-                setEmailError('');
+            } finally {
+                setDniCheckLoading(false);
             }
         }
+        
+        // Actualizamos el error de DNI después de la validación asíncrona
+        setDniError(currentDniError);
 
-
-        if (hasError) {
-            return; // Detiene el envío del formulario si hay errores
+        // Si hay error (síncrono o asíncrono)
+        if (hasError || currentDniError) {
+            return;
         }
         
         // Si no hay errores, enviar
