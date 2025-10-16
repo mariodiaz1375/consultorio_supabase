@@ -79,7 +79,7 @@
 /* Estilos para las etiquetas */
 .pacientes-form label {
     display: block;
-    margin-top: 10px;
+    margin-top: 1px;
     margin-bottom: 5px;
     color: #34495e; /* Color oscuro para legibilidad */
     font-weight: 600;
@@ -90,4 +90,13 @@
     border: 0;
     border-top: 1px solid #ddd;
     margin: 20px 0;
+}
+
+.error-message {
+    color: #e74c3c; /* Rojo para errores */
+    font-size: 0.85rem;
+    margin-top: 10px; /* Acercar al input */
+    margin-bottom: 10px; /* Separar del siguiente label */
+    padding-left: 5px;
+    font-weight: bold;
 }
