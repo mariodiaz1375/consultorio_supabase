@@ -78,13 +78,6 @@ export default function PacientesForm({
     const [apellidoError, setApellidoError] = useState('');
     const [generoIdError, setGeneroIdError] = useState('');
 
-    // // 2. Crear un objeto Date a partir de los milisegundos
-    // const fechaActual = new Date(tiempoActualMilisegundos);
-
-    // // 3. Obtener el día, mes y año por separado
-    // const dia = fechaActual.getDate();
-    // const mes = fechaActual.getMonth() + 1; // Sumar 1 porque los meses empiezan en 0
-    // const año = fechaActual.getFullYear();
 
     useEffect(() => {
         setFormData(getInitialState(initialData));
@@ -138,7 +131,32 @@ export default function PacientesForm({
     // ==========================================================
     // FUNCIONES DE MANEJO ESTÁNDAR (Datos básicos, FK, M2M)
     // ==========================================================
+    
+    // Función de manejo para CHECKBOX (M2M)
+    const handleCheckboxChange = (e) => {
+        const { name, value, checked } = e.target;
+        const id = Number(value); // El valor es el ID del antecedente/análisis
+        
+        setFormData(prevData => {
+            let newArray = [...prevData[name]]; // Copia del array (antecedentes_ids o analisis_funcional_ids)
 
+            if (checked) {
+                // Si está marcado, añadir el ID si no existe
+                if (!newArray.includes(id)) {
+                    newArray.push(id);
+                }
+            } else {
+                // Si está desmarcado, quitar el ID
+                newArray = newArray.filter(item => item !== id);
+            }
+
+            return {
+                ...prevData,
+                [name]: newArray
+            };
+        });
+    };
+    
     const handleChange = (e) => {
         const { name, value, type, options } = e.target;
         
@@ -146,11 +164,14 @@ export default function PacientesForm({
 
         const emailRegex = /^\S+@\S+\.\S+$/; 
 
-        // Lógica para campos Many-to-Many (Multi-Select)
+        // Lógica anterior para campos Many-to-Many (Multi-Select)
+        // ESTA PARTE FUE REEMPLAZADA POR handleCheckboxChange
         if ( (name === 'antecedentes_ids' || name === 'analisis_funcional_ids') && type === 'select-multiple') {
-            newValue = Array.from(options)
-                        .filter(option => option.selected)
-                        .map(option => Number(option.value)); 
+             // MANTENEMOS ESTA LÓGICA POR SI ALGO MÁS USA SELECT-MULTIPLE, AUNQUE EL COMPONENTE
+             // YA NO LO USARÁ PARA ANTECEDENTES/ANÁLISIS FUNCIONAL.
+             newValue = Array.from(options)
+                         .filter(option => option.selected)
+                         .map(option => Number(option.value)); 
         } 
 
         // Lógica de validación para Fecha de Nacimiento
@@ -205,49 +226,6 @@ export default function PacientesForm({
         }));
     };
 
-    // const handleSubmit = (e) => {
-    //     e.preventDefault();
-        
-    //     // Validar Errores antes de enviar
-    //     let hasError = false;
-
-    //     // 1. Validación de DNI
-    //     const dniLength = formData.dni.length;
-    //     if (dniLength !== 7 && dniLength !== 8) {
-    //         setDniError('ERROR: El DNI debe tener 7 u 8 dígitos para continuar.');
-    //         hasError = true;
-    //     } else {
-    //         setDniError('');
-    //     }
-
-    //     // 2. Validación de Fecha de Nacimiento (comprobar si hay error en el estado)
-    //     if (fechaNacimientoError) {
-    //          // Si el error ya está seteado por handleChange, solo prevenimos el envío.
-    //          hasError = true;
-    //     } else if (!formData.fecha_nacimiento) {
-    //          setFechaNacimientoError('La fecha de nacimiento es obligatoria.');
-    //          hasError = true;
-    //     }
-
-    //     // 4. Validación de Email
-    //     const emailRegex = /^\S+@\S+\.\S+$/;
-    //     if (formData.email) {
-    //         if (!emailRegex.test(formData.email)) {
-    //             setEmailError('ERROR: Por favor, ingrese un formato de email válido.');
-    //             hasError = true;
-    //         } else {
-    //             setEmailError('');
-    //         }
-    //     }
-
-
-    //     if (hasError) {
-    //         return; // Detiene el envío del formulario si hay errores
-    //     }
-        
-    //     // Si no hay errores, enviar
-    //     onSubmit(formData);
-    // };
 
     const handleSubmit = async (e) => { // Hacemos la función ASÍNCRONA
         e.preventDefault();
@@ -498,35 +476,43 @@ export default function PacientesForm({
                 ))}
             </select>
             
-            {/* CAMPO ANTECEDENTES (MANY-TO-MANY) */}
-            <label>Antecedentes (Ctrl/Cmd + Clic para seleccionar múltiples)</label>
-            <select
-                name="antecedentes_ids"
-                multiple 
-                value={formData.antecedentes_ids} 
-                onChange={handleChange}
-            >
+            {/* CAMPO ANTECEDENTES (MANY-TO-MANY) - AHORA COMO CHECKBOXES */}
+            <div className={styles['checkbox-group']}>
+                <label className={styles['checkbox-group-label']}>Antecedentes</label>
                 {antecedentes.map(ant => (
-                    <option key={ant.id} value={ant.id}>
-                        {ant.nombre_ant}
-                    </option>
+                    <div key={ant.id} className={styles['checkbox-item']}>
+                        <input
+                            type="checkbox"
+                            name="antecedentes_ids"
+                            value={ant.id}
+                            id={`antecedente-${ant.id}`}
+                            onChange={handleCheckboxChange}
+                            // checked verifica si el ID ya está en el array de IDs seleccionados
+                            checked={formData.antecedentes_ids.includes(ant.id)} 
+                        />
+                        <label htmlFor={`antecedente-${ant.id}`}>{ant.nombre_ant}</label>
+                    </div>
                 ))}
-            </select>
+            </div>
             
-            {/* CAMPO ANÁLISIS FUNCIONAL (MANY-TO-MANY) */}
-            <label>Análisis Funcional (Ctrl/Cmd + Clic para seleccionar múltiples)</label>
-            <select
-                name="analisis_funcional_ids"
-                multiple 
-                value={formData.analisis_funcional_ids} 
-                onChange={handleChange}
-            >
+            {/* CAMPO ANÁLISIS FUNCIONAL (MANY-TO-MANY) - AHORA COMO CHECKBOXES */}
+            <div className={styles['checkbox-group']}>
+                <label className={styles['checkbox-group-label']}>Análisis Funcional</label>
                 {analisisFuncional.map(af => (
-                    <option key={af.id} value={af.id}>
-                        {af.nombre_analisis}
-                    </option>
+                    <div key={af.id} className={styles['checkbox-item']}>
+                        <input
+                            type="checkbox"
+                            name="analisis_funcional_ids"
+                            value={af.id}
+                            id={`analisis-${af.id}`}
+                            onChange={handleCheckboxChange}
+                            // checked verifica si el ID ya está en el array de IDs seleccionados
+                            checked={formData.analisis_funcional_ids.includes(af.id)} 
+                        />
+                        <label htmlFor={`analisis-${af.id}`}>{af.nombre_analisis}</label>
+                    </div>
                 ))}
-            </select>
+            </div>
             
             <hr /> 
 
