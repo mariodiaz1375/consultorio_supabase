@@ -50,9 +50,9 @@ class Pacientes(models.Model):
     apellido = models.CharField(max_length=255)
     dni = models.CharField(max_length=255)
     fecha_nacimiento = models.DateField()
-    domicilio = models.CharField(max_length=255)
+    domicilio = models.CharField(max_length=255, blank=True, null=True)
     telefono = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255)
+    email = models.EmailField(max_length=255, blank=True, null=True)
     antecedentes = models.ManyToManyField(
         Antecedentes, 
         related_name='pacientes',

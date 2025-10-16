@@ -336,6 +336,7 @@ export default function PacientesForm({
             value={formData.telefono} 
             onChange={handleChange} 
             placeholder="Teléfono" 
+            required
             />
             {telefonoError && <p className={styles['error-message']}>{telefonoError}</p>}
             
@@ -358,6 +359,7 @@ export default function PacientesForm({
                 name="genero_id" 
                 value={formData.genero_id} 
                 onChange={handleChange}
+                required
             >
                 <option value="">Seleccione un Género</option>
                 {generos.map(g => (
