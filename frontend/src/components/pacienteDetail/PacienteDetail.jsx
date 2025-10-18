@@ -74,7 +74,7 @@ export default function PacienteDetail({ paciente, onBack }) {
                     <h2>Información Personal</h2>
                     <p><strong>DNI:</strong> {paciente.dni}</p>
                     {/* Se usa fecha_nacimiento que es el campo correcto de la API */}
-                    <p><strong>Fecha de Nacimiento:</strong> {paciente.fecha_nacimiento}</p> 
+                    <p><strong>Edad:</strong> {paciente.edad}</p> 
                     {/* Se usa nombreGenero que ya tiene la lógica de seguridad */}
                     <p><strong>Género:</strong> {nombreGenero}</p>
                     <p><strong>Teléfono:</strong> {paciente.telefono}</p>
@@ -101,10 +101,10 @@ export default function PacienteDetail({ paciente, onBack }) {
 
             {/* Sección para futuros botones de Historia Clínica, Odontograma, etc. */}
             <div className={styles.dashboard}>
-                <h2>Dashboard Clínico</h2>
-                <button className={styles.actionButton}>Ver Historia Clínica</button>
+                {/* <h2>Dashboard Clínico</h2> */}
+                {/* <button className={styles.actionButton}>Ver Historia Clínica</button>
                 <button className={styles.actionButton}>Ver Odontograma</button>
-                <button className={styles.actionButton}>Administrar Turnos</button>
+                <button className={styles.actionButton}>Administrar Turnos</button> */}
             </div>
         </div>
     );

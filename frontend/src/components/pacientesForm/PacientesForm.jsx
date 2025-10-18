@@ -18,6 +18,10 @@ const initialFormData = {
     os_pacientes_data: [], // Array de objetos: [{ os_id: N, num_afiliado: '' }]
 };
 
+const MIN_PHONE_LENGTH = 7; 
+
+const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
+
 // RECIBIR las listas de opciones como props
 export default function PacientesForm({ 
     onSubmit, 
@@ -27,6 +31,7 @@ export default function PacientesForm({
     obrasSociales = [], //  Lista de Obras Sociales disponibles
     initialData = null,
     isEditing = false,
+    checkDniUniqueness,
 }) {
 
     const getInitialState = (data) => {
@@ -56,6 +61,23 @@ export default function PacientesForm({
     };
 
     const [formData, setFormData] = useState(getInitialState(initialData));
+
+    const [dniError, setDniError] = useState(''); 
+
+    const [fechaNacimientoError, setFechaNacimientoError] = useState('');
+
+    const [telefonoError, setTelefonoError] = useState('');
+
+    const [emailError, setEmailError] = useState('');
+
+    const tiempoActualMilisegundos = Date.now();
+
+    const [dniCheckLoading, setDniCheckLoading] = useState(false); 
+
+    const [nombreError, setNombreError] = useState('');
+    const [apellidoError, setApellidoError] = useState('');
+    const [generoIdError, setGeneroIdError] = useState('');
+
 
     useEffect(() => {
         setFormData(getInitialState(initialData));
@@ -109,22 +131,92 @@ export default function PacientesForm({
     // ==========================================================
     // FUNCIONES DE MANEJO ESTÁNDAR (Datos básicos, FK, M2M)
     // ==========================================================
+    
+    // Función de manejo para CHECKBOX (M2M)
+    const handleCheckboxChange = (e) => {
+        const { name, value, checked } = e.target;
+        const id = Number(value); // El valor es el ID del antecedente/análisis
+        
+        setFormData(prevData => {
+            let newArray = [...prevData[name]]; // Copia del array (antecedentes_ids o analisis_funcional_ids)
 
+            if (checked) {
+                // Si está marcado, añadir el ID si no existe
+                if (!newArray.includes(id)) {
+                    newArray.push(id);
+                }
+            } else {
+                // Si está desmarcado, quitar el ID
+                newArray = newArray.filter(item => item !== id);
+            }
+
+            return {
+                ...prevData,
+                [name]: newArray
+            };
+        });
+    };
+    
     const handleChange = (e) => {
         const { name, value, type, options } = e.target;
         
         let newValue = value;
 
-        // Lógica para campos Many-to-Many (Multi-Select)
+        const emailRegex = /^\S+@\S+\.\S+$/; 
+
+        // Lógica anterior para campos Many-to-Many (Multi-Select)
+        // ESTA PARTE FUE REEMPLAZADA POR handleCheckboxChange
         if ( (name === 'antecedentes_ids' || name === 'analisis_funcional_ids') && type === 'select-multiple') {
-            newValue = Array.from(options)
-                        .filter(option => option.selected)
-                        .map(option => Number(option.value)); 
+             // MANTENEMOS ESTA LÓGICA POR SI ALGO MÁS USA SELECT-MULTIPLE, AUNQUE EL COMPONENTE
+             // YA NO LO USARÁ PARA ANTECEDENTES/ANÁLISIS FUNCIONAL.
+             newValue = Array.from(options)
+                         .filter(option => option.selected)
+                         .map(option => Number(option.value)); 
         } 
+
+        // Lógica de validación para Fecha de Nacimiento
+        if (name === 'fecha_nacimiento') {
+            const today = new Date();
+            // Quitar la hora para la comparación (comparar solo la fecha)
+            today.setHours(0, 0, 0, 0); 
+            
+            const selectedDate = new Date(value);
+            
+            if (selectedDate >= today) {
+                setFechaNacimientoError('La fecha de nacimiento no puede ser futura.');
+            } else {
+                setFechaNacimientoError('');
+            }
+        }
+
+        // Lógica de validación de Email
+        if (name === 'email') {
+            // Si hay un valor y no pasa la validación regex
+            if (value && !emailRegex.test(value)) {
+                setEmailError('El formato del email no es válido (ej: usuario@dominio.com).');
+            } else {
+                setEmailError('');
+            }
+        }
         
         // Lógica para campo Foreign Key (Género)
         else if (name === 'genero_id') {
             newValue = value ? Number(value) : ''; 
+        }
+
+        // 💡 Lógica de filtrado para Teléfono
+        if (name === 'telefono') {
+            // 1. Filtrado: Permite solo números, espacios, +, -, ( y ).
+            newValue = value.replace(/[^0-9\s\+\-\(\)]/g, ''); 
+            
+            // 2. Validación en tiempo real (contando solo dígitos)
+            const digitCount = newValue.replace(/[^0-9]/g, '').length;
+            
+            if (digitCount > 0 && digitCount < MIN_PHONE_LENGTH) {
+                setTelefonoError(`El teléfono debe tener un mínimo de ${MIN_PHONE_LENGTH} dígitos.`);
+            } else {
+                setTelefonoError('');
+            }
         }
 
         // Manejo estándar para el resto de los campos
@@ -134,11 +226,166 @@ export default function PacientesForm({
         }));
     };
 
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => { // Hacemos la función ASÍNCRONA
         e.preventDefault();
         
-        // El formData ahora incluye el array os_pacientes_data listo para el Serializer
+        if (dniCheckLoading) return; // Evitar envíos múltiples mientras verifica DNI
+        
+        let hasError = false;
+        let currentDniError = ''; 
+        let currentTelefonoError = '';
+        let currentFechaError = '';
+        let currentEmailError = '';
+        let currentNombreError = '';
+        let currentApellidoError = '';
+        let currentGeneroError = '';
+
+        // --- 1. VALIDACIONES DE CAMPOS OBLIGATORIOS Y SÍNCRONAS ---
+        
+        // Nombre
+        if (!formData.nombre.trim()) {
+            currentNombreError = 'El nombre es obligatorio.';
+            hasError = true;
+        }
+        setNombreError(currentNombreError);
+
+        // Apellido
+        if (!formData.apellido.trim()) {
+            currentApellidoError = 'El apellido es obligatorio.';
+            hasError = true;
+        }
+        setApellidoError(currentApellidoError);
+        
+        // DNI (Requiere valor Y longitud correcta)
+        const dniLength = formData.dni.length;
+        if (dniLength === 0) {
+            currentDniError = 'El DNI es obligatorio.';
+            hasError = true;
+        } else if (dniLength !== 7 && dniLength !== 8) {
+            currentDniError = 'El DNI debe tener 7 u 8 dígitos para continuar.';
+            hasError = true;
+        } 
+        
+        // Teléfono (Ahora obligatorio)
+        const phoneDigits = formData.telefono.replace(/[^0-9]/g, '').length;
+        if (formData.telefono.length === 0) {
+             currentTelefonoError = 'El teléfono es obligatorio.';
+             hasError = true;
+        } else if (phoneDigits < MIN_PHONE_LENGTH) {
+            currentTelefonoError = `ERROR: El teléfono debe tener un mínimo de ${MIN_PHONE_LENGTH} dígitos.`;
+            hasError = true;
+        } 
+        setTelefonoError(currentTelefonoError);
+
+
+        // Género ID (Ahora obligatorio)
+        if (!formData.genero_id) {
+            currentGeneroError = 'El género es obligatorio.';
+            hasError = true;
+        } 
+        setGeneroIdError(currentGeneroError);
+
+
+        // Fecha de Nacimiento (comprobar si hay error en el estado O si está vacío)
+        if (fechaNacimientoError) {
+             hasError = true; // Ya tiene un error de fecha futura
+             currentFechaError = fechaNacimientoError; // Mantener el error
+        } else if (!formData.fecha_nacimiento) {
+             currentFechaError = 'La fecha de nacimiento es obligatoria.';
+             hasError = true;
+        }
+        setFechaNacimientoError(currentFechaError);
+
+        // Validación de Email (Solo si tiene valor, debe ser válido)
+        if (formData.email && !EMAIL_REGEX.test(formData.email)) {
+            currentEmailError = 'ERROR: Por favor, ingrese un formato de email válido.';
+            hasError = true;
+        }
+        setEmailError(currentEmailError);
+
+        // Si hay errores síncronos, detenemos aquí
+        if (hasError) {
+            setDniError(currentDniError); // Asegurar que el error de DNI se muestre si es síncrono
+            return;
+        }
+        
+        // --- 2. VALIDACIÓN ASÍNCRONA DE UNICIDAD DEL DNI ---
+        const originalDni = initialData ? initialData.dni : null;
+        const isDniChanged = formData.dni !== originalDni;
+        
+        // Solo verificamos unicidad si:
+        // a) Estamos creando un nuevo paciente (no isEditing)
+        // b) Estamos editando Y el DNI ha sido modificado
+        if ((!isEditing || isDniChanged) && checkDniUniqueness) {
+            setDniCheckLoading(true);
+            try {
+                // await la verificación asíncrona
+                const exists = await checkDniUniqueness(formData.dni); 
+                if (exists) {
+                    currentDniError = 'Ya existe un paciente registrado con este DNI.';
+                    hasError = true;
+                }
+            } catch (error) {
+                console.error("Error al verificar la unicidad del DNI:", error);
+                currentDniError = 'Error al verificar la unicidad del DNI. Intente de nuevo.';
+                hasError = true;
+            } finally {
+                setDniCheckLoading(false);
+            }
+        }
+        
+        // Actualizamos el error de DNI después de la validación asíncrona
+        setDniError(currentDniError);
+
+        // Si hay error (síncrono o asíncrono)
+        if (hasError || currentDniError) {
+            return;
+        }
+        
+        // Si no hay errores, enviar
         onSubmit(formData);
+    };
+
+    // ==========================================================
+    // FUNCIÓN PARA FILTRAR NOMBRE/APELLIDO (Letras y espacios) 
+    // ==========================================================
+
+    const handleNameChange = (e, fieldName) => {
+        const text = e.target.value;
+        // Expresión Regular que ELIMINA todo lo que NO sea (^) letras, acentos o espacios.
+        const filteredText = text.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''); 
+        
+        setFormData(prevData => ({
+            ...prevData,
+            [fieldName]: filteredText
+        }));
+    };
+
+
+    // ==========================================================
+    // FUNCIÓN PARA FILTRAR DNI 
+    // ==========================================================
+
+    const handleDniChange = (e) => {
+        const text = e.target.value;
+        // Elimina cualquier cosa que no sea un dígito (0-9)
+        const filteredText = text.replace(/\D/g, ''); 
+        
+        // Limita la entrada a un máximo de 8 dígitos para evitar DNI demasiado largos
+        const maxLengthText = filteredText.slice(0, 8);
+        
+        setFormData(prevData => ({
+            ...prevData,
+            dni: maxLengthText
+        }));
+
+        // Validar longitud en tiempo real (feedback inmediato)
+        if (maxLengthText.length > 0 && maxLengthText.length !== 7 && maxLengthText.length !== 8) {
+            setDniError('El DNI debe tener 7 u 8 dígitos.');
+        } else {
+            setDniError('');
+        }
     };
 
     return (
@@ -149,25 +396,64 @@ export default function PacientesForm({
             
             {/* ======================= DATOS BÁSICOS ======================= */}
             <label>Nombre</label>
-            <input name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Nombre" required />
+            <input 
+            name="nombre" 
+            value={formData.nombre} 
+            onChange={(e) => handleNameChange(e, 'nombre')}
+            // onChange={handleChange} 
+            placeholder="Nombre" 
+            required 
+            />
             
             <label>Apellido</label>
-            <input name="apellido" value={formData.apellido} onChange={handleChange} placeholder="Apellido" required />
+            <input 
+                name="apellido" 
+                value={formData.apellido} 
+                // onChange={handleChange} 
+                onChange={(e) => handleNameChange(e, 'apellido')}
+                placeholder="Apellido"
+                required 
+            />
             
             <label>DNI</label>
-            <input name="dni" value={formData.dni} onChange={handleChange} placeholder="DNI" required />
+            <input 
+                name="dni" 
+                value={formData.dni} 
+                onChange={handleDniChange} 
+                placeholder="DNI" 
+                required 
+            />
+            {dniError && <p className={styles['error-message']}>{dniError}</p>}
             
             <label>Fecha de Nacimiento</label>
-            <input type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleChange} required />
+            <input 
+            type="date" 
+            name="fecha_nacimiento" 
+            value={formData.fecha_nacimiento} 
+            onChange={handleChange} 
+            required 
+            />
+            {fechaNacimientoError && <p className={styles['error-message']}>{fechaNacimientoError}</p>}
             
             <label>Domicilio</label>
             <input name="domicilio" value={formData.domicilio} onChange={handleChange} placeholder="Domicilio" />
             
             <label>Teléfono</label>
-            <input name="telefono" value={formData.telefono} onChange={handleChange} placeholder="Teléfono" />
+            <input name="telefono" 
+            value={formData.telefono} 
+            onChange={handleChange} 
+            placeholder="Teléfono" 
+            required
+            />
+            {telefonoError && <p className={styles['error-message']}>{telefonoError}</p>}
             
             <label>Email</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Correo Electrónico" />
+            <input type="email" 
+            name="email" value={formData.email} 
+            onChange={handleChange} 
+            placeholder="Correo Electrónico" 
+            />
+            {emailError && <p className={styles['error-message']}>{emailError}</p>}
             
             <hr /> 
             
@@ -180,6 +466,7 @@ export default function PacientesForm({
                 name="genero_id" 
                 value={formData.genero_id} 
                 onChange={handleChange}
+                required
             >
                 <option value="">Seleccione un Género</option>
                 {generos.map(g => (
@@ -189,35 +476,43 @@ export default function PacientesForm({
                 ))}
             </select>
             
-            {/* CAMPO ANTECEDENTES (MANY-TO-MANY) */}
-            <label>Antecedentes (Ctrl/Cmd + Clic para seleccionar múltiples)</label>
-            <select
-                name="antecedentes_ids"
-                multiple 
-                value={formData.antecedentes_ids} 
-                onChange={handleChange}
-            >
+            {/* CAMPO ANTECEDENTES (MANY-TO-MANY) - AHORA COMO CHECKBOXES */}
+            <div className={styles['checkbox-group']}>
+                <label className={styles['checkbox-group-label']}>Antecedentes</label>
                 {antecedentes.map(ant => (
-                    <option key={ant.id} value={ant.id}>
-                        {ant.nombre_ant}
-                    </option>
+                    <div key={ant.id} className={styles['checkbox-item']}>
+                        <input
+                            type="checkbox"
+                            name="antecedentes_ids"
+                            value={ant.id}
+                            id={`antecedente-${ant.id}`}
+                            onChange={handleCheckboxChange}
+                            // checked verifica si el ID ya está en el array de IDs seleccionados
+                            checked={formData.antecedentes_ids.includes(ant.id)} 
+                        />
+                        <label htmlFor={`antecedente-${ant.id}`}>{ant.nombre_ant}</label>
+                    </div>
                 ))}
-            </select>
+            </div>
             
-            {/* CAMPO ANÁLISIS FUNCIONAL (MANY-TO-MANY) */}
-            <label>Análisis Funcional (Ctrl/Cmd + Clic para seleccionar múltiples)</label>
-            <select
-                name="analisis_funcional_ids"
-                multiple 
-                value={formData.analisis_funcional_ids} 
-                onChange={handleChange}
-            >
+            {/* CAMPO ANÁLISIS FUNCIONAL (MANY-TO-MANY) - AHORA COMO CHECKBOXES */}
+            <div className={styles['checkbox-group']}>
+                <label className={styles['checkbox-group-label']}>Análisis Funcional</label>
                 {analisisFuncional.map(af => (
-                    <option key={af.id} value={af.id}>
-                        {af.nombre_analisis}
-                    </option>
+                    <div key={af.id} className={styles['checkbox-item']}>
+                        <input
+                            type="checkbox"
+                            name="analisis_funcional_ids"
+                            value={af.id}
+                            id={`analisis-${af.id}`}
+                            onChange={handleCheckboxChange}
+                            // checked verifica si el ID ya está en el array de IDs seleccionados
+                            checked={formData.analisis_funcional_ids.includes(af.id)} 
+                        />
+                        <label htmlFor={`analisis-${af.id}`}>{af.nombre_analisis}</label>
+                    </div>
                 ))}
-            </select>
+            </div>
             
             <hr /> 
 

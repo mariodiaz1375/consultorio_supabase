@@ -79,7 +79,7 @@
 /* Estilos para las etiquetas */
 .pacientes-form label {
     display: block;
-    margin-top: 10px;
+    margin-top: 1px;
     margin-bottom: 5px;
     color: #34495e; /* Color oscuro para legibilidad */
     font-weight: 600;
@@ -90,4 +90,146 @@
     border: 0;
     border-top: 1px solid #ddd;
     margin: 20px 0;
+}
+
+.error-message {
+    color: #e74c3c; /* Rojo para errores */
+    font-size: 0.85rem;
+    margin-top: 10px; /* Acercar al input */
+    margin-bottom: 10px; /* Separar del siguiente label */
+    padding-left: 5px;
+    font-weight: bold;
+}
+
+/* ======================================= */
+/* NUEVOS ESTILOS PARA CHECKBOXES */
+/* ======================================= */
+
+/* Contenedor principal de los grupos de checkboxes (Antecedentes / Análisis Funcional) */
+.checkbox-group {
+    padding: 10px 15px; /* Padding interno */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px; /* Separación del siguiente elemento */
+    background-color: #f9f9f9; /* Fondo ligero para destacarlo */
+}
+
+/* Etiqueta del título del grupo (p. ej., "Antecedentes") */
+.checkbox-group-label {
+    display: block;
+    font-size: 1rem;
+    color: #34495e;
+    font-weight: 700;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Contenedor de cada checkbox y su etiqueta */
+.checkbox-item {
+    display: flex; /* Para alinear el input y la etiqueta */
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+/* Estilo para el input checkbox */
+.checkbox-item input[type="checkbox"] {
+    /* Reinicia el estilo de input general */
+    width: auto; 
+    margin-right: 8px; /* Espacio entre el checkbox y el texto */
+    margin-bottom: 0;
+    padding: 0;
+    /* Estilo del box */
+    appearance: none; /* Oculta el estilo nativo para estilizarlo */
+    width: 16px;
+    height: 16px;
+    border: 2px solid #555;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    top: 1px;
+}
+
+/* Estilo para el input checkbox cuando está marcado */
+.checkbox-item input[type="checkbox"]:checked {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+/* Icono de verificación (check) cuando está marcado */
+.checkbox-item input[type="checkbox"]:checked::before {
+    content: '\2713'; /* Unicode de un tick/check mark */
+    display: block;
+    color: white;
+    font-size: 12px;
+    line-height: 14px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Estilo para la etiqueta de cada opción individual */
+.checkbox-item label {
+    margin: 0;
+    font-weight: normal; /* Menos énfasis que la etiqueta principal del campo */
+    cursor: pointer;
+    /* Permite que el texto ocupe el espacio restante */
+    flex-grow: 1; 
+}
+
+
+/* ======================================= */
+/* ESTILOS DE OBRAS SOCIALES */
+/* ======================================= */
+/* Contenedor de cada Obra Social */
+.os-group {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    background-color: #fdfdfd;
+}
+
+/* Separador dentro de los grupos de OS */
+.os-separator {
+    border-top: 1px dashed #e0e0e0 !important; /* Usamos !important para anular el hr general */
+    margin: 10px 0 !important;
+}
+
+/* Botón de eliminar Obra Social */
+.remove-os-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: block; /* Ocupa todo el ancho si no se usa flexbox */
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.remove-os-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Botón de agregar Obra Social */
+.add-os-btn {
+    background-color: #3498db; /* Un color distinto para diferenciar */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    transition: background-color 0.3s;
+}
+
+.add-os-btn:hover {
+    background-color: #2980b9;
 }

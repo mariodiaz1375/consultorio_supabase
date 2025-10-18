@@ -45,6 +45,32 @@ export default function PacientesList() {
         setShowForm(true);
   };
 
+    // ==========================================================
+  // 💡 FUNCIÓN DE VERIFICACIÓN DE DNI (A PASAR AL FORMULARIO) 💡
+  // ==========================================================
+  /**
+   * Verifica si el DNI proporcionado ya existe en la lista de pacientes cargados.
+   * @param {string} dni El DNI a verificar.
+   * @returns {Promise<boolean>} Retorna true si el DNI ya existe, false si no.
+   */
+  const checkDniUniqueness = async (dni) => {
+    // Convertimos el DNI a string para asegurar la comparación
+    const dniString = String(dni); 
+
+    // Busca si existe algún paciente con ese DNI, excluyendo al paciente que se está editando
+    const exists = pacientes.some(paciente => 
+        // 1. Coincide el DNI
+        String(paciente.dni) === dniString &&
+        // 2. NO es el paciente que estamos editando actualmente
+        (editingPaciente ? paciente.id !== editingPaciente.id : true) 
+    );
+    
+    // Console log para debug:
+    console.log(`Verificando DNI: ${dniString}. Resultado: ${exists ? 'Duplicado' : 'Único'}`);
+
+    return exists;
+  };
+
   const handleViewDetail = (paciente) => {
     // Asegurarse de que el formulario esté cerrado
     setShowForm(false);
@@ -145,6 +171,7 @@ export default function PacientesList() {
               obrasSociales={obrasSocialesOptions}
               initialData={editingPaciente}
               isEditing={isEditing}
+              checkDniUniqueness={checkDniUniqueness}
           />
       </div>
     );
