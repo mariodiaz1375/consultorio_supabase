@@ -1,7 +1,10 @@
+// PacientesForm.jsx (VERSION FINAL CORREGIDA)
+
 import React, { useState, useEffect } from 'react';
 import styles from './PacientesForm.module.css';
+import ModalAdd from '../modalAdd/ModalAdd';
 
-
+// ... (initialFormData, MIN_PHONE_LENGTH, EMAIL_REGEX y componentes auxiliares) ...
 const initialFormData = {
     nombre: '',
     apellido: '',
@@ -22,105 +25,270 @@ const MIN_PHONE_LENGTH = 7;
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 
-// RECIBIR las listas de opciones como props
+// =================================================================
+// 🚨 COMPONENTES AUXILIARES DE FORMULARIO PARA LOS MODALES 🚨
+// =================================================================
+
+// Formulario para agregar una nueva Obra Social
+const AddOsForm = ({ onSave, onCancel }) => {
+    const [nombre, setNombre] = useState('');
+    const [error, setError] = useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!nombre.trim()) {
+            setError("El nombre de la Obra Social es obligatorio.");
+            return;
+        }
+        // SIMULACIÓN de la creación y obtención del nuevo objeto
+        const newOs = { id: Date.now(), nombre_os: nombre.trim() };
+        onSave(newOs); 
+        setNombre('');
+        setError('');
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className={styles.modalForm}>
+            <label htmlFor="os-nombre">Nombre de la Obra Social</label>
+            <input
+                id="os-nombre"
+                type="text"
+                value={nombre}
+                onChange={(e) => {setNombre(e.target.value); setError('');}}
+                placeholder="Ej: OSDE, Swiss Medical..."
+                required
+            />
+            {error && <p className={styles['error-message']}>{error}</p>}
+            <button type="submit">Guardar Obra Social</button>
+            <button 
+                type="button" 
+                onClick={onCancel} 
+                className={styles['modal-cancel-btn']}
+                style={{marginTop: '10px'}}
+            >
+                Cancelar
+            </button>
+        </form>
+    );
+};
+
+// Formulario para agregar un nuevo Antecedente
+const AddAntecedenteForm = ({ onSave, onCancel }) => {
+    const [nombre, setNombre] = useState('');
+    const [error, setError] = useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!nombre.trim()) {
+            setError("El nombre del Antecedente es obligatorio.");
+            return;
+        }
+        // SIMULACIÓN
+        const newAnt = { id: Date.now(), nombre_ant: nombre.trim() };
+        onSave(newAnt);
+        setNombre('');
+        setError('');
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className={styles.modalForm}>
+            <label htmlFor="ant-nombre">Descripción del Antecedente</label>
+            <input
+                id="ant-nombre"
+                type="text"
+                value={nombre}
+                onChange={(e) => {setNombre(e.target.value); setError('');}}
+                placeholder="Ej: Separación de padres, Acoso escolar, etc."
+                required
+            />
+            {error && <p className={styles['error-message']}>{error}</p>}
+            <button type="submit">Guardar Antecedente</button>
+            <button 
+                type="button" 
+                onClick={onCancel} 
+                className={styles['modal-cancel-btn']}
+                style={{marginTop: '10px'}}
+            >
+                Cancelar
+            </button>
+        </form>
+    );
+};
+
+// Formulario para agregar un nuevo Análisis Funcional
+const AddAnalisisFuncionalForm = ({ onSave, onCancel }) => {
+    const [nombre, setNombre] = useState('');
+    const [error, setError] = useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!nombre.trim()) {
+            setError("El nombre del Análisis es obligatorio.");
+            return;
+        }
+        // SIMULACIÓN
+        const newAF = { id: Date.now(), nombre_analisis: nombre.trim() };
+        onSave(newAF);
+        setNombre('');
+        setError('');
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className={styles.modalForm}>
+            <label htmlFor="af-nombre">Descripción del Análisis Funcional</label>
+            <input
+                id="af-nombre"
+                type="text"
+                value={nombre}
+                onChange={(e) => {setNombre(e.target.value); setError('');}}
+                placeholder="Ej: Obtención de atención, Evitar demanda, etc."
+                required
+            />
+            {error && <p className={styles['error-message']}>{error}</p>}
+            <button type="submit">Guardar Análisis Funcional</button>
+            <button 
+                type="button" 
+                onClick={onCancel} 
+                className={styles['modal-cancel-btn']}
+                style={{marginTop: '10px'}}
+            >
+                Cancelar
+            </button>
+        </form>
+    );
+};
+// =================================================================
+
+
 export default function PacientesForm({ 
     onSubmit, 
     generos = [], 
     antecedentes = [], 
     analisisFuncional = [],
-    obrasSociales = [], //  Lista de Obras Sociales disponibles
+    obrasSociales = [], // Lista de Obras Sociales disponibles
     initialData = null,
     isEditing = false,
     checkDniUniqueness,
+    userRole = 'User'
 }) {
 
     const getInitialState = (data) => {
         if (!data) return initialFormData;
-
-        // Mapeo inverso de las propiedades de lectura a las de escritura
+        // ... (Lógica de getInitialState) ...
         return {
             ...data,
-            // 1. Foreign Key (Género): Viene como objeto, necesitamos solo el ID.
             genero_id: data.genero ? data.genero.id : (data.genero_info ? data.genero_info.id : ''),
-            
-            // 2. Many-to-Many: Viene como array de objetos, necesitamos array de IDs.
             antecedentes_ids: data.antecedentes_info ? data.antecedentes_info.map(a => a.id) : [],
             analisis_funcional_ids: data.analisis_funcional_info ? data.analisis_funcional_info.map(a => a.id) : [],
-
-            // 3. Relación Anidada (OsPacientes): Viene como array de objetos, 
-            //    necesitamos transformar la Obra Social de objeto a ID.
             os_pacientes_data: data.os_pacientes_info ? data.os_pacientes_info.map(item => ({
                 os_id: item.os_info.id,
                 num_afiliado: item.num_afiliado,
             })) : [],
-            
-            // Sobreescribir campos que no usamos en el formulario de edición (como 'edad', 'activo')
-            // y asegurar que campos como fecha_nacimiento estén en formato YYYY-MM-DD
             fecha_nacimiento: data.fecha_nacimiento.substring(0, 10), 
         };
     };
 
+
     const [formData, setFormData] = useState(getInitialState(initialData));
-
     const [dniError, setDniError] = useState(''); 
-
     const [fechaNacimientoError, setFechaNacimientoError] = useState('');
-
     const [telefonoError, setTelefonoError] = useState('');
-
     const [emailError, setEmailError] = useState('');
-
-    const tiempoActualMilisegundos = Date.now();
-
     const [dniCheckLoading, setDniCheckLoading] = useState(false); 
-
     const [nombreError, setNombreError] = useState('');
     const [apellidoError, setApellidoError] = useState('');
     const [generoIdError, setGeneroIdError] = useState('');
+    
+    // ESTADOS PARA CONTROLAR LOS MODALES
+    const [isOsModalOpen, setIsOsModalOpen] = useState(false);
+    const [isAntecedenteModalOpen, setIsAntecedenteModalOpen] = useState(false);
+    const [isAnalisisFuncionalModalOpen, setIsAnalisisFuncionalModalOpen] = useState(false);
 
+    // ESTADOS PARA LAS LISTAS DE OPCIONES (Para poder actualizar el DOM)
+    const [currentAntecedentes, setCurrentAntecedentes] = useState(antecedentes);
+    const [currentAnalisisFuncional, setCurrentAnalisisFuncional] = useState(analisisFuncional);
+    const [currentObrasSociales, setCurrentObrasSociales] = useState(obrasSociales);
+
+    // Sincronizar las listas si las props cambian
+    useEffect(() => {
+        setCurrentAntecedentes(antecedentes);
+    }, [antecedentes]);
+
+    useEffect(() => {
+        setCurrentAnalisisFuncional(analisisFuncional);
+    }, [analisisFuncional]);
+
+    useEffect(() => {
+        setCurrentObrasSociales(obrasSociales);
+    }, [obrasSociales]);
 
     useEffect(() => {
         setFormData(getInitialState(initialData));
     }, [initialData]);
 
     // ==========================================================
-    // 🚨 FUNCIONES DE MANEJO DE OBRAS SOCIALES (Array Anidado) 🚨
+    // FUNCIONES HANDLESAVE PARA LOS NUEVOS ITEMS
     // ==========================================================
+    
+    // Función para guardar una nueva Obra Social y actualizar la lista (Modal)
+    const handleSaveNewOs = (newOs) => {
+        // Asume que la nueva OS ya fue creada en el backend y recibimos el objeto completo
+        setCurrentObrasSociales(prev => [...prev, newOs]);
+        setIsOsModalOpen(false);
+    };
 
+    // Función para guardar un nuevo Antecedente y actualizar la lista
+    const handleSaveNewAntecedente = (newAnt) => {
+        setCurrentAntecedentes(prev => [...prev, newAnt]);
+        setIsAntecedenteModalOpen(false);
+        // Opcional: Marcar el nuevo antecedente automáticamente
+        setFormData(prevData => ({
+            ...prevData,
+            antecedentes_ids: [...prevData.antecedentes_ids, newAnt.id]
+        }));
+    };
+
+    // Función para guardar un nuevo Análisis Funcional y actualizar la lista
+    const handleSaveNewAnalisisFuncional = (newAF) => {
+        setCurrentAnalisisFuncional(prev => [...prev, newAF]);
+        setIsAnalisisFuncionalModalOpen(false);
+        // Opcional: Marcar el nuevo análisis automáticamente
+        setFormData(prevData => ({
+            ...prevData,
+            analisis_funcional_ids: [...prevData.analisis_funcional_ids, newAF.id]
+        }));
+    };
+
+    // ... (handleOsChange, handleAddOs, handleRemoveOs, handleCheckboxChange, handleChange, handleSubmit, handleNameChange, handleDniChange) ...
+    
     const handleOsChange = (index, e) => {
         const { name, value } = e.target;
-        
-        // 1. Crear una copia inmutable del array de Obras Sociales
         const newOsData = [...formData.os_pacientes_data];
         
         if (name === 'os_id') {
-            // Convertir a número el ID si tiene valor (es lo que espera el Serializer anidado)
             newOsData[index][name] = value ? Number(value) : '';
         } else {
-            // Para el número de afiliado (CharField)
             newOsData[index][name] = value;
         }
 
-        // 2. Actualizar el estado con el nuevo array
         setFormData(prevData => ({
             ...prevData,
             os_pacientes_data: newOsData,
         }));
     };
 
+    // FUNCIÓN PARA AÑADIR UN NUEVO CAMPO DE OS AL PACIENTE
     const handleAddOs = () => {
-        // Agregar un nuevo objeto de Obra Social al array
         setFormData(prevData => ({
             ...prevData,
             os_pacientes_data: [
                 ...prevData.os_pacientes_data,
-                { os_id: '', num_afiliado: '' } // Objeto inicial
+                { os_id: '', num_afiliado: '' }
             ]
         }));
     };
 
     const handleRemoveOs = (index) => {
-        // Eliminar el objeto del array por índice
         const newOsData = formData.os_pacientes_data.filter((_, i) => i !== index);
         setFormData(prevData => ({
             ...prevData,
@@ -128,25 +296,18 @@ export default function PacientesForm({
         }));
     };
 
-    // ==========================================================
-    // FUNCIONES DE MANEJO ESTÁNDAR (Datos básicos, FK, M2M)
-    // ==========================================================
-    
-    // Función de manejo para CHECKBOX (M2M)
     const handleCheckboxChange = (e) => {
         const { name, value, checked } = e.target;
-        const id = Number(value); // El valor es el ID del antecedente/análisis
+        const id = Number(value); 
         
         setFormData(prevData => {
-            let newArray = [...prevData[name]]; // Copia del array (antecedentes_ids o analisis_funcional_ids)
+            let newArray = [...prevData[name]]; 
 
             if (checked) {
-                // Si está marcado, añadir el ID si no existe
                 if (!newArray.includes(id)) {
                     newArray.push(id);
                 }
             } else {
-                // Si está desmarcado, quitar el ID
                 newArray = newArray.filter(item => item !== id);
             }
 
@@ -164,20 +325,14 @@ export default function PacientesForm({
 
         const emailRegex = /^\S+@\S+\.\S+$/; 
 
-        // Lógica anterior para campos Many-to-Many (Multi-Select)
-        // ESTA PARTE FUE REEMPLAZADA POR handleCheckboxChange
         if ( (name === 'antecedentes_ids' || name === 'analisis_funcional_ids') && type === 'select-multiple') {
-             // MANTENEMOS ESTA LÓGICA POR SI ALGO MÁS USA SELECT-MULTIPLE, AUNQUE EL COMPONENTE
-             // YA NO LO USARÁ PARA ANTECEDENTES/ANÁLISIS FUNCIONAL.
              newValue = Array.from(options)
                          .filter(option => option.selected)
                          .map(option => Number(option.value)); 
         } 
 
-        // Lógica de validación para Fecha de Nacimiento
         if (name === 'fecha_nacimiento') {
             const today = new Date();
-            // Quitar la hora para la comparación (comparar solo la fecha)
             today.setHours(0, 0, 0, 0); 
             
             const selectedDate = new Date(value);
@@ -189,9 +344,7 @@ export default function PacientesForm({
             }
         }
 
-        // Lógica de validación de Email
         if (name === 'email') {
-            // Si hay un valor y no pasa la validación regex
             if (value && !emailRegex.test(value)) {
                 setEmailError('El formato del email no es válido (ej: usuario@dominio.com).');
             } else {
@@ -199,17 +352,13 @@ export default function PacientesForm({
             }
         }
         
-        // Lógica para campo Foreign Key (Género)
         else if (name === 'genero_id') {
             newValue = value ? Number(value) : ''; 
         }
 
-        // 💡 Lógica de filtrado para Teléfono
         if (name === 'telefono') {
-            // 1. Filtrado: Permite solo números, espacios, +, -, ( y ).
             newValue = value.replace(/[^0-9\s\+\-\(\)]/g, ''); 
             
-            // 2. Validación en tiempo real (contando solo dígitos)
             const digitCount = newValue.replace(/[^0-9]/g, '').length;
             
             if (digitCount > 0 && digitCount < MIN_PHONE_LENGTH) {
@@ -219,7 +368,6 @@ export default function PacientesForm({
             }
         }
 
-        // Manejo estándar para el resto de los campos
         setFormData(prevData => ({
             ...prevData,
             [name]: newValue
@@ -227,10 +375,10 @@ export default function PacientesForm({
     };
 
 
-    const handleSubmit = async (e) => { // Hacemos la función ASÍNCRONA
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (dniCheckLoading) return; // Evitar envíos múltiples mientras verifica DNI
+        if (dniCheckLoading) return;
         
         let hasError = false;
         let currentDniError = ''; 
@@ -241,23 +389,18 @@ export default function PacientesForm({
         let currentApellidoError = '';
         let currentGeneroError = '';
 
-        // --- 1. VALIDACIONES DE CAMPOS OBLIGATORIOS Y SÍNCRONAS ---
-        
-        // Nombre
         if (!formData.nombre.trim()) {
             currentNombreError = 'El nombre es obligatorio.';
             hasError = true;
         }
         setNombreError(currentNombreError);
 
-        // Apellido
         if (!formData.apellido.trim()) {
             currentApellidoError = 'El apellido es obligatorio.';
             hasError = true;
         }
         setApellidoError(currentApellidoError);
         
-        // DNI (Requiere valor Y longitud correcta)
         const dniLength = formData.dni.length;
         if (dniLength === 0) {
             currentDniError = 'El DNI es obligatorio.';
@@ -267,7 +410,6 @@ export default function PacientesForm({
             hasError = true;
         } 
         
-        // Teléfono (Ahora obligatorio)
         const phoneDigits = formData.telefono.replace(/[^0-9]/g, '').length;
         if (formData.telefono.length === 0) {
              currentTelefonoError = 'El teléfono es obligatorio.';
@@ -278,49 +420,38 @@ export default function PacientesForm({
         } 
         setTelefonoError(currentTelefonoError);
 
-
-        // Género ID (Ahora obligatorio)
         if (!formData.genero_id) {
             currentGeneroError = 'El género es obligatorio.';
             hasError = true;
         } 
         setGeneroIdError(currentGeneroError);
 
-
-        // Fecha de Nacimiento (comprobar si hay error en el estado O si está vacío)
         if (fechaNacimientoError) {
-             hasError = true; // Ya tiene un error de fecha futura
-             currentFechaError = fechaNacimientoError; // Mantener el error
+             hasError = true;
+             currentFechaError = fechaNacimientoError;
         } else if (!formData.fecha_nacimiento) {
              currentFechaError = 'La fecha de nacimiento es obligatoria.';
              hasError = true;
         }
         setFechaNacimientoError(currentFechaError);
 
-        // Validación de Email (Solo si tiene valor, debe ser válido)
         if (formData.email && !EMAIL_REGEX.test(formData.email)) {
             currentEmailError = 'ERROR: Por favor, ingrese un formato de email válido.';
             hasError = true;
         }
         setEmailError(currentEmailError);
 
-        // Si hay errores síncronos, detenemos aquí
         if (hasError) {
-            setDniError(currentDniError); // Asegurar que el error de DNI se muestre si es síncrono
+            setDniError(currentDniError); 
             return;
         }
         
-        // --- 2. VALIDACIÓN ASÍNCRONA DE UNICIDAD DEL DNI ---
         const originalDni = initialData ? initialData.dni : null;
         const isDniChanged = formData.dni !== originalDni;
         
-        // Solo verificamos unicidad si:
-        // a) Estamos creando un nuevo paciente (no isEditing)
-        // b) Estamos editando Y el DNI ha sido modificado
         if ((!isEditing || isDniChanged) && checkDniUniqueness) {
             setDniCheckLoading(true);
             try {
-                // await la verificación asíncrona
                 const exists = await checkDniUniqueness(formData.dni); 
                 if (exists) {
                     currentDniError = 'Ya existe un paciente registrado con este DNI.';
@@ -335,25 +466,17 @@ export default function PacientesForm({
             }
         }
         
-        // Actualizamos el error de DNI después de la validación asíncrona
         setDniError(currentDniError);
 
-        // Si hay error (síncrono o asíncrono)
         if (hasError || currentDniError) {
             return;
         }
         
-        // Si no hay errores, enviar
         onSubmit(formData);
     };
 
-    // ==========================================================
-    // FUNCIÓN PARA FILTRAR NOMBRE/APELLIDO (Letras y espacios) 
-    // ==========================================================
-
     const handleNameChange = (e, fieldName) => {
         const text = e.target.value;
-        // Expresión Regular que ELIMINA todo lo que NO sea (^) letras, acentos o espacios.
         const filteredText = text.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''); 
         
         setFormData(prevData => ({
@@ -362,17 +485,9 @@ export default function PacientesForm({
         }));
     };
 
-
-    // ==========================================================
-    // FUNCIÓN PARA FILTRAR DNI 
-    // ==========================================================
-
     const handleDniChange = (e) => {
         const text = e.target.value;
-        // Elimina cualquier cosa que no sea un dígito (0-9)
         const filteredText = text.replace(/\D/g, ''); 
-        
-        // Limita la entrada a un máximo de 8 dígitos para evitar DNI demasiado largos
         const maxLengthText = filteredText.slice(0, 8);
         
         setFormData(prevData => ({
@@ -380,7 +495,6 @@ export default function PacientesForm({
             dni: maxLengthText
         }));
 
-        // Validar longitud en tiempo real (feedback inmediato)
         if (maxLengthText.length > 0 && maxLengthText.length !== 7 && maxLengthText.length !== 8) {
             setDniError('El DNI debe tener 7 u 8 dígitos.');
         } else {
@@ -391,16 +505,14 @@ export default function PacientesForm({
     return (
         <form onSubmit={handleSubmit} className={styles['pacientes-form']}> 
             
-            
+            {/* ... (Datos básicos) ... */}
             {isEditing? <h3>Editar Paciente</h3> : <h3>Registrar nuevo paciente</h3>}
             
-            {/* ======================= DATOS BÁSICOS ======================= */}
             <label>Nombre</label>
             <input 
             name="nombre" 
             value={formData.nombre} 
             onChange={(e) => handleNameChange(e, 'nombre')}
-            // onChange={handleChange} 
             placeholder="Nombre" 
             required 
             />
@@ -409,7 +521,6 @@ export default function PacientesForm({
             <input 
                 name="apellido" 
                 value={formData.apellido} 
-                // onChange={handleChange} 
                 onChange={(e) => handleNameChange(e, 'apellido')}
                 placeholder="Apellido"
                 required 
@@ -457,10 +568,8 @@ export default function PacientesForm({
             
             <hr /> 
             
-            {/* ======================= RELACIONES FK/M2M ======================= */}
             <h4>Relaciones y Antecedentes</h4>
 
-            {/* CAMPO GÉNERO (FOREIGN KEY) */}
             <label>Género</label>
             <select
                 name="genero_id" 
@@ -476,10 +585,24 @@ export default function PacientesForm({
                 ))}
             </select>
             
-            {/* CAMPO ANTECEDENTES (MANY-TO-MANY) - AHORA COMO CHECKBOXES */}
+            {/* ======================================================== */}
+            {/* CAMPO ANTECEDENTES (CHECKBOXES) + BOTÓN AGREGAR NUEVO */}
+            {/* ======================================================== */}
             <div className={styles['checkbox-group']}>
-                <label className={styles['checkbox-group-label']}>Antecedentes</label>
-                {antecedentes.map(ant => (
+                <div className={styles['checkbox-group-header']}> 
+                    <label className={styles['checkbox-group-label']}>Antecedentes</label>
+                    {userRole === 'Admin' && (
+                        <button 
+                            type="button" 
+                            onClick={() => setIsAntecedenteModalOpen(true)}
+                            className={styles['add-new-btn']}
+                        >
+                            +
+                        </button>
+                    )}
+                </div>
+
+                {currentAntecedentes.map(ant => (
                     <div key={ant.id} className={styles['checkbox-item']}>
                         <input
                             type="checkbox"
@@ -487,7 +610,6 @@ export default function PacientesForm({
                             value={ant.id}
                             id={`antecedente-${ant.id}`}
                             onChange={handleCheckboxChange}
-                            // checked verifica si el ID ya está en el array de IDs seleccionados
                             checked={formData.antecedentes_ids.includes(ant.id)} 
                         />
                         <label htmlFor={`antecedente-${ant.id}`}>{ant.nombre_ant}</label>
@@ -495,10 +617,24 @@ export default function PacientesForm({
                 ))}
             </div>
             
-            {/* CAMPO ANÁLISIS FUNCIONAL (MANY-TO-MANY) - AHORA COMO CHECKBOXES */}
+            {/* ======================================================== */}
+            {/* CAMPO ANÁLISIS FUNCIONAL (CHECKBOXES) + BOTÓN AGREGAR NUEVO */}
+            {/* ======================================================== */}
             <div className={styles['checkbox-group']}>
-                <label className={styles['checkbox-group-label']}>Análisis Funcional</label>
-                {analisisFuncional.map(af => (
+                <div className={styles['checkbox-group-header']}> 
+                    <label className={styles['checkbox-group-label']}>Análisis Funcional</label>
+                    {userRole === 'Admin' && (
+                        <button 
+                            type="button" 
+                            onClick={() => setIsAnalisisFuncionalModalOpen(true)}
+                            className={styles['add-new-btn']}
+                        >
+                            +
+                        </button>
+                    )}
+                </div>
+
+                {currentAnalisisFuncional.map(af => (
                     <div key={af.id} className={styles['checkbox-item']}>
                         <input
                             type="checkbox"
@@ -506,7 +642,6 @@ export default function PacientesForm({
                             value={af.id}
                             id={`analisis-${af.id}`}
                             onChange={handleCheckboxChange}
-                            // checked verifica si el ID ya está en el array de IDs seleccionados
                             checked={formData.analisis_funcional_ids.includes(af.id)} 
                         />
                         <label htmlFor={`analisis-${af.id}`}>{af.nombre_analisis}</label>
@@ -516,53 +651,122 @@ export default function PacientesForm({
             
             <hr /> 
 
-            {/* ======================= OBRAS SOCIALES (CAMPOS DINÁMICOS) ======================= */}
-            <h4>Obras Sociales y Afiliación</h4>
-
-            {formData.os_pacientes_data.map((osItem, index) => (
-                // Usamos la clase 'os-group' para estilizar cada bloque de OS
-                <div key={index} className={styles['os-group']}>
-                    
-                    <label>Obra Social #{index + 1}</label>
-                    <select
-                        name="os_id" 
-                        value={osItem.os_id} 
-                        onChange={(e) => handleOsChange(index, e)}
-                    >
-                        <option value="">Seleccione Obra Social</option>
-                        {obrasSociales.map(os => (
-                            <option key={os.id} value={os.id}>
-                                {os.nombre_os}
-                            </option>
-                        ))}
-                    </select>
-                    
-                    <label>Número de Afiliado</label>
-                    <input 
-                        type="text"
-                        name="num_afiliado"
-                        value={osItem.num_afiliado}
-                        onChange={(e) => handleOsChange(index, e)}
-                        placeholder="N° de Afiliado"
-                    />
-
+            {/* ======================================================== */}
+            {/* OBRAS SOCIALES (CAMPOS DINÁMICOS) + BOTONES REVERTIDOS */}
+            {/* ======================================================== */}
+            
+            {/* H4 con el botón + para añadir a la lista maestra (Función menos frecuente, como Antecedentes/Análisis) */}
+            <h4 style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                Obras Sociales y Afiliación
+                {/* BOTÓN PARA ABRIR EL MODAL Y CREAR UNA NUEVA OS EN LA LISTA MAESTRA */}
+                {userRole === 'Admin' && (
                     <button 
                         type="button" 
-                        onClick={() => handleRemoveOs(index)}
-                        className={styles['remove-os-btn']}
+                        onClick={() => setIsOsModalOpen(true)} 
+                        className={styles['add-new-btn']} 
                     >
-                        Eliminar Obra Social
+                        +
                     </button>
-                    {/* Separador visual para bloques de OS */}
-                    {index < formData.os_pacientes_data.length - 1 && <hr className={styles['os-separator']}/>}
-                </div>
-            ))}
+                )}
+            </h4>
 
-            <button type="button" onClick={handleAddOs} className={styles['add-os-btn']}>
-                + Agregar Obra Social
+            {/* BOTÓN PARA AÑADIR UNA NUEVA OBRA SOCIAL AL PACIENTE (Función más frecuente) */}
+            <button 
+                type="button" 
+                onClick={handleAddOs} // <-- AÑADIR CAMPO AL PACIENTE
+                className={styles['add-new-btn-inline']} 
+                style={{marginBottom: '20px', width: '100%', marginLeft: '0'}} // Ajuste de estilo
+            >
+                + Asignar Obra Social al Paciente
             </button>
-            
+
+
+            {/* LISTADO DE OS DEL PACIENTE */}
+            {formData.os_pacientes_data.length === 0 ? (
+                <p style={{marginTop: '10px', color: '#777'}}>Haga clic en 'Asignar Obra Social al Paciente' para agregar una.</p>
+            ) : (
+                formData.os_pacientes_data.map((osItem, index) => (
+                    <div key={index} className={styles['os-group']}>
+                        
+                        <label>Obra Social #{index + 1}</label>
+                        <select
+                            name="os_id" 
+                            value={osItem.os_id} 
+                            onChange={(e) => handleOsChange(index, e)}
+                        >
+                            <option value="">Seleccione Obra Social</option>
+                            {currentObrasSociales.map(os => (
+                                <option key={os.id} value={os.id}>
+                                    {os.nombre_os}
+                                </option>
+                            ))}
+                        </select>
+                        
+                        <label>Número de Afiliado</label>
+                        <input 
+                            type="text"
+                            name="num_afiliado"
+                            value={osItem.num_afiliado}
+                            onChange={(e) => handleOsChange(index, e)}
+                            placeholder="N° de Afiliado"
+                            required
+                        />
+
+                        <button 
+                            type="button" 
+                            onClick={() => handleRemoveOs(index)}
+                            className={styles['remove-os-btn']}
+                        >
+                            Eliminar Obra Social
+                        </button>
+                        {index < formData.os_pacientes_data.length - 1 && <hr className={styles['os-separator']}/>}
+                    </div>
+                ))
+            )}
+
             <button type="submit">{isEditing? 'Guardar cambios' : 'Registrar paciente'}</button>
+
+
+            {/* ======================================================== */}
+            {/* RENDERIZADO DE LOS MODALES */}
+            {/* ======================================================== */}
+
+            {/* Modal para Obra Social */}
+            <ModalAdd
+                isOpen={isOsModalOpen}
+                onClose={() => setIsOsModalOpen(false)}
+                title="Agregar Nueva Obra Social a la Lista"
+            >
+                <AddOsForm 
+                    onSave={handleSaveNewOs} 
+                    onCancel={() => setIsOsModalOpen(false)} 
+                />
+            </ModalAdd>
+
+            {/* Modal para Antecedentes */}
+            <ModalAdd
+                isOpen={isAntecedenteModalOpen}
+                onClose={() => setIsAntecedenteModalOpen(false)}
+                title="Agregar Nuevo Antecedente"
+            >
+                <AddAntecedenteForm 
+                    onSave={handleSaveNewAntecedente} 
+                    onCancel={() => setIsAntecedenteModalOpen(false)} 
+                />
+            </ModalAdd>
+            
+            {/* Modal para Análisis Funcional */}
+            <ModalAdd
+                isOpen={isAnalisisFuncionalModalOpen}
+                onClose={() => setIsAnalisisFuncionalModalOpen(false)}
+                title="Agregar Nuevo Análisis Funcional"
+            >
+                <AddAnalisisFuncionalForm 
+                    onSave={handleSaveNewAnalisisFuncional} 
+                    onCancel={() => setIsAnalisisFuncionalModalOpen(false)} 
+                />
+            </ModalAdd>
+
         </form>
     );
 }

@@ -19,10 +19,13 @@
     border-bottom: 2px solid #27ae60;
 }
 
+/* Para asegurar que el h4 y el botón inline se alineen */
 .pacientes-form h4 {
     color: #555;
     margin-top: 20px;
     margin-bottom: 15px;
+    display: flex; /* Añadido para alinear con el botón + Agregar Nueva OS */
+    align-items: center;
 }
 
 /* Estilos para los campos de entrada (input) y select */
@@ -102,10 +105,52 @@
 }
 
 /* ======================================= */
-/* NUEVOS ESTILOS PARA CHECKBOXES */
+/* NUEVOS ESTILOS PARA CHECKBOXES Y BOTONES */
 /* ======================================= */
 
-/* Contenedor principal de los grupos de checkboxes (Antecedentes / Análisis Funcional) */
+/* Contenedor para el título del grupo de checkbox y el botón */
+.checkbox-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.add-new-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 700;
+}
+
+.add-new-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Botón para la sección de Obras Sociales (junto al h4) */
+.add-new-btn-inline {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-left: 15px; /* Separación del título h4 */
+}
+
+.add-new-btn-inline:hover {
+    background-color: #2980b9;
+}
+
 .checkbox-group {
     padding: 10px 15px; /* Padding interno */
     border: 1px solid #ccc;
@@ -214,22 +259,57 @@
     background-color: #c0392b;
 }
 
-/* Botón de agregar Obra Social */
-.add-os-btn {
-    background-color: #3498db; /* Un color distinto para diferenciar */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    display: block;
+/* ======================================= */
+/* 🚨 ESTILOS DE MODAL FORMULARIO FALTANTES 🚨 */
+/* ======================================= */
+
+/* Contenedor del formulario dentro del Modal (ej: AddOsForm) */
+.modalForm {
+    padding: 5px;
+}
+
+/* Inputs dentro de los formularios del modal */
+.modalForm input {
     width: 100%;
-    margin-top: 15px;
-    margin-bottom: 25px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Etiquetas dentro de los formularios del modal */
+.modalForm label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #34495e;
+}
+
+/* Botón principal (Guardar) dentro de los formularios del modal */
+.modalForm button[type="submit"] {
+    width: 100%;
+    background-color: #27ae60;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px; 
     transition: background-color 0.3s;
 }
 
-.add-os-btn:hover {
-    background-color: #2980b9;
+.modalForm button[type="submit"]:hover {
+    background-color: #2ecc71;
+}
+
+/* Botón de cancelar (el que usa .modal-cancel-btn) */
+.modal-cancel-btn {
+    background-color: #95a5a6 !important; /* Gris */
+    margin-top: 10px; /* Asegura separación si se aplica a través de style */
+}
+
+.modal-cancel-btn:hover {
+    background-color: #7f8c8d !important; /* Gris oscuro */
 }

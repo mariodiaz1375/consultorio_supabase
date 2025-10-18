@@ -8,6 +8,7 @@ import PacienteCard from '../pacienteCard/PacienteCard';
 import PacienteDetail from '../pacienteDetail/PacienteDetail';
 
 export default function PacientesList() {
+  const [userInfo, setUserInfo] = useState(null);
   const [pacientes, setPacientes] = useState([]);
   const [showForm, setShowForm] = useState(false);
   
@@ -100,6 +101,16 @@ export default function PacientesList() {
   useEffect(() => {
     fetchPacientes();
     fetchOptions(); // Cargar opciones al montar el componente
+
+    // aqui cargamos la user info desde localstorage realizado en el dashboard
+    const storedUserInfo = localStorage.getItem('user_info');
+    if (storedUserInfo) {
+        try {
+            setUserInfo(JSON.parse(storedUserInfo));
+        } catch (e) {
+            console.error("Error al analizar user_info desde localStorage:", e);
+        }
+    }
   }, []);
 
   const handleFormSubmit = async (pacienteData) => {
@@ -161,6 +172,7 @@ export default function PacientesList() {
       return <PacienteDetail paciente={viewingDetail} onBack={handleBack} />;
   }
 
+    const userRole = userInfo?.puesto_info?.nombre_puesto;
     const renderForm = (className) => (
       <div className={className}>
           <PacientesForm
@@ -172,6 +184,7 @@ export default function PacientesList() {
               initialData={editingPaciente}
               isEditing={isEditing}
               checkDniUniqueness={checkDniUniqueness}
+              userRole= {userRole}
           />
       </div>
     );
