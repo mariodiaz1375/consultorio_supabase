@@ -88,16 +88,29 @@ class GenerosList(generics.ListAPIView):
     queryset = Generos.objects.all()
     serializer_class = GenerosSerializer
 
-class AntecedentesList(generics.ListAPIView):
+# Vistas CRUD para Antecedentes
+class AntecedentesList(generics.ListCreateAPIView): # 🚨 CAMBIO A ListCreateAPIView
     queryset = Antecedentes.objects.all()
     serializer_class = AntecedentesSerializer
 
-class AnalisisFuncionalList(generics.ListAPIView):
+class AntecedentesDetail(generics.RetrieveUpdateDestroyAPIView): # 🚨 NUEVA VISTA para RUD
+    queryset = Antecedentes.objects.all()
+    serializer_class = AntecedentesSerializer
+
+# Vistas CRUD para Análisis Funcional
+class AnalisisFuncionalList(generics.ListCreateAPIView): # 🚨 CAMBIO A ListCreateAPIView
     queryset = AnalisisFuncional.objects.all()
     serializer_class = AnalisisFuncionalSerializer
 
-# 🚨 NUEVA VISTA: Obras Sociales
-class ObrasSocialesList(generics.ListAPIView):
-    """Devuelve la lista de Obras Sociales para usar en selects/comboboxes."""
+class AnalisisFuncionalDetail(generics.RetrieveUpdateDestroyAPIView): # 🚨 NUEVA VISTA para RUD
+    queryset = AnalisisFuncional.objects.all()
+    serializer_class = AnalisisFuncionalSerializer
+
+# Vistas CRUD para Obras Sociales
+class ObrasSocialesList(generics.ListCreateAPIView): # 🚨 CAMBIO A ListCreateAPIView
+    queryset = ObrasSociales.objects.all()
+    serializer_class = ObrasSocialesSerializer
+
+class ObrasSocialesDetail(generics.RetrieveUpdateDestroyAPIView): # 🚨 NUEVA VISTA para RUD
     queryset = ObrasSociales.objects.all()
     serializer_class = ObrasSocialesSerializer

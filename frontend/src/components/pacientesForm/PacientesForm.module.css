@@ -313,3 +313,84 @@
 .modal-cancel-btn:hover {
     background-color: #7f8c8d !important; /* Gris oscuro */
 }
+
+
+/* PacientesForm.module.css */
+
+/* ... (Estilos existentes) ... */
+
+/* ======================================= */
+/* --- Estilos para ListManager (dentro del Modal) --- */
+/* ======================================= */
+
+.list-manager-container {
+    max-height: 400px; /* Para que sea cómodo y quepa en un modal pequeño */
+    overflow-y: auto;
+    padding-right: 5px; /* Espacio para la barra de desplazamiento */
+}
+
+.manager-form-container {
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+/* El formulario de edición/creación dentro del modal manager */
+.manager-form-container input[type="text"] {
+    margin-bottom: 10px;
+}
+
+.manager-form-container button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+
+.list-manager-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+}
+
+.list-manager-item:last-child {
+    border-bottom: none;
+}
+
+.item-name {
+    flex-grow: 1;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.item-actions button {
+    margin-left: 8px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background-color 0.2s;
+}
+
+.edit-btn {
+    background-color: #3498db;
+    color: white;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #2980b9;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* ... (Resto de estilos existentes) ... */

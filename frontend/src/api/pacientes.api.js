@@ -81,16 +81,8 @@ export const getGeneros = async () => {
     }
 };
 
-// URL para Antecedentes
-// export const getAntecedentes = async () => {
-//     // Aquí se llama a la función getToken()
-//     const token = getToken(); 
-//     const response = await fetch('http://localhost:8000/api/antecedentes/', {
-//         headers: { 'Authorization': `Bearer ${token}` }
-//     });
-//     if (!response.ok) throw new Error('Error al cargar antecedentes');
-//     return response.json();
-// };
+
+// METODOS PARA ANTECEDENTES
 
 export const getAntecedentes = async () => {
     try {
@@ -103,16 +95,39 @@ export const getAntecedentes = async () => {
     }
 };
 
-// URL para Análisis Funcional
-// export const getAnalisisFuncional = async () => {
-//     // Aquí se llama a la función getToken()
-//     const token = getToken();
-//     const response = await fetch('http://localhost:8000/api/analisis-funcional/', {
-//         headers: { 'Authorization': `Bearer ${token}` }
-//     });
-//     if (!response.ok) throw new Error('Error al cargar análisis funcional');
-//     return response.json();
-// };
+export const createAntecedente = async (data) => {
+    try {
+        // data debe ser { nombre_ant: 'Nuevo Nombre' }
+        const response = await pacientesApi.post('/antecedentes/', data);
+        return response.data;
+    } catch (error) {
+        console.error("Error al crear Antecedente:", error);
+        throw error;
+    }
+};
+
+export const updateAntecedente = async (id, data) => {
+    try {
+        const response = await pacientesApi.patch(`/antecedentes/${id}/`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error al editar Antecedente:", error);
+        throw error;
+    }
+};
+
+export const deleteAntecedente = async (id) => {
+    try {
+        await pacientesApi.delete(`/antecedentes/${id}/`);
+        return true;
+    } catch (error) {
+        console.error("Error al eliminar Antecedente:", error);
+        throw error;
+    }
+};
+
+
+// METODOS PARA ANALISIS FUNCIONAL
 
 export const getAnalisisFuncional = async () => {
     try {
@@ -125,6 +140,40 @@ export const getAnalisisFuncional = async () => {
     }
 };
 
+export const createAnalisisFuncional = async (data) => {
+    try {
+        // data debe ser { nombre_analisis: 'Nuevo Nombre' }
+        const response = await pacientesApi.post('/analisis-funcional/', data);
+        return response.data;
+    } catch (error) {
+        console.error("Error al crear Análisis Funcional:", error);
+        throw error;
+    }
+};
+
+export const updateAnalisisFuncional = async (id, data) => {
+    try {
+        const response = await pacientesApi.patch(`/analisis-funcional/${id}/`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error al editar Análisis Funcional:", error);
+        throw error;
+    }
+};
+
+export const deleteAnalisisFuncional = async (id) => {
+    try {
+        await pacientesApi.delete(`/analisis-funcional/${id}/`);
+        return true;
+    } catch (error) {
+        console.error("Error al eliminar Análisis Funcional:", error);
+        throw error;
+    }
+};
+
+
+// METODOS PARA OBRAS SOCIALES
+
 export const getObrasSociales = async () => {
     try {
         // Se concatena a la baseURL: http://localhost:8000/api/personal + puestos/
@@ -136,9 +185,34 @@ export const getObrasSociales = async () => {
     }
 };
 
-// export const getObrasSociales = async () => {
-//     // Usamos la URL que definiste en tu urls.py de pacientes:
-//     // path('obras-sociales/', ObrasSocialesList.as_view(), ...) -> /api/pacientes/obras-sociales/
-//     const response = await api.get('/pacientes/obras-sociales/'); 
-//     return response.data;
-// };
+export const createObraSocial = async (data) => {
+    try {
+        // data debe ser { nombre_os: 'Nuevo Nombre' }
+        const response = await pacientesApi.post('/obras-sociales/', data);
+        return response.data; // Devuelve el nuevo objeto con su ID
+    } catch (error) {
+        console.error("Error al crear Obra Social:", error);
+        throw error;
+    }
+};
+
+export const updateObraSocial = async (id, data) => {
+    try {
+        // data debe ser { nombre_os: 'Nombre Editado' }
+        const response = await pacientesApi.patch(`/obras-sociales/${id}/`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error al editar Obra Social:", error);
+        throw error;
+    }
+};
+
+export const deleteObraSocial = async (id) => {
+    try {
+        await pacientesApi.delete(`/obras-sociales/${id}/`);
+        return true; // Éxito en la eliminación
+    } catch (error) {
+        console.error("Error al eliminar Obra Social:", error);
+        throw error;
+    }
+};

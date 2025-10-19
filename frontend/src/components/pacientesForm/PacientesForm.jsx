@@ -3,6 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import styles from './PacientesForm.module.css';
 import ModalAdd from '../modalAdd/ModalAdd';
+import { 
+    createObraSocial, updateObraSocial, deleteObraSocial,
+    createAntecedente, updateAntecedente, deleteAntecedente,
+    createAnalisisFuncional, updateAnalisisFuncional, deleteAnalisisFuncional,
+    // ... otros métodos
+} from '../../api/pacientes.api.js';
 
 // ... (initialFormData, MIN_PHONE_LENGTH, EMAIL_REGEX y componentes auxiliares) ...
 const initialFormData = {
@@ -26,137 +32,129 @@ const MIN_PHONE_LENGTH = 7;
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 
 // =================================================================
-// 🚨 COMPONENTES AUXILIARES DE FORMULARIO PARA LOS MODALES 🚨
+// 🚨 COMPONENTE AUXILIAR PARA ADMINISTRAR CUALQUIER LISTA MAESTRA 🚨
 // =================================================================
-
-// Formulario para agregar una nueva Obra Social
-const AddOsForm = ({ onSave, onCancel }) => {
-    const [nombre, setNombre] = useState('');
+const ListManagerContent = ({ 
+    list, 
+    idField = 'id', // Campo ID, por defecto 'id'
+    nameField, // Campo del nombre (ej: 'nombre_os')
+    onAdd, 
+    onEdit, 
+    onDelete, 
+}) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editId, setEditId] = useState(null);
+    const [inputName, setInputName] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    useEffect(() => {
+        if (editId) {
+            const itemToEdit = list.find(item => item[idField] === editId);
+            if (itemToEdit) {
+                setInputName(itemToEdit[nameField]);
+                setIsEditing(true);
+            }
+        } else {
+            setInputName('');
+            setIsEditing(false);
+        }
+    }, [editId, list, idField, nameField]);
+
+    const handleEditStart = (item) => {
+        setEditId(item[idField]);
+    };
+
+    const handleSave = (e) => {
         e.preventDefault();
-        if (!nombre.trim()) {
-            setError("El nombre de la Obra Social es obligatorio.");
+        if (!inputName.trim()) {
+            setError("El nombre es obligatorio.");
             return;
         }
-        // SIMULACIÓN de la creación y obtención del nuevo objeto
-        const newOs = { id: Date.now(), nombre_os: nombre.trim() };
-        onSave(newOs); 
-        setNombre('');
+
+        if (isEditing) {
+            onEdit(editId, inputName.trim());
+        } else {
+            onAdd(inputName.trim());
+        }
+        
+        // Reset state
+        setEditId(null);
+        setInputName('');
+        setIsEditing(false);
+        setError('');
+    };
+
+    const handleCancelEdit = () => {
+        setEditId(null);
+        setInputName('');
+        setIsEditing(false);
         setError('');
     };
 
     return (
-        <form onSubmit={handleSubmit} className={styles.modalForm}>
-            <label htmlFor="os-nombre">Nombre de la Obra Social</label>
-            <input
-                id="os-nombre"
-                type="text"
-                value={nombre}
-                onChange={(e) => {setNombre(e.target.value); setError('');}}
-                placeholder="Ej: OSDE, Swiss Medical..."
-                required
-            />
-            {error && <p className={styles['error-message']}>{error}</p>}
-            <button type="submit">Guardar Obra Social</button>
-            <button 
-                type="button" 
-                onClick={onCancel} 
-                className={styles['modal-cancel-btn']}
-                style={{marginTop: '10px'}}
-            >
-                Cancelar
-            </button>
-        </form>
+        <div className={styles['list-manager-container']}>
+            {/* 🚨 AQUÍ EL CAMBIO: Usamos <div> en lugar de <form> */}
+            <div className={styles['manager-form-container']}> 
+                <label htmlFor="manager-input">{isEditing ? `Editar ID ${editId}` : "Nuevo Elemento"}</label>
+                <input
+                    id="manager-input"
+                    type="text"
+                    value={inputName}
+                    onChange={(e) => {setInputName(e.target.value); setError('');}}
+                    placeholder={`Ingrese el nombre o descripción`}
+                    // Opcional: Para permitir guardar con Enter incluso sin form
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault(); 
+                            handleSave(); 
+                        }
+                    }}
+                    required
+                />
+                {error && <p className={styles['error-message']}>{error}</p>}
+                {/* El botón llama directamente a handleSave */}
+                <button type="button" onClick={handleSave}> 
+                    {isEditing ? "Guardar Cambios" : "Agregar a la Lista"}
+                </button>
+                {isEditing && (
+                    <button 
+                        type="button" 
+                        onClick={handleCancelEdit} 
+                        className={styles['modal-cancel-btn']}
+                        style={{marginTop: '10px'}}
+                    >
+                        Cancelar Edición
+                    </button>
+                )}
+            </div>
+
+            <h5 style={{marginTop: '20px', paddingBottom: '5px', borderBottom: '1px solid #ddd'}}>Lista Existente:</h5>
+            {list.map(item => (
+                <div key={item[idField]} className={styles['list-manager-item']}>
+                    <span className={styles['item-name']}>{item[nameField]}</span>
+                    <div className={styles['item-actions']}>
+                        <button 
+                            type="button" 
+                            onClick={() => handleEditStart(item)}
+                            className={styles['edit-btn']}
+                        >
+                            Editar
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={() => onDelete(item[idField])}
+                            className={styles['delete-btn']}
+                        >
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            ))}
+            {list.length === 0 && <p style={{color: '#999', fontSize: '0.9rem'}}>No hay elementos en la lista.</p>}
+        </div>
     );
 };
 
-// Formulario para agregar un nuevo Antecedente
-const AddAntecedenteForm = ({ onSave, onCancel }) => {
-    const [nombre, setNombre] = useState('');
-    const [error, setError] = useState('');
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!nombre.trim()) {
-            setError("El nombre del Antecedente es obligatorio.");
-            return;
-        }
-        // SIMULACIÓN
-        const newAnt = { id: Date.now(), nombre_ant: nombre.trim() };
-        onSave(newAnt);
-        setNombre('');
-        setError('');
-    };
-
-    return (
-        <form onSubmit={handleSubmit} className={styles.modalForm}>
-            <label htmlFor="ant-nombre">Descripción del Antecedente</label>
-            <input
-                id="ant-nombre"
-                type="text"
-                value={nombre}
-                onChange={(e) => {setNombre(e.target.value); setError('');}}
-                placeholder="Ej: Separación de padres, Acoso escolar, etc."
-                required
-            />
-            {error && <p className={styles['error-message']}>{error}</p>}
-            <button type="submit">Guardar Antecedente</button>
-            <button 
-                type="button" 
-                onClick={onCancel} 
-                className={styles['modal-cancel-btn']}
-                style={{marginTop: '10px'}}
-            >
-                Cancelar
-            </button>
-        </form>
-    );
-};
-
-// Formulario para agregar un nuevo Análisis Funcional
-const AddAnalisisFuncionalForm = ({ onSave, onCancel }) => {
-    const [nombre, setNombre] = useState('');
-    const [error, setError] = useState('');
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!nombre.trim()) {
-            setError("El nombre del Análisis es obligatorio.");
-            return;
-        }
-        // SIMULACIÓN
-        const newAF = { id: Date.now(), nombre_analisis: nombre.trim() };
-        onSave(newAF);
-        setNombre('');
-        setError('');
-    };
-
-    return (
-        <form onSubmit={handleSubmit} className={styles.modalForm}>
-            <label htmlFor="af-nombre">Descripción del Análisis Funcional</label>
-            <input
-                id="af-nombre"
-                type="text"
-                value={nombre}
-                onChange={(e) => {setNombre(e.target.value); setError('');}}
-                placeholder="Ej: Obtención de atención, Evitar demanda, etc."
-                required
-            />
-            {error && <p className={styles['error-message']}>{error}</p>}
-            <button type="submit">Guardar Análisis Funcional</button>
-            <button 
-                type="button" 
-                onClick={onCancel} 
-                className={styles['modal-cancel-btn']}
-                style={{marginTop: '10px'}}
-            >
-                Cancelar
-            </button>
-        </form>
-    );
-};
 // =================================================================
 
 
@@ -225,6 +223,96 @@ export default function PacientesForm({
     useEffect(() => {
         setFormData(getInitialState(initialData));
     }, [initialData]);
+
+    // ==========================================================
+    // FUNCIONES CRUD PARA LAS LISTAS MAESTRAS
+    // ==========================================================
+    
+    /**
+     * Función genérica para manipular cualquier lista maestra (Agregar, Editar, Eliminar).
+     * @param {string} listType - Tipo de lista ('os', 'antecedentes', 'analisisFuncional').
+     * @param {string} action - Acción a realizar ('add', 'edit', 'delete').
+     * @param {number | null} id - ID del elemento (solo para 'edit' y 'delete').
+     * @param {string | null} newName - Nuevo nombre (solo para 'add' y 'edit').
+     */
+    
+    const manipulateList = async (listType, action, id, newName) => {
+        let nameField = '';
+        let listStateSetter = null;
+        let createApi, updateApi, deleteApi;
+        let dataKey = {};
+        
+        // 1. Configuración de API y campos según el tipo de lista
+        if (listType === 'os') {
+            nameField = 'nombre_os';
+            listStateSetter = setCurrentObrasSociales;
+            createApi = createObraSocial;
+            updateApi = updateObraSocial;
+            deleteApi = deleteObraSocial;
+            dataKey = { nombre_os: newName };
+        } else if (listType === 'antecedentes') {
+            nameField = 'nombre_ant';
+            listStateSetter = setCurrentAntecedentes;
+            createApi = createAntecedente;
+            updateApi = updateAntecedente;
+            deleteApi = deleteAntecedente;
+            dataKey = { nombre_ant: newName };
+        } else if (listType === 'analisisFuncional') {
+            nameField = 'nombre_analisis';
+            listStateSetter = setCurrentAnalisisFuncional;
+            createApi = createAnalisisFuncional;
+            updateApi = updateAnalisisFuncional;
+            deleteApi = deleteAnalisisFuncional;
+            dataKey = { nombre_analisis: newName };
+        } else {
+            return; 
+        }
+
+        try {
+            // --- ADD (CREATE) ---
+            if (action === 'add') {
+                const newItem = await createApi(dataKey); // Llamada a la API
+                listStateSetter(prev => [...prev, newItem]);
+                alert(`Elemento "${newItem[nameField]}" creado con éxito.`);
+            }
+            
+            // --- EDIT (UPDATE) ---
+            else if (action === 'edit') {
+                const updatedItem = await updateApi(id, dataKey); // Llamada a la API
+                listStateSetter(prev => prev.map(item => 
+                    item.id === id ? updatedItem : item
+                ));
+                alert(`Elemento editado a "${updatedItem[nameField]}".`);
+            }
+
+            // --- DELETE ---
+            else if (action === 'delete') {
+                const confirmDelete = window.confirm("¿Está seguro de que desea eliminar este elemento? Esto afectará a los pacientes que lo tengan asociado.");
+                if (!confirmDelete) return;
+
+                await deleteApi(id); // Llamada a la API
+                listStateSetter(prev => prev.filter(item => item.id !== id));
+                
+                // Si es Antecedentes o Análisis Funcional, también desmarcar del paciente
+                if (listType === 'antecedentes') {
+                     setFormData(prevData => ({
+                        ...prevData,
+                        antecedentes_ids: prevData.antecedentes_ids.filter(antId => antId !== id)
+                    }));
+                } else if (listType === 'analisisFuncional') {
+                     setFormData(prevData => ({
+                        ...prevData,
+                        analisis_funcional_ids: prevData.analisis_funcional_ids.filter(afId => afId !== id)
+                    }));
+                }
+                alert("Elemento eliminado con éxito.");
+            }
+        } catch (error) {
+            console.error(`Error al ejecutar acción ${action} en ${listType}:`, error);
+            // Mostrar un mensaje de error al usuario
+            alert(`Error: No se pudo completar la operación (${action}). Revise la consola.`);
+        }
+    };
 
     // ==========================================================
     // FUNCIONES HANDLESAVE PARA LOS NUEVOS ITEMS
@@ -726,20 +814,22 @@ export default function PacientesForm({
 
             <button type="submit">{isEditing? 'Guardar cambios' : 'Registrar paciente'}</button>
 
-
-            {/* ======================================================== */}
-            {/* RENDERIZADO DE LOS MODALES */}
+{/* ======================================================== */}
+            {/* RENDERIZADO DE LOS MODALES (AHORA CON LISTMANAGER) */}
             {/* ======================================================== */}
 
             {/* Modal para Obra Social */}
             <ModalAdd
                 isOpen={isOsModalOpen}
                 onClose={() => setIsOsModalOpen(false)}
-                title="Agregar Nueva Obra Social a la Lista"
+                title="Administrar Obras Sociales"
             >
-                <AddOsForm 
-                    onSave={handleSaveNewOs} 
-                    onCancel={() => setIsOsModalOpen(false)} 
+                <ListManagerContent 
+                    list={currentObrasSociales}
+                    nameField="nombre_os"
+                    onAdd={(name) => manipulateList('os', 'add', null, name)}
+                    onEdit={(id, name) => manipulateList('os', 'edit', id, name)}
+                    onDelete={(id) => manipulateList('os', 'delete', id)}
                 />
             </ModalAdd>
 
@@ -747,11 +837,14 @@ export default function PacientesForm({
             <ModalAdd
                 isOpen={isAntecedenteModalOpen}
                 onClose={() => setIsAntecedenteModalOpen(false)}
-                title="Agregar Nuevo Antecedente"
+                title="Administrar Antecedentes"
             >
-                <AddAntecedenteForm 
-                    onSave={handleSaveNewAntecedente} 
-                    onCancel={() => setIsAntecedenteModalOpen(false)} 
+                <ListManagerContent 
+                    list={currentAntecedentes}
+                    nameField="nombre_ant"
+                    onAdd={(name) => manipulateList('antecedentes', 'add', null, name)}
+                    onEdit={(id, name) => manipulateList('antecedentes', 'edit', id, name)}
+                    onDelete={(id) => manipulateList('antecedentes', 'delete', id)}
                 />
             </ModalAdd>
             
@@ -759,11 +852,14 @@ export default function PacientesForm({
             <ModalAdd
                 isOpen={isAnalisisFuncionalModalOpen}
                 onClose={() => setIsAnalisisFuncionalModalOpen(false)}
-                title="Agregar Nuevo Análisis Funcional"
+                title="Administrar Análisis Funcional"
             >
-                <AddAnalisisFuncionalForm 
-                    onSave={handleSaveNewAnalisisFuncional} 
-                    onCancel={() => setIsAnalisisFuncionalModalOpen(false)} 
+                <ListManagerContent 
+                    list={currentAnalisisFuncional}
+                    nameField="nombre_analisis"
+                    onAdd={(name) => manipulateList('analisisFuncional', 'add', null, name)}
+                    onEdit={(id, name) => manipulateList('analisisFuncional', 'edit', id, name)}
+                    onDelete={(id) => manipulateList('analisisFuncional', 'delete', id)}
                 />
             </ModalAdd>
 
