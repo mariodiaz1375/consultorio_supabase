@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { getPacientes, createPaciente, getGeneros, getAntecedentes, getAnalisisFuncional, getObrasSociales, updatePaciente } from '../../api/pacientes.api'; 
 import styles from './PacientesList.module.css';
 import PacientesForm from '../pacientesForm/PacientesForm';
@@ -23,6 +23,31 @@ export default function PacientesList() {
   const isCreating = showForm && !editingPaciente;
   const [viewingDetail, setViewingDetail] = useState(null);
   const [activo, setActivo] = useState(true);
+  // se agrega MasterOptions para poder actulizar el formulario cuando cambia la lista de
+  // antecedentes, os o analisis f.
+  const loadMasterOptions = useCallback(async () => {
+        try {
+            const [
+                generosData, 
+                antecedentesData, 
+                analisisFuncionalData, 
+                obrasSocialesData
+            ] = await Promise.all([
+                getGeneros(),
+                getAntecedentes(),
+                getAnalisisFuncional(),
+                getObrasSociales(),
+            ]);
+
+            setGeneros(generosData);
+            setAntecedentesOptions(antecedentesData);
+            setAnalisisFuncionalOptions(analisisFuncionalData);
+            setObrasSocialesOptions(obrasSocialesData);
+            
+        } catch (error) {
+            console.error("Error al cargar las opciones maestras:", error);
+        }
+    }, []);
 
   const toggleSwitch = () => {
     // Usamos el valor previo para invertirlo
@@ -81,27 +106,11 @@ export default function PacientesList() {
   };
 
   // cargar todas las opciones del formulario
-  const fetchOptions = async () => {
-    try {
-        const [generosData, antecedentesData, analisisData, obrasSocialesData] = await Promise.all([
-            getGeneros(), 
-            getAntecedentes(), 
-            getAnalisisFuncional(),
-            getObrasSociales()
-        ]);
-        setGeneros(generosData);
-        setAntecedentesOptions(antecedentesData);
-        setAnalisisFuncionalOptions(analisisData);
-        setObrasSocialesOptions(obrasSocialesData);
-    } catch (error) {
-        console.error('Error al cargar las opciones del formulario:', error);
-    }
-  }
+
 
   useEffect(() => {
     fetchPacientes();
-    fetchOptions(); // Cargar opciones al montar el componente
-
+    loadMasterOptions();
     // aqui cargamos la user info desde localstorage realizado en el dashboard
     const storedUserInfo = localStorage.getItem('user_info');
     if (storedUserInfo) {
@@ -111,7 +120,7 @@ export default function PacientesList() {
             console.error("Error al analizar user_info desde localStorage:", e);
         }
     }
-  }, []);
+  }, [loadMasterOptions]);
 
   const handleFormSubmit = async (pacienteData) => {
       try {
@@ -185,6 +194,7 @@ export default function PacientesList() {
               isEditing={isEditing}
               checkDniUniqueness={checkDniUniqueness}
               userRole= {userRole}
+              onMasterListChange={loadMasterOptions}
           />
       </div>
     );

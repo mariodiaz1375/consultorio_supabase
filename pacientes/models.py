@@ -56,7 +56,7 @@ class Pacientes(models.Model):
     antecedentes = models.ManyToManyField(
         Antecedentes, 
         related_name='pacientes',
-        blank=True
+        blank=True,
         )
     analisis_funcional = models.ManyToManyField(
         AnalisisFuncional, 

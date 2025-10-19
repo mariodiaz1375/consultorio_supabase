@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated # Si quieres proteger las vistas
 
 # Importar modelos y serializers. Asegúrate de que los serializers existan en pacientes/serializers.py
@@ -97,6 +97,23 @@ class AntecedentesDetail(generics.RetrieveUpdateDestroyAPIView): # 🚨 NUEVA VI
     queryset = Antecedentes.objects.all()
     serializer_class = AntecedentesSerializer
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        
+        # 🚨 LÓGICA DE PROTECCIÓN 🚨
+        # Verifica si hay algún paciente relacionado
+        if instance.pacientes.exists():
+            # Si hay relaciones, devuelve un error 400 o 409
+            return Response(
+                {"detail": "No se puede eliminar este antecedente porque está asociado a uno o más pacientes."},
+                status=status.HTTP_400_BAD_REQUEST 
+                # Se usa 400 (Bad Request) o 409 (Conflict), no el 405 original
+            )
+
+        # Si no hay relaciones, procede con la eliminación
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 # Vistas CRUD para Análisis Funcional
 class AnalisisFuncionalList(generics.ListCreateAPIView): # 🚨 CAMBIO A ListCreateAPIView
     queryset = AnalisisFuncional.objects.all()
@@ -105,6 +122,22 @@ class AnalisisFuncionalList(generics.ListCreateAPIView): # 🚨 CAMBIO A ListCre
 class AnalisisFuncionalDetail(generics.RetrieveUpdateDestroyAPIView): # 🚨 NUEVA VISTA para RUD
     queryset = AnalisisFuncional.objects.all()
     serializer_class = AnalisisFuncionalSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        
+        # 🚨 LÓGICA DE PROTECCIÓN 🚨
+        # Verifica si hay algún paciente relacionado
+        if instance.pacientes.exists():
+            # Si hay relaciones, devuelve un error 400
+            return Response(
+                {"detail": "No se puede eliminar este análisis funcional porque está asociado a uno o más pacientes."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Si no hay relaciones, procede con la eliminación
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 # Vistas CRUD para Obras Sociales
 class ObrasSocialesList(generics.ListCreateAPIView): # 🚨 CAMBIO A ListCreateAPIView

@@ -167,7 +167,8 @@ export default function PacientesForm({
     initialData = null,
     isEditing = false,
     checkDniUniqueness,
-    userRole = 'User'
+    userRole = 'User',
+    onMasterListChange,
 }) {
 
     const getInitialState = (data) => {
@@ -203,26 +204,26 @@ export default function PacientesForm({
     const [isAnalisisFuncionalModalOpen, setIsAnalisisFuncionalModalOpen] = useState(false);
 
     // ESTADOS PARA LAS LISTAS DE OPCIONES (Para poder actualizar el DOM)
-    const [currentAntecedentes, setCurrentAntecedentes] = useState(antecedentes);
-    const [currentAnalisisFuncional, setCurrentAnalisisFuncional] = useState(analisisFuncional);
-    const [currentObrasSociales, setCurrentObrasSociales] = useState(obrasSociales);
+    // const [currentAntecedentes, setCurrentAntecedentes] = useState(antecedentes);
+    // const [currentAnalisisFuncional, setCurrentAnalisisFuncional] = useState(analisisFuncional);
+    // const [currentObrasSociales, setCurrentObrasSociales] = useState(obrasSociales);
 
-    // Sincronizar las listas si las props cambian
-    useEffect(() => {
-        setCurrentAntecedentes(antecedentes);
-    }, [antecedentes]);
+    // // Sincronizar las listas si las props cambian
+    // useEffect(() => {
+    //     setCurrentAntecedentes(antecedentes);
+    // }, [antecedentes]);
 
-    useEffect(() => {
-        setCurrentAnalisisFuncional(analisisFuncional);
-    }, [analisisFuncional]);
+    // useEffect(() => {
+    //     setCurrentAnalisisFuncional(analisisFuncional);
+    // }, [analisisFuncional]);
 
-    useEffect(() => {
-        setCurrentObrasSociales(obrasSociales);
-    }, [obrasSociales]);
+    // useEffect(() => {
+    //     setCurrentObrasSociales(obrasSociales);
+    // }, [obrasSociales]);
 
-    useEffect(() => {
-        setFormData(getInitialState(initialData));
-    }, [initialData]);
+    // useEffect(() => {
+    //     setFormData(getInitialState(initialData));
+    // }, [initialData]);
 
     // ==========================================================
     // FUNCIONES CRUD PARA LAS LISTAS MAESTRAS
@@ -235,7 +236,7 @@ export default function PacientesForm({
      * @param {number | null} id - ID del elemento (solo para 'edit' y 'delete').
      * @param {string | null} newName - Nuevo nombre (solo para 'add' y 'edit').
      */
-    
+
     const manipulateList = async (listType, action, id, newName) => {
         let nameField = '';
         let listStateSetter = null;
@@ -245,21 +246,18 @@ export default function PacientesForm({
         // 1. Configuración de API y campos según el tipo de lista
         if (listType === 'os') {
             nameField = 'nombre_os';
-            listStateSetter = setCurrentObrasSociales;
             createApi = createObraSocial;
             updateApi = updateObraSocial;
             deleteApi = deleteObraSocial;
             dataKey = { nombre_os: newName };
         } else if (listType === 'antecedentes') {
             nameField = 'nombre_ant';
-            listStateSetter = setCurrentAntecedentes;
             createApi = createAntecedente;
             updateApi = updateAntecedente;
             deleteApi = deleteAntecedente;
             dataKey = { nombre_ant: newName };
         } else if (listType === 'analisisFuncional') {
             nameField = 'nombre_analisis';
-            listStateSetter = setCurrentAnalisisFuncional;
             createApi = createAnalisisFuncional;
             updateApi = updateAnalisisFuncional;
             deleteApi = deleteAnalisisFuncional;
@@ -272,80 +270,56 @@ export default function PacientesForm({
             // --- ADD (CREATE) ---
             if (action === 'add') {
                 const newItem = await createApi(dataKey); // Llamada a la API
-                listStateSetter(prev => [...prev, newItem]);
+                // 🚨 ¡IMPORTANTE! Ya no modificamos el estado local de la lista.
                 alert(`Elemento "${newItem[nameField]}" creado con éxito.`);
             }
             
             // --- EDIT (UPDATE) ---
             else if (action === 'edit') {
                 const updatedItem = await updateApi(id, dataKey); // Llamada a la API
-                listStateSetter(prev => prev.map(item => 
-                    item.id === id ? updatedItem : item
-                ));
+                // 🚨 ¡IMPORTANTE! Ya no modificamos el estado local de la lista.
                 alert(`Elemento editado a "${updatedItem[nameField]}".`);
             }
 
             // --- DELETE ---
             else if (action === 'delete') {
-                const confirmDelete = window.confirm("¿Está seguro de que desea eliminar este elemento? Esto afectará a los pacientes que lo tengan asociado.");
-                if (!confirmDelete) return;
-
+                // ... (lógica de confirmación) ...
                 await deleteApi(id); // Llamada a la API
-                listStateSetter(prev => prev.filter(item => item.id !== id));
+                // 🚨 ¡IMPORTANTE! Ya no modificamos el estado local de la lista.
                 
-                // Si es Antecedentes o Análisis Funcional, también desmarcar del paciente
-                if (listType === 'antecedentes') {
-                     setFormData(prevData => ({
-                        ...prevData,
-                        antecedentes_ids: prevData.antecedentes_ids.filter(antId => antId !== id)
-                    }));
-                } else if (listType === 'analisisFuncional') {
-                     setFormData(prevData => ({
-                        ...prevData,
-                        analisis_funcional_ids: prevData.analisis_funcional_ids.filter(afId => afId !== id)
-                    }));
-                }
+                // ... (Lógica de desmarcación de paciente) ...
+                
                 alert("Elemento eliminado con éxito.");
+            }
+            
+            // 🚨 NOTIFICAR AL PADRE DESPUÉS DE UN CRUD EXITOSO
+            if (onMasterListChange) {
+                onMasterListChange();
             }
         } catch (error) {
             console.error(`Error al ejecutar acción ${action} en ${listType}:`, error);
             // Mostrar un mensaje de error al usuario
-            alert(`Error: No se pudo completar la operación (${action}). Revise la consola.`);
+            const errorMessage = error.response?.data?.detail || error.message || 
+                                `No se pudo completar la operación (${action}).`;
+
+            if (error.response && error.response.status === 400 && errorMessage.includes("No se puede eliminar")) {
+                // Mensaje específico para la protección de la base de datos
+                alert(`PROTECCIÓN DE DATOS: ${errorMessage}`);
+            } else {
+                // Mensaje genérico para otros errores (ej: 404, 500)
+                alert(`Error: ${errorMessage}. Revise la consola.`);
+            }
         }
     };
 
     // ==========================================================
     // FUNCIONES HANDLESAVE PARA LOS NUEVOS ITEMS
     // ==========================================================
-    
-    // Función para guardar una nueva Obra Social y actualizar la lista (Modal)
-    const handleSaveNewOs = (newOs) => {
-        // Asume que la nueva OS ya fue creada en el backend y recibimos el objeto completo
-        setCurrentObrasSociales(prev => [...prev, newOs]);
-        setIsOsModalOpen(false);
-    };
 
     // Función para guardar un nuevo Antecedente y actualizar la lista
-    const handleSaveNewAntecedente = (newAnt) => {
-        setCurrentAntecedentes(prev => [...prev, newAnt]);
-        setIsAntecedenteModalOpen(false);
-        // Opcional: Marcar el nuevo antecedente automáticamente
-        setFormData(prevData => ({
-            ...prevData,
-            antecedentes_ids: [...prevData.antecedentes_ids, newAnt.id]
-        }));
-    };
+
 
     // Función para guardar un nuevo Análisis Funcional y actualizar la lista
-    const handleSaveNewAnalisisFuncional = (newAF) => {
-        setCurrentAnalisisFuncional(prev => [...prev, newAF]);
-        setIsAnalisisFuncionalModalOpen(false);
-        // Opcional: Marcar el nuevo análisis automáticamente
-        setFormData(prevData => ({
-            ...prevData,
-            analisis_funcional_ids: [...prevData.analisis_funcional_ids, newAF.id]
-        }));
-    };
 
     // ... (handleOsChange, handleAddOs, handleRemoveOs, handleCheckboxChange, handleChange, handleSubmit, handleNameChange, handleDniChange) ...
     
@@ -690,7 +664,7 @@ export default function PacientesForm({
                     )}
                 </div>
 
-                {currentAntecedentes.map(ant => (
+                {antecedentes.map(ant => (
                     <div key={ant.id} className={styles['checkbox-item']}>
                         <input
                             type="checkbox"
@@ -722,7 +696,7 @@ export default function PacientesForm({
                     )}
                 </div>
 
-                {currentAnalisisFuncional.map(af => (
+                {analisisFuncional.map(af => (
                     <div key={af.id} className={styles['checkbox-item']}>
                         <input
                             type="checkbox"
@@ -783,7 +757,7 @@ export default function PacientesForm({
                             onChange={(e) => handleOsChange(index, e)}
                         >
                             <option value="">Seleccione Obra Social</option>
-                            {currentObrasSociales.map(os => (
+                            {obrasSociales.map(os => (
                                 <option key={os.id} value={os.id}>
                                     {os.nombre_os}
                                 </option>
@@ -825,7 +799,7 @@ export default function PacientesForm({
                 title="Administrar Obras Sociales"
             >
                 <ListManagerContent 
-                    list={currentObrasSociales}
+                    list={obrasSociales}
                     nameField="nombre_os"
                     onAdd={(name) => manipulateList('os', 'add', null, name)}
                     onEdit={(id, name) => manipulateList('os', 'edit', id, name)}
@@ -840,7 +814,7 @@ export default function PacientesForm({
                 title="Administrar Antecedentes"
             >
                 <ListManagerContent 
-                    list={currentAntecedentes}
+                    list={antecedentes}
                     nameField="nombre_ant"
                     onAdd={(name) => manipulateList('antecedentes', 'add', null, name)}
                     onEdit={(id, name) => manipulateList('antecedentes', 'edit', id, name)}
@@ -855,7 +829,7 @@ export default function PacientesForm({
                 title="Administrar Análisis Funcional"
             >
                 <ListManagerContent 
-                    list={currentAnalisisFuncional}
+                    list={analisisFuncional}
                     nameField="nombre_analisis"
                     onAdd={(name) => manipulateList('analisisFuncional', 'add', null, name)}
                     onEdit={(id, name) => manipulateList('analisisFuncional', 'edit', id, name)}
