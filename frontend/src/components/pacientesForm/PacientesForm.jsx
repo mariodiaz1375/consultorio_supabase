@@ -564,6 +564,36 @@ export default function PacientesForm({
         }
     };
 
+    useEffect(() => {
+        // Solo aplica si estamos editando un paciente
+        if (initialData) {
+            // Re-aplicamos getInitialState para que filtre las OS borradas
+            const updatedFormData = getInitialState(initialData);
+
+            // 💡 Lógica de Sincronización Clave: 
+            // 1. Filtra las afiliaciones de OS para eliminar las que ya no existen
+            //    en la lista maestra 'obrasSociales'.
+            const osIdsExistentes = new Set(obrasSociales.map(os => os.id));
+            
+            updatedFormData.os_pacientes_data = updatedFormData.os_pacientes_data.filter(osItem => 
+                osIdsExistentes.has(osItem.os_id)
+            );
+
+            // 2. Filtra IDs de Antecedentes/Análisis si es necesario (opcional, pero buena práctica)
+            const antIdsExistentes = new Set(antecedentes.map(ant => ant.id));
+            updatedFormData.antecedentes_ids = updatedFormData.antecedentes_ids.filter(id => antIdsExistentes.has(id));
+
+            const afIdsExistentes = new Set(analisisFuncional.map(af => af.id));
+            updatedFormData.analisis_funcional_ids = updatedFormData.analisis_funcional_ids.filter(id => afIdsExistentes.has(id));
+            
+            // 3. Actualiza el estado del formulario con los datos filtrados
+            setFormData(updatedFormData);
+        }
+    // 💡 DEPENDENCIAS: Se ejecuta cada vez que las listas maestras cambian.
+    // Esto sucede cuando PacientesList llama a loadMasterOptions.
+    }, [obrasSociales, antecedentes, analisisFuncional, initialData]);
+
+
     return (
         <form onSubmit={handleSubmit} className={styles['pacientes-form']}> 
             
