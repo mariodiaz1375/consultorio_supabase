@@ -40,7 +40,7 @@ const ListManagerContent = ({
     nameField, // Campo del nombre (ej: 'nombre_os')
     onAdd, 
     onEdit, 
-    onDelete, 
+    onDelete,
 }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState(null);
@@ -755,6 +755,7 @@ export default function PacientesForm({
                             name="os_id" 
                             value={osItem.os_id} 
                             onChange={(e) => handleOsChange(index, e)}
+                            required
                         >
                             <option value="">Seleccione Obra Social</option>
                             {obrasSociales.map(os => (
@@ -788,7 +789,7 @@ export default function PacientesForm({
 
             <button type="submit">{isEditing? 'Guardar cambios' : 'Registrar paciente'}</button>
 
-{/* ======================================================== */}
+            {/* ======================================================== */}
             {/* RENDERIZADO DE LOS MODALES (AHORA CON LISTMANAGER) */}
             {/* ======================================================== */}
 
