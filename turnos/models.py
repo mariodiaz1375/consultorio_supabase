@@ -59,7 +59,7 @@ class Turnos(models.Model):
     odontologo = models.ForeignKey(Personal, on_delete=models.PROTECT)
     paciente = models.ForeignKey(Pacientes, on_delete=models.PROTECT)
     fecha_turno = models.DateField(verbose_name='Fecha')
-    horario_turno = models.ForeignKey(HorarioFijo, on_delete=models.PROTECT, verbose_name='Hora')
+    horario_turno = models.ForeignKey(HorarioFijo, on_delete=models.PROTECT, verbose_name='Hora', null=True, blank=True)
     estado_turno = models.ForeignKey(EstadosTurnos, on_delete=models.PROTECT)
     motivo = models.TextField(blank=True, null=True, verbose_name='Motivo del Turno')
 
