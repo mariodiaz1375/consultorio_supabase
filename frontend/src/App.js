@@ -13,6 +13,7 @@ import ProtectedRoute from './components/Auth/ProtectedRoute'; // ✅
 import PacientesPagina from './pages/pacientesPagina/PacientesPagina';
 import PersonalPagina from './pages/personalPagina/PersonalPagina';
 import RoleProtectedRoute from './components/Auth/RoleProtectedRoute';
+import TurnosPagina from './pages/turnosPagina/TurnosPagina';
 
 
 function App() {
@@ -37,6 +38,11 @@ function App() {
           <RoleProtectedRoute allowedRoles={['Admin']}>
             <PersonalPagina />
           </RoleProtectedRoute>
+          </ProtectedRoute>
+        } />
+        <Route path="/turnos" element={
+          <ProtectedRoute>
+            <TurnosPagina />
           </ProtectedRoute>
         } />
         <Route path="/" element={<Login />} />

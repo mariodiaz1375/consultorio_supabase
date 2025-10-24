@@ -1,0 +1,98 @@
+/* ======================================================= */
+/* Contenedor Principal del Formulario */
+/* ======================================================= */
+.turnos-form {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Encabezado */
+.turnos-form h3 {
+    color: #2c3e50;
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #27ae60;
+}
+
+/* Estilos para etiquetas y espaciado */
+.turnos-form label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #34495e;
+}
+
+/* Campos de entrada (input, select, textarea) */
+.turnos-form input[type="date"],
+.turnos-form select,
+.turnos-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px; /* Espacio después de cada campo */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Asegura que el padding no aumente el ancho */
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Efecto de foco para los campos */
+.turnos-form input:focus,
+.turnos-form select:focus,
+.turnos-form textarea:focus {
+    border-color: #27ae60;
+    outline: none;
+    box-shadow: 0 0 5px rgba(39, 174, 96, 0.4);
+}
+
+/* ======================================================= */
+/* Botón de Envío */
+/* ======================================================= */
+.turnos-form button[type="submit"] {
+    display: block;
+    width: 100%;
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-top: 25px;
+}
+
+.turnos-form button[type="submit"]:hover {
+    background-color: #2ecc71; /* Un verde más claro al pasar el ratón */
+    transform: translateY(-1px);
+}
+
+.turnos-form button[type="submit"]:active {
+    background-color: #1e8449; /* Verde oscuro al hacer clic */
+    transform: translateY(0);
+}
+
+/* ======================================================= */
+/* Estilos de Error */
+/* ======================================================= */
+.error {
+    color: #e74c3c; /* Rojo */
+    background-color: #fceae9;
+    border: 1px solid #e74c3c;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    text-align: center;
+}
