@@ -43,7 +43,7 @@ class Personal(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.dni} {self.nombre} {self.apellido}"
+        return f"{self.nombre} {self.apellido}"
     
     class Meta:
         verbose_name = 'Personal'

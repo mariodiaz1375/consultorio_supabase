@@ -84,7 +84,7 @@ export const deleteTurno = async (id) => {
 export const getHorariosFijos = async () => {
     try {
         // Asumiendo un endpoint: /api/turnos/horarios-fijos/
-        const response = await turnosApi.get('/horarios-fijos/'); 
+        const response = await turnosApi.get('/horarios/'); 
         return response.data;
     } catch (error) {
         console.error('Error al obtener la lista de Horarios Fijos:', error);
@@ -95,7 +95,18 @@ export const getHorariosFijos = async () => {
 export const getEstadosTurno = async () => {
     try {
         // Asumiendo un endpoint: /api/turnos/estados-turno/
-        const response = await turnosApi.get('/estados-turno/'); 
+        const response = await turnosApi.get('/estados/'); 
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener la lista de Estados de Turno:', error);
+        throw error;
+    }
+}
+
+export const getDiasSemana = async () => {
+    try {
+        // Asumiendo un endpoint: /api/turnos/estados-turno/
+        const response = await turnosApi.get('/dias/'); 
         return response.data;
     } catch (error) {
         console.error('Error al obtener la lista de Estados de Turno:', error);

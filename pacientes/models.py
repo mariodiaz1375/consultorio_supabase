@@ -67,7 +67,7 @@ class Pacientes(models.Model):
     activo = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.dni} {self.nombre} {self.apellido}"
+        return f"{self.nombre} {self.apellido}"
     
     @property
     def edad(self):

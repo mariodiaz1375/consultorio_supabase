@@ -1,10 +1,10 @@
 import React from 'react'
-import TurnosForm from '../../components/turnosForm/TurnosForm'
+import TurnosList from '../../components/turnosList/TurnosList'
 
 export default function TurnosPagina() {
   return (
     <div>
-        <TurnosForm />
+        <TurnosList />
     </div>
 
   )
