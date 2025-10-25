@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styles from './TurnosList.module.css';
-import TurnosForm from '../turnosForm/TurnosForm'; 
+import TurnosForm from '../turnosForm/TurnosForm';
+import TurnoCard from '../turnosCard/TurnosCard'; 
 // Importar APIs
 import { 
     getTurnos, createTurno, updateTurno, 
-    getHorariosFijos, getEstadosTurno 
+    getHorariosFijos 
 } from '../../api/turnos.api';
 import { getPacientes } from '../../api/pacientes.api'; 
 import { getPersonal } from '../../api/personal.api'; // Necesitas crear esta API
@@ -122,6 +123,7 @@ export default function TurnosList() {
                     horariosFijos={horariosFijosOptions}
                     initialData={editingTurno} // Pasamos la data mapeada
                     isEditing={isEditing}
+                    turnosExistentes={turnos}
                 />
                 {isEditing && (
                     <button 
@@ -155,37 +157,3 @@ export default function TurnosList() {
 }
 
 // **Componente TurnoCard CORREGIDO**
-const TurnoCard = ({ turno, onEditStart }) => {
-    // 🚨 CORRECCIÓN: Usamos las propiedades planas que proporciona tu API
-    const fecha = turno.fecha_turno; // La fecha ya viene como string YYYY-MM-DD
-    const hora = turno.horario_display || 'N/A';
-    const estado = turno.estado_nombre || 'Desconocido';
-    const paciente = turno.paciente_nombre || 'N/A';
-    const odontologo = turno.odontologo_nombre || 'N/A';
-    
-    // 🚨 CORRECCIÓN: Usamos estado.toLowerCase() directamente, ya que 'estado' es un string
-    const estadoClassName = `estado-${estado.toLowerCase().replace(/ /g, '-')}`; 
-    // .replace(/ /g, '-') es para manejar estados con espacios (ej: 'Libre X', 'Pendiente de Pago')
-
-    return (
-        <div className={styles['turno-card']}>
-            <div className={styles['turno-info']}>
-                <p className={styles['turno-fecha']}>📅 {fecha} - 🕒 {hora}</p>
-                <p>👤 **Paciente:** {paciente}</p>
-                <p>🧑‍⚕️ **Odontólogo:** {odontologo}</p>
-                {/* La línea corregida */}
-                <p className={styles[estadoClassName]}>
-                    **Estado:** {estado}
-                </p>
-            </div>
-            <div className={styles['turno-actions']}>
-                <button 
-                    className={styles['edit-btn']} 
-                    onClick={() => onEditStart(turno)}
-                >
-                    Editar
-                </button>
-            </div>
-        </div>
-    );
-};

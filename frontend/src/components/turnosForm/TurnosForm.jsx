@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 // 🚨 CORRECCIÓN 1: Debería apuntar a su propio archivo CSS
 import styles from './TurnosForm.module.css'; 
 // Importamos las funciones API necesarias para crear/editar
-import { createTurno, updateTurno } from '../../api/turnos.api'; 
 // 🚨 CORRECCIÓN 2: Eliminada la importación incorrecta de TurnoCard
 
 const initialFormData = {
@@ -26,9 +25,38 @@ export default function TurnosForm({
     horariosFijos = [], 
     initialData = null, 
     isEditing = false,
+    submissionError = null,
+    turnosExistentes = [],
 }) {
     const [formData, setFormData] = useState(initialFormData);
     const [error, setError] = useState('');
+
+    const horariosDisponibles = React.useMemo(() => {
+        const { paciente, odontologo, fecha_turno } = formData;
+        
+        // 1. Si no hay odontólogo y fecha, todos están disponibles (o ninguno)
+        if (!odontologo || !fecha_turno) {
+            return horariosFijos; // Mostrar todos si faltan datos clave
+        }
+
+        // 2. Encontrar los IDs de los horarios ya ocupados en la fecha y con el odontólogo
+        const horariosOcupadosIDs = turnosExistentes
+            .filter(turno => 
+                // Filtramos por la fecha seleccionada
+                turno.fecha_turno === fecha_turno && 
+                // Filtramos por el odontólogo seleccionado
+                turno.odontologo === odontologo &&
+                // IMPORTANTE: Permitir editar el turno actual sin que se filtre a sí mismo.
+                (!isEditing || turno.id !== initialData?.id)
+            )
+            .map(turno => turno.horario_turno); // Devolvemos solo el ID del horario
+
+        // 3. Filtrar la lista completa de horarios fijos
+        return horariosFijos.filter(horario => 
+            !horariosOcupadosIDs.includes(horario.id)
+        );
+
+    }, [formData.odontologo, formData.fecha_turno, horariosFijos, turnosExistentes, isEditing, initialData]);
 
     // Cargar datos iniciales para edición
     useEffect(() => {
@@ -120,11 +148,18 @@ export default function TurnosForm({
                 onChange={handleChange}
                 required
             >
-                <option value="">Seleccione Horario</option>
-                {horariosFijos.map(horario => (
-                    <option key={horario.id} value={horario.id}>
-                        {horario.hora} 
-                    </option>
+                <option value="">
+                {/* Mensaje dinámico */}
+                {formData.odontologo && formData.fecha_turno 
+                    ? 'Seleccione Horario Libre' 
+                    : 'Seleccione Odontólogo y Fecha primero'}
+                </option>
+        
+            {/* 🚨 USAR LA LISTA FILTRADA 🚨 */}
+            {horariosDisponibles.map(horario => (
+                <option key={horario.id} value={horario.id}>
+                {horario.hora} 
+                </option>
                 ))}
             </select>
             

@@ -66,4 +66,4 @@ class Turnos(models.Model):
     class Meta:
         verbose_name = 'Turno'
         verbose_name_plural = 'Turnos'
-        unique_together = ('odontologo', 'fecha_turno', 'horario_turno')
+        unique_together = ('odontologo', 'fecha_turno', 'horario_turno', 'paciente')
