@@ -5,7 +5,7 @@ import TurnoCard from '../turnosCard/TurnosCard';
 // Importar APIs
 import { 
     getTurnos, createTurno, updateTurno, 
-    getHorariosFijos 
+    getHorariosFijos, deleteTurno
 } from '../../api/turnos.api';
 import { getPacientes } from '../../api/pacientes.api'; 
 import { getPersonal } from '../../api/personal.api'; // Necesitas crear esta API
@@ -39,10 +39,23 @@ export default function TurnosList() {
                 getPersonal(), 
                 getHorariosFijos(),
             ]);
+            const filteredOdontologos = odontologosData.filter(miembro => {
+                // Condición: Es ACTIVO Y (Es Odontólogo O Es Admin)
+                return miembro.activo === true && (
+                    miembro.puesto_info.nombre_puesto === 'Odontólogo/a' || miembro.puesto_info.nombre_puesto === 'Admin'
+                );
+            });
+            
+            // =========================================================
+            // 🚨 CORRECCIÓN 2: FILTRADO DE PACIENTES (Solo Activos)
+            // =========================================================
+            const filteredPacientes = pacientesData.filter(paciente => 
+                paciente.activo === true
+            );
 
             setTurnos(turnosData);
-            setPacientesOptions(pacientesData);
-            setOdontologosOptions(odontologosData);
+            setPacientesOptions(filteredPacientes);
+            setOdontologosOptions(filteredOdontologos);
             setHorariosFijosOptions(horariosData);
 
         } catch (err) {
@@ -81,22 +94,17 @@ export default function TurnosList() {
         }
     };
 
-    // Función para mapear el Turno (de la API) a la estructura del Formulario
-    const handleEditStart = (turno) => {
-        // Mapeamos los campos de visualización de la API (ej: 'paciente_nombre')
-        // a los campos de ID que necesita el formulario para el selector (ej: 'paciente_id')
-        setEditingTurno({
-            id: turno.id,
-            paciente_id: turno.paciente, // Usamos el ID
-            odontologo_id: turno.odontologo, // Usamos el ID
-            horario_turno_id: turno.horario_turno, // Usamos el ID
-            fecha_turno: turno.fecha_turno,
-            motivo: turno.motivo || '', // Asume que agregaste 'motivo' a la API
-        });
-    };
-
-    const handleCancelEdit = () => {
-        setEditingTurno(null);
+    const handleDelete = async (id) => {
+        try {
+            await deleteTurno(id);
+            
+            // Recargar la lista y resetear cualquier edición pendiente
+            await loadData(); 
+            setEditingTurno(null); 
+        } catch (err) {
+            console.error("Error al eliminar el turno:", err.response?.data || err);
+            alert("Hubo un error al eliminar el turno. Intente nuevamente.");
+        }
     };
 
     // ========================================================
@@ -125,14 +133,6 @@ export default function TurnosList() {
                     isEditing={isEditing}
                     turnosExistentes={turnos}
                 />
-                {isEditing && (
-                    <button 
-                        className={styles['cancel-edit-btn']} 
-                        onClick={handleCancelEdit}
-                    >
-                        Cancelar Edición
-                    </button>
-                )}
             </div>
 
             {/* -------------------- COLUMNA DERECHA: LISTA -------------------- */}
@@ -146,7 +146,7 @@ export default function TurnosList() {
                             <TurnoCard 
                                 key={turno.id} 
                                 turno={turno} 
-                                onEditStart={handleEditStart}
+                                onDelete={handleDelete}
                             />
                         ))
                     )}

@@ -6,6 +6,20 @@ import styles from './TurnosForm.module.css';
 // Importamos las funciones API necesarias para crear/editar
 // 🚨 CORRECCIÓN 2: Eliminada la importación incorrecta de TurnoCard
 
+    // 💡 Función auxiliar para obtener la fecha de hoy en formato YYYY-MM-DD
+const getTodayDateString = () => {
+    const today = new Date();
+    // Obtener las partes
+    const year = today.getFullYear();
+    // Sumamos 1 a getMonth() porque es base 0 (Enero=0). Agregamos '0' si es necesario.
+    const month = String(today.getMonth() + 1).padStart(2, '0'); 
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+};
+
+const TODAY_DATE = getTodayDateString(); 
+
 const initialFormData = {
     // 1. Foreign Keys - se envían como IDs
     paciente: '',
@@ -14,7 +28,7 @@ const initialFormData = {
     estado_turno: '3',
 
     // 2. Campos de datos
-    fecha_turno: '',
+    fecha_turno: TODAY_DATE,
     motivo: '',
 };
 
@@ -138,9 +152,21 @@ export default function TurnosForm({
                 ))}
             </select>
 
+            
+            {/* Campo FECHA */}
+            <label htmlFor="fecha_turno">Fecha (*)</label>
+            <input
+                id="fecha_turno"
+                type="date"
+                name="fecha_turno"
+                value={formData.fecha_turno}
+                onChange={handleChange}
+                min={TODAY_DATE}
+                required
+            />
 
-            {/* Selector de HORARIO */}
-            <label htmlFor="horario_turno">Horario (*)</label>
+                {/* Selector de HORARIO */}
+             <label htmlFor="horario_turno">Horario (*)</label>
             <select
                 id="horario_turno"
                 name="horario_turno" // 🚨 CORREGIDO
@@ -162,17 +188,6 @@ export default function TurnosForm({
                 </option>
                 ))}
             </select>
-            
-            {/* Campo FECHA */}
-            <label htmlFor="fecha_turno">Fecha (*)</label>
-            <input
-                id="fecha_turno"
-                type="date"
-                name="fecha_turno"
-                value={formData.fecha_turno}
-                onChange={handleChange}
-                required
-            />
 
             {/* Campo MOTIVO */}
             <label htmlFor="motivo">Motivo / Notas</label>

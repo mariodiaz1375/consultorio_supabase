@@ -76,8 +76,8 @@
     transition: background-color 0.3s;
 }
 
-.edit-btn {
-    background-color: #3498db; /* Azul */
+.delete-btn {
+    background-color: #e74c3c; /* Azul */
     color: white;
     border: none;
 }
