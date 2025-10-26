@@ -21,6 +21,10 @@ export default function TurnosList() {
     const [odontologosOptions, setOdontologosOptions] = useState([]);
     const [horariosFijosOptions, setHorariosFijosOptions] = useState([]);
 
+    const [filterDate, setFilterDate] = useState('');      // Para filtrar por fecha
+    const [filterOdontologo, setFilterOdontologo] = useState(''); // Para filtrar por odontólogo ID
+    const [filterPaciente, setFilterPaciente] = useState('');   // Para filtrar por paciente ID
+
     const isEditing = !!editingTurno;
 
     // ========================================================
@@ -107,6 +111,48 @@ export default function TurnosList() {
         }
     };
 
+    const filteredTurnos = React.useMemo(() => {
+        return turnos.filter(turno => {
+            let matches = true;
+
+            // Filtro por Fecha (YYYY-MM-DD)
+            if (filterDate) {
+                // Asume que la fecha del turno ya está en formato YYYY-MM-DD
+                matches = matches && (turno.fecha_turno === filterDate);
+            }
+
+            // Filtro por Odontólogo (ID)
+            if (filterOdontologo) {
+                // Compara el ID del odontólogo (que asumimos es un número)
+                // Usamos == para comparación flexible si los tipos son distintos (string vs number)
+                matches = matches && (String(turno.odontologo) === filterOdontologo);
+            }
+
+            // Filtro por Paciente (ID)
+            if (filterPaciente) {
+                // Compara el ID del paciente
+                matches = matches && (String(turno.paciente) === filterPaciente);
+            }
+
+            return matches;
+        });
+    }, [turnos, filterDate, filterOdontologo, filterPaciente]);
+
+    // ========================================================
+    // 3. MANEJADORES DE CAMBIOS DE FILTRO
+    // ========================================================
+
+    const handleFilterChange = (setter) => (e) => {
+        setter(e.target.value);
+    };
+    
+    // Función para limpiar todos los filtros
+    const handleClearFilters = () => {
+        setFilterDate('');
+        setFilterOdontologo('');
+        setFilterPaciente('');
+    };
+
     // ========================================================
     // 3. RENDERIZADO
     // ========================================================
@@ -137,12 +183,60 @@ export default function TurnosList() {
 
             {/* -------------------- COLUMNA DERECHA: LISTA -------------------- */}
             <div className={styles['list-column']}>
-                <h2>Próximos Turnos ({turnos.length})</h2>
+
+                {/* ======================= 🚨 CONTROLES DE FILTRO 🚨 ======================= */}
+                <div className={styles['filter-bar']}>
+                    <h3>Filtrar Turnos</h3>
+
+                    {/* 1. FILTRO POR FECHA */}
+                    <input
+                        type="date"
+                        value={filterDate}
+                        onChange={handleFilterChange(setFilterDate)}
+                        className={styles['filter-input']}
+                    />
+
+                    {/* 2. FILTRO POR ODONTÓLOGO */}
+                    <select
+                        value={filterOdontologo}
+                        onChange={handleFilterChange(setFilterOdontologo)}
+                        className={styles['filter-select']}
+                    >
+                        <option value="">Todos los Odontólogos</option>
+                        {odontologosOptions.map(o => (
+                            <option key={o.id} value={o.id}>
+                                {`${o.nombre} ${o.apellido}`}
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* 3. FILTRO POR PACIENTE */}
+                    <select
+                        value={filterPaciente}
+                        onChange={handleFilterChange(setFilterPaciente)}
+                        className={styles['filter-select']}
+                    >
+                        <option value="">Todos los Pacientes</option>
+                        {pacientesOptions.map(p => (
+                            <option key={p.id} value={p.id}>
+                                {`${p.nombre} ${p.apellido}`}
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* Botón para limpiar filtros */}
+                    <button onClick={handleClearFilters} className={styles['clear-btn']}>
+                        Limpiar Filtros
+                    </button>
+                </div>
+                {/* ======================================================================= */}
+
+                <h2>Próximos Turnos ({filteredTurnos.length})</h2>
                 <div className={styles['turnos-list']}>
-                    {turnos.length === 0 ? (
-                        <p>No hay turnos registrados.</p>
+                    {filteredTurnos.length === 0 ? (
+                        <p>No hay turnos registrados que coincidan con los filtros.</p>
                     ) : (
-                        turnos.map(turno => (
+                        filteredTurnos.map(turno => (
                             <TurnoCard 
                                 key={turno.id} 
                                 turno={turno} 
