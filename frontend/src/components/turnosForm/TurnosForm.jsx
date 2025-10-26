@@ -42,6 +42,8 @@ export default function TurnosForm({
     submissionError = null,
     turnosExistentes = [],
 }) {
+
+    const [searchTerm, setSearchTerm] = useState('');
     const [formData, setFormData] = useState(initialFormData);
     const [error, setError] = useState('');
 
@@ -71,6 +73,33 @@ export default function TurnosForm({
         );
 
     }, [formData.odontologo, formData.fecha_turno, horariosFijos, turnosExistentes, isEditing, initialData]);
+
+    // ----------------------------------------------------
+    // 1. LÓGICA DE FILTRADO DE PACIENTES
+    // ----------------------------------------------------
+    const filteredPacientes = React.useMemo(() => {
+        if (!searchTerm) {
+            return pacientes;
+        }
+
+        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+        return pacientes.filter(p => {
+            // Asumiendo que cada paciente tiene al menos nombre, apellido y dni
+            const fullName = `${p.nombre} ${p.apellido}`.toLowerCase();
+            const dni = p.dni ? String(p.dni).toLowerCase() : '';
+            
+            return fullName.includes(lowerCaseSearchTerm) || 
+                   dni.includes(lowerCaseSearchTerm);
+        });
+    }, [pacientes, searchTerm]);
+    
+    // ... (useEffect, handleChange, handleSubmit) ...
+
+    // 💡 NUEVO MANEJADOR para el campo de búsqueda
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
 
     // Cargar datos iniciales para edición
     useEffect(() => {
@@ -115,25 +144,44 @@ export default function TurnosForm({
 
     return (
         <form className={styles['turnos-form']} onSubmit={handleSubmit}>
-            {/* Si tienes un mensaje de error */}
-            {error && <p className={styles.error}>{error}</p>}
-            
             {/* Selector de PACIENTE */}
+            <label htmlFor="search_paciente">Buscar Paciente (Nombre, Apellido o DNI)</label>
+            {/* 💡 Campo de Búsqueda */}
+            <input
+                id="search_paciente"
+                type="text"
+                placeholder="Escriba aquí para filtrar..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className={styles['search-input']} // Puedes estilizar este input en tu CSS
+            />
+
             <label htmlFor="paciente">Paciente (*)</label>
             <select
                 id="paciente"
-                name="paciente" // 🚨 CORREGIDO
+                name="paciente"
                 value={formData.paciente}
                 onChange={handleChange}
                 required
             >
-                <option value="">Seleccione Paciente</option>
-                {pacientes.map(p => (
-                    <option key={p.id} value={p.id}>
-                        {p.nombre} {p.apellido}
+                <option value="">
+                    {searchTerm ? `Resultados: ${filteredPacientes.length}` : 'Seleccione Paciente'}
+                </option>
+                
+                {/* 🚨 USAR LA LISTA FILTRADA 🚨 */}
+                {filteredPacientes.map(paciente => (
+                    <option key={paciente.id} value={paciente.id}>
+                        {`${paciente.nombre} ${paciente.apellido} (DNI: ${paciente.dni})`}
                     </option>
                 ))}
             </select>
+            
+            {/* 💡 Mensaje si no hay resultados */}
+            {searchTerm && filteredPacientes.length === 0 && (
+                <p className={styles['alert-info']}>
+                    No se encontraron pacientes que coincidan con la búsqueda.
+                </p>
+            )}
             
             {/* Selector de ODONTÓLOGO (¡Debes implementarlo en tu JSX!) */}
             <label htmlFor="odontologo">Odontólogo (*)</label>
