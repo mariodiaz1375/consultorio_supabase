@@ -105,3 +105,34 @@ export const getEspecialidades = async () => {
         throw error;
     }
 };
+
+// src/api/personal.api.js (Función getCurrentUser)
+
+export const getCurrentUser = async () => {
+    // 🚨 CORRECCIÓN: Usar 'access_token' para que coincida con Login.jsx
+    const token = localStorage.getItem('access_token'); 
+    
+    // Si no hay token, fallar antes de la llamada
+    if (!token) {
+        throw new Error('Usuario no autenticado, falta el token.');
+    }
+
+    const response = await fetch('http://localhost:8000/api/personal/me/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            // Enviar el token en el header 'Authorization' con el esquema 'Bearer'
+            'Authorization': `Bearer ${token}` 
+        },
+    }); 
+    
+    if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+            // Un 401 aquí probablemente significa que el token expiró o es inválido
+            throw new Error('Sesión expirada o no autorizada. Por favor, vuelva a iniciar sesión.');
+        }
+        throw new Error('No se pudo obtener la información del usuario.');
+    }
+    
+    return response.json();
+};

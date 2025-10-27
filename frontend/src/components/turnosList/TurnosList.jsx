@@ -15,6 +15,7 @@ export default function TurnosList() {
     const [editingTurno, setEditingTurno] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
 
     // ESTADOS para los listados de opciones (Foreign Keys)
     const [pacientesOptions, setPacientesOptions] = useState([]);
@@ -72,7 +73,34 @@ export default function TurnosList() {
 
     useEffect(() => {
         loadData();
+        
+        // Cargar información del usuario desde localStorage
+        const userInfoString = localStorage.getItem('user_info');
+        if (userInfoString) {
+            try {
+                const userInfo = JSON.parse(userInfoString);
+                setCurrentUser(userInfo);
+
+                const userRole = userInfo?.puesto_info?.nombre_puesto;
+                if (userRole === 'Odontólogo/a') {
+                    // El ID del usuario está en el campo 'user' o 'id' de la API /me/. 
+                    // Asumiremos que el campo que enlaza con el modelo de Personal es `id`.
+                    // Si el backend usa `user` para el ID de personal, úsalo: userInfo.id
+                    
+                    // 🚨 IMPORTANTE: Asegúrate de que el ID es el correcto (string) para el filtro
+                    setFilterOdontologo(String(userInfo.id));
+                }
+            } catch (e) {
+                console.error("Error parsing user info from localStorage:", e);
+                // Opcional: limpiar localStorage o forzar logout si la data es corrupta
+            }
+        }
     }, [loadData]);
+
+    // Helper para obtener el rol de forma segura
+    const userRole = currentUser?.puesto_info?.nombre_puesto;
+    const isFilterBlocked = userRole === 'Odontólogo/a'
+    const loggedInUserId = currentUser?.id;
 
     // ========================================================
     // 2. MANEJO DE FORMULARIO (Crear/Editar)
@@ -178,6 +206,8 @@ export default function TurnosList() {
                     initialData={editingTurno} // Pasamos la data mapeada
                     isEditing={isEditing}
                     turnosExistentes={turnos}
+                    isFilterBlocked={isFilterBlocked}
+                    loggedInUserId={loggedInUserId}
                 />
             </div>
 
@@ -201,13 +231,28 @@ export default function TurnosList() {
                         value={filterOdontologo}
                         onChange={handleFilterChange(setFilterOdontologo)}
                         className={styles['filter-select']}
+                        disabled={isFilterBlocked}
                     >
-                        <option value="">Todos los Odontólogos</option>
-                        {odontologosOptions.map(o => (
-                            <option key={o.id} value={o.id}>
-                                {`${o.nombre} ${o.apellido}`}
-                            </option>
-                        ))}
+                        {isFilterBlocked ? (
+                            // Mostrar solo la opción del odontólogo logueado si está bloqueado
+                            odontologosOptions
+                                .filter(o => String(o.id) === filterOdontologo)
+                                .map(o => (
+                                    <option key={o.id} value={o.id}>
+                                        {`${o.nombre} ${o.apellido} (Mi cuenta)`}
+                                    </option>
+                                ))
+                        ) : (
+                            // Mostrar todas las opciones si no está bloqueado (Admin o no Odontólogo)
+                            <>
+                                <option value="">Todos los Odontólogos</option>
+                                {odontologosOptions.map(o => (
+                                    <option key={o.id} value={o.id}>
+                                        {`${o.nombre} ${o.apellido}`}
+                                    </option>
+                                ))}
+                            </>
+                        )}
                     </select>
 
                     {/* 3. FILTRO POR PACIENTE */}

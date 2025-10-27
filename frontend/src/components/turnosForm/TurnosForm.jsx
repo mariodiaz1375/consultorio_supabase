@@ -41,14 +41,15 @@ export default function TurnosForm({
     isEditing = false,
     submissionError = null,
     turnosExistentes = [],
+    isFilterBlocked = false,
+    loggedInUserId = null
 }) {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [formData, setFormData] = useState(initialFormData);
-    const [error, setError] = useState('');
 
     const horariosDisponibles = React.useMemo(() => {
-        const { paciente, odontologo, fecha_turno } = formData;
+        const { odontologo, fecha_turno } = formData;
         
         // 1. Si no hay odontólogo y fecha, todos están disponibles (o ninguno)
         if (!odontologo || !fecha_turno) {
@@ -72,7 +73,7 @@ export default function TurnosForm({
             !horariosOcupadosIDs.includes(horario.id)
         );
 
-    }, [formData.odontologo, formData.fecha_turno, horariosFijos, turnosExistentes, isEditing, initialData]);
+    }, [formData, horariosFijos, turnosExistentes, isEditing, initialData]);
 
     // ----------------------------------------------------
     // 1. LÓGICA DE FILTRADO DE PACIENTES
@@ -103,21 +104,25 @@ export default function TurnosForm({
 
     // Cargar datos iniciales para edición
     useEffect(() => {
+        let initialDataForForm = initialFormData;
         if (initialData) {
             // Mapear los datos de lectura (ej: paciente.id) a los campos de escritura (paciente_id)
-            setFormData({
+            initialDataForForm = {
                 paciente: initialData.paciente, // Usamos los IDs planos que mapeamos en TurnosList
                 odontologo: initialData.odontologo, 
                 horario_turno: initialData.horario_turno,
                 estado_turno: initialData.estado_turno,
                 fecha_turno: initialData.fecha_turno,
                 motivo: initialData.motivo || '',
-            });
-        } else {
-             // Modo Creación: Reinicia al valor por defecto (incluyendo estado_turno: '1')
-            setFormData(initialFormData);
-        }
-    }, [initialData]);
+            };
+        } else if (isFilterBlocked && loggedInUserId) {
+            initialDataForForm = {
+                 ...initialFormData,
+                 odontologo: loggedInUserId, // Forzar el ID del odontólogo
+             };
+        } 
+        setFormData(initialDataForForm);
+    }, [initialData, isFilterBlocked, loggedInUserId]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -128,14 +133,13 @@ export default function TurnosForm({
             ...prev,
             [name]: parsedValue,
         }));
-        setError('');
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         if (!formData.paciente || !formData.odontologo || !formData.fecha_turno || !formData.horario_turno) {
-            setError('Por favor, complete todos los campos obligatorios (Paciente, Odontólogo, Fecha y Horario).');
+            alert('Por favor, complete todos los campos obligatorios (Paciente, Odontólogo, Fecha y Horario).');
             return;
         }
 
@@ -187,17 +191,32 @@ export default function TurnosForm({
             <label htmlFor="odontologo">Odontólogo (*)</label>
             <select
                 id="odontologo"
-                name="odontologo" // 🚨 CORREGIDO
+                name="odontologo"
                 value={formData.odontologo}
                 onChange={handleChange}
+                disabled={isFilterBlocked}
                 required
             >
-                <option value="">Seleccione Odontólogo</option>
-                {odontologos.map(o => (
-                    <option key={o.id} value={o.id}>
-                        {o.nombre} {o.apellido}
-                    </option>
-                ))}
+                {isFilterBlocked ? (
+                    // Mostrar solo la opción del odontólogo logueado si está bloqueado
+                    odontologos
+                        .filter(o => o.id === formData.odontologo)
+                        .map(o => (
+                            <option key={o.id} value={o.id}>
+                                {`${o.nombre} ${o.apellido} (Mi cuenta)`}
+                            </option>
+                        ))
+                ) : (
+                    // Mostrar todas las opciones si no está bloqueado (Admin o no Odontólogo)
+                    <>
+                        <option value="">Seleccione un Odontólogo</option>
+                        {odontologos.map(o => (
+                            <option key={o.id} value={o.id}>
+                                {`${o.nombre} ${o.apellido}`}
+                            </option>
+                        ))}
+                    </>
+                )}
             </select>
 
             
