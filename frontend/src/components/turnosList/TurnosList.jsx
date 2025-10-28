@@ -26,6 +26,7 @@ export default function TurnosList() {
     const [filterDate, setFilterDate] = useState('');      // Para filtrar por fecha
     const [filterOdontologo, setFilterOdontologo] = useState(''); // Para filtrar por odontólogo ID
     const [filterPaciente, setFilterPaciente] = useState('');   // Para filtrar por paciente ID
+    const [filterEstado, setFilterEstado] = useState('');
 
     const isEditing = !!editingTurno;
 
@@ -165,9 +166,14 @@ export default function TurnosList() {
                 matches = matches && (String(turno.paciente) === filterPaciente);
             }
 
+            if (filterEstado) {
+                
+                matches = matches && (String(turno.estado_turno) === filterEstado);
+            }
+
             return matches;
         });
-    }, [turnos, filterDate, filterOdontologo, filterPaciente]);
+    }, [turnos, filterDate, filterOdontologo, filterPaciente, filterEstado]);
 
     // ========================================================
     // 3. MANEJADORES DE CAMBIOS DE FILTRO
@@ -182,6 +188,7 @@ export default function TurnosList() {
         setFilterDate('');
         setFilterOdontologo('');
         setFilterPaciente('');
+        setFilterEstado('');
     };
 
     // ========================================================
@@ -279,6 +286,21 @@ export default function TurnosList() {
                         {pacientesOptions.map(p => (
                             <option key={p.id} value={p.id}>
                                 {`${p.nombre} ${p.apellido}`}
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* 🚨 NUEVO FILTRO POR ESTADO 🚨 */}
+                    <select
+                        className={styles['filter-select']}
+                        value={filterEstado}
+                        onChange={handleFilterChange(setFilterEstado)}
+                    >
+                        <option value="">Todos los Estados</option>
+                        {/* Usamos estadosTurnoOptions y la propiedad correcta 'nombre_est_tur' */}
+                        {estadosTurnoOptions.map(e => (
+                            <option key={e.id} value={e.id}>
+                                {e.nombre_est_tur}
                             </option>
                         ))}
                     </select>
