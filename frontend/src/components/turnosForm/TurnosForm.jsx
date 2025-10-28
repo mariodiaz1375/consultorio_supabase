@@ -36,7 +36,8 @@ export default function TurnosForm({
     onSubmit,           
     pacientes = [],     
     odontologos = [],   
-    horariosFijos = [], 
+    horariosFijos = [],
+    estadosTurno = [],
     initialData = null, 
     isEditing = false,
     submissionError = null,
@@ -139,7 +140,7 @@ export default function TurnosForm({
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!formData.paciente || !formData.odontologo || !formData.fecha_turno || !formData.horario_turno) {
+        if (!formData.paciente || !formData.odontologo || !formData.fecha_turno || !formData.horario_turno || !formData.estado_turno) {
             alert('Por favor, complete todos los campos obligatorios (Paciente, Odontólogo, Fecha y Horario).');
             return;
         }
@@ -257,6 +258,25 @@ export default function TurnosForm({
                 ))}
             </select>
 
+            {/* 🚨 NUEVO CAMPO: ESTADO DEL TURNO (Al final, antes de los botones) */}
+            <label htmlFor="estado_turno">Estado del Turno</label>
+            <select
+                id="estado_turno"
+                name="estado_turno"
+                value={formData.estado_turno}
+                onChange={handleChange}
+                required
+                disabled={!isEditing}
+            >
+                <option value="">Seleccione el Estado</option>
+                {/* Usamos la prop 'estadosTurno' con la estructura de la API: { id, nombre } */}
+                {estadosTurno.map(estado => (
+                    <option key={estado.id} value={estado.id}>
+                        {estado.nombre_est_tur}
+                    </option>
+                ))}
+            </select>
+
             {/* Campo MOTIVO */}
             <label htmlFor="motivo">Motivo / Notas</label>
             <textarea
@@ -268,6 +288,8 @@ export default function TurnosForm({
                 placeholder="Escriba un breve motivo o nota del turno..."
             />
             
+
+
             <button type="submit">
                 {isEditing ? 'Guardar Cambios' : 'Agendar Turno'}
             </button>

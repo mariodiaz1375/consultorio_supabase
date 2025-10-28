@@ -5,7 +5,7 @@ import TurnoCard from '../turnosCard/TurnosCard';
 // Importar APIs
 import { 
     getTurnos, createTurno, updateTurno, 
-    getHorariosFijos, deleteTurno
+    getHorariosFijos, deleteTurno, getEstadosTurno
 } from '../../api/turnos.api';
 import { getPacientes } from '../../api/pacientes.api'; 
 import { getPersonal } from '../../api/personal.api'; // Necesitas crear esta API
@@ -21,6 +21,7 @@ export default function TurnosList() {
     const [pacientesOptions, setPacientesOptions] = useState([]);
     const [odontologosOptions, setOdontologosOptions] = useState([]);
     const [horariosFijosOptions, setHorariosFijosOptions] = useState([]);
+    const [estadosTurnoOptions, setEstadosTurnoOptions] = useState([]);
 
     const [filterDate, setFilterDate] = useState('');      // Para filtrar por fecha
     const [filterOdontologo, setFilterOdontologo] = useState(''); // Para filtrar por odontólogo ID
@@ -38,11 +39,12 @@ export default function TurnosList() {
             setError(null);
 
             // Cargar datos principales
-            const [turnosData, pacientesData, odontologosData, horariosData] = await Promise.all([
+            const [turnosData, pacientesData, odontologosData, horariosData, estadosData] = await Promise.all([
                 getTurnos(),
                 getPacientes(), 
                 getPersonal(), 
                 getHorariosFijos(),
+                getEstadosTurno(),
             ]);
             const filteredOdontologos = odontologosData.filter(miembro => {
                 // Condición: Es ACTIVO Y (Es Odontólogo O Es Admin)
@@ -62,6 +64,7 @@ export default function TurnosList() {
             setPacientesOptions(filteredPacientes);
             setOdontologosOptions(filteredOdontologos);
             setHorariosFijosOptions(horariosData);
+            setEstadosTurnoOptions(estadosData);
 
         } catch (err) {
             console.error("Error al cargar datos iniciales:", err);
@@ -217,6 +220,8 @@ export default function TurnosList() {
                     isFilterBlocked={isFilterBlocked}
                     loggedInUserId={loggedInUserId}
                     onCancel={handleCancelEdit}
+                    estadosTurno={estadosTurnoOptions}
+                    //turno={turno}
                 />
             </div>
 
