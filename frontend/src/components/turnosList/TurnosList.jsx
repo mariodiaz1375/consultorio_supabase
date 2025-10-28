@@ -192,6 +192,14 @@ export default function TurnosList() {
     if (error) {
         return <div className={styles['error']}>{error}</div>;
     }
+    const handleEdit = (turno) => {
+        setEditingTurno(turno);
+        // Opcional: Desplazarse al formulario
+        // window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    const handleCancelEdit = () => {
+        setEditingTurno(null); // Esto saca a la lista del modo edición
+    };
 
     return (
         <div className={styles['turnos-container']}>
@@ -208,6 +216,7 @@ export default function TurnosList() {
                     turnosExistentes={turnos}
                     isFilterBlocked={isFilterBlocked}
                     loggedInUserId={loggedInUserId}
+                    onCancel={handleCancelEdit}
                 />
             </div>
 
@@ -286,6 +295,7 @@ export default function TurnosList() {
                                 key={turno.id} 
                                 turno={turno} 
                                 onDelete={handleDelete}
+                                onEdit={() => handleEdit(turno)}
                             />
                         ))
                     )}

@@ -42,7 +42,8 @@ export default function TurnosForm({
     submissionError = null,
     turnosExistentes = [],
     isFilterBlocked = false,
-    loggedInUserId = null
+    loggedInUserId = null,
+    onCancel
 }) {
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -270,6 +271,17 @@ export default function TurnosForm({
             <button type="submit">
                 {isEditing ? 'Guardar Cambios' : 'Agendar Turno'}
             </button>
+
+            {/* Botón de Cancelar (solo si estamos editando) */}
+            {isEditing && (
+                <button 
+                    type="button" // IMPORTANTE: Debe ser type="button" para no enviar el formulario
+                    onClick={onCancel} // Llama a la función que recibimos por prop
+                    className={styles['cancel-edit-btn']} // Necesitarás estilizar esta clase
+                >
+                    Cancelar Edición
+                </button>
+            )}
         </form>
     );
 }

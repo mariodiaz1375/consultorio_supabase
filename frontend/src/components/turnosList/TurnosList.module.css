@@ -69,39 +69,40 @@
 
 /* Estilos de botones de acción en la tarjeta */
 .turno-actions button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 8px 15px;
     border-radius: 4px;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin: auto;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .delete-btn {
-    background-color: #e74c3c; /* Azul */
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+}
+
+.edit-btn {
+    background-color: #2980b9; /* Azul */
     color: white;
     border: none;
 }
 
 .edit-btn:hover {
-    background-color: #2980b9;
+    background-color: #5297c5;
+}
+.delete-btn:hover {
+    background-color: #e97467;
 }
 
 /* Estilo para el botón de Cancelar Edición fuera del formulario */
-.cancel-edit-btn {
-    width: 100%;
-    margin-top: 15px;
-    padding: 10px;
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
 
-.cancel-edit-btn:hover {
-    background-color: #c0392b;
-}
 
 /* Estilos de estado para el placeholder de la tarjeta */
 .estado-pendiente { color: #f39c12; font-weight: bold; }

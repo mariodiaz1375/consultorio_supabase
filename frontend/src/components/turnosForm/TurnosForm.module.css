@@ -96,3 +96,42 @@
     font-size: 0.9rem;
     text-align: center;
 }
+
+.cancel-edit-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cancel-edit-btn:hover {
+    background-color: #c0392b;
+}
+
+.cancel-edit-btn {
+    display: block;
+    width: 100%;
+    background-color: #b93526;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-top: 25px;
+}
+
+.cancel-edit-btn:hover {
+    background-color: #e74c3c; /* Un verde más claro al pasar el ratón */
+    transform: translateY(-1px);
+}
+
+

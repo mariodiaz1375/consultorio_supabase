@@ -9,8 +9,9 @@ import styles from '../turnosList/TurnosList.module.css';
  * @param {object} props - Propiedades del componente.
  * @param {object} props.turno - El objeto turno tal como viene de la API.
  * @param {function} props.onDElete - Función para iniciar la edición.
+ * @param {function} props.onEdit - Función para iniciar la edición.
  */
-export default function TurnoCard({ turno, onDelete }) {
+export default function TurnoCard({ turno, onDelete, onEdit }) {
     // 🚨 CORRECCIÓN: Usamos las propiedades planas (flat) que proporciona tu API
     const fecha = turno.fecha_turno;
     const hora = turno.horario_display || 'N/A';
@@ -26,15 +27,26 @@ export default function TurnoCard({ turno, onDelete }) {
         }
     };
 
+    const handleEditClick = () => {
+        onEdit(turno); // Llama a la función onEdit pasada desde TurnosList
+    };
+
     return (
         <div className={styles['turno-card']}>
             <div className={styles['turno-info']}>
                 <p className={styles['turno-fecha']}>📅 {fecha} - 🕒 {hora}</p>
                 <p>👤 Paciente: {paciente}</p>
                 <p>🧑‍⚕️ Odontólogo: {odontologo}</p>
+                <p>🧑‍⚕️ Estado: {estado}</p>
                 {/* Aplicamos la clase dinámica usando la notación de corchetes */}
             </div>
             <div className={styles['turno-actions']}>
+                <button 
+                    className={styles['edit-btn']} // Asume que tienes un estilo para 'edit-btn'
+                    onClick={handleEditClick}
+                >
+                    Editar
+                </button>
                 <button 
                     className={styles['delete-btn']} 
                     onClick={handleDeleteClick}
