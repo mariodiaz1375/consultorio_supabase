@@ -30,6 +30,8 @@ export default function TurnosList() {
 
     const isEditing = !!editingTurno;
 
+
+
     // ========================================================
     // 1. CARGA INICIAL DE DATOS
     // ========================================================

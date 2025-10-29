@@ -1,6 +1,6 @@
 // src/components/turnosCard/TurnoCard.jsx
 
-import React from 'react';
+import React, { useState } from 'react';
 // IMPORTANTE: Reutilizamos los estilos de la lista para no crear un nuevo archivo CSS solo para la tarjeta.
 import styles from '../turnosList/TurnosList.module.css'; 
 
@@ -31,8 +31,26 @@ export default function TurnoCard({ turno, onDelete, onEdit }) {
         onEdit(turno); // Llama a la función onEdit pasada desde TurnosList
     };
 
+    
+    const [isChecked, setIsChecked] = useState(false);
+    
+    
+    const handleChange = () => {
+      setIsChecked(!isChecked); // Toggle the state
+    };
+
     return (
         <div className={styles['turno-card']}>
+
+            <div className={styles['checkbox-wrapper']}>
+                <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={handleChange}
+                    className={styles['checkbox-turno']}
+                />
+            </div>
+            
             <div className={styles['turno-info']}>
                 <p className={styles['turno-fecha']}>📅 {fecha} - 🕒 {hora}</p>
                 <p>👤 Paciente: {paciente}</p>
