@@ -258,7 +258,7 @@ const Dashboard = () => {
               <h3>👥 Pacientes</h3>
             </div>
             <div className="card-content">
-              <p>Gestión de pacientes del consultorio</p>
+              <p>Gestión de pacientes</p>
               <button 
                 className="card-button"
                 onClick={() => navigate('/pacientes')}

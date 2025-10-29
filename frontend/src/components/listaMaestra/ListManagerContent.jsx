@@ -32,10 +32,36 @@ const ListManagerContent = ({
         setEditId(item[idField]);
     };
 
+
     const handleSave = (e) => {
         e.preventDefault();
-        if (!inputName.trim()) {
+
+        const trimmedInputName = inputName.trim();
+        const lowerCaseInputName = trimmedInputName.toLowerCase(); // Convertir a minúscula
+        
+        if (!trimmedInputName) {
             setError("El nombre es obligatorio.");
+            return;
+        }
+
+        const isDuplicate = list.some(item => {
+            // Obtenemos el nombre existente, lo limpiamos y lo ponemos en minúsculas para la comparación.
+            const existingName = item[nameField].toString().trim().toLowerCase(); 
+
+            if (existingName === lowerCaseInputName) {
+                // Si estamos editando, solo es un duplicado si es un elemento DIFERENTE al que estamos editando.
+                if (isEditing) {
+                    return item[idField] !== editId;
+                }
+                
+                // Si estamos agregando, cualquier coincidencia es un duplicado.
+                return true; 
+            }
+            return false;
+        });
+
+        if (isDuplicate) {
+            setError(`El nombre "${trimmedInputName}" ya existe en la lista. No se permiten duplicados.`);
             return;
         }
 
@@ -103,7 +129,7 @@ const ListManagerContent = ({
                 />
                 {error && <p className={styles['error-message']}>{error}</p>}
                 {/* El botón llama directamente a handleSave */}
-                <button type="button" onClick={handleSave}> 
+                <button type="button" onClick={handleSave} className={styles['manager-action-btn']}> 
                     {isEditing ? "Guardar Cambios" : "Agregar a la Lista"}
                 </button>
                 {isEditing && (
@@ -111,7 +137,6 @@ const ListManagerContent = ({
                         type="button" 
                         onClick={handleCancelEdit} 
                         className={styles['modal-cancel-btn']}
-                        style={{marginTop: '10px'}}
                     >
                         Cancelar Edición
                     </button>
