@@ -72,31 +72,7 @@ export default function PacientesForm({
     const [isAntecedenteModalOpen, setIsAntecedenteModalOpen] = useState(false);
     const [isAnalisisFuncionalModalOpen, setIsAnalisisFuncionalModalOpen] = useState(false);
 
-    // ESTADOS PARA LAS LISTAS DE OPCIONES (Para poder actualizar el DOM)
-    // const [currentAntecedentes, setCurrentAntecedentes] = useState(antecedentes);
-    // const [currentAnalisisFuncional, setCurrentAnalisisFuncional] = useState(analisisFuncional);
-    // const [currentObrasSociales, setCurrentObrasSociales] = useState(obrasSociales);
 
-    // // Sincronizar las listas si las props cambian
-    // useEffect(() => {
-    //     setCurrentAntecedentes(antecedentes);
-    // }, [antecedentes]);
-
-    // useEffect(() => {
-    //     setCurrentAnalisisFuncional(analisisFuncional);
-    // }, [analisisFuncional]);
-
-    // useEffect(() => {
-    //     setCurrentObrasSociales(obrasSociales);
-    // }, [obrasSociales]);
-
-    // useEffect(() => {
-    //     setFormData(getInitialState(initialData));
-    // }, [initialData]);
-
-    // ==========================================================
-    // FUNCIONES CRUD PARA LAS LISTAS MAESTRAS
-    // ==========================================================
     
     /**
      * Función genérica para manipular cualquier lista maestra (Agregar, Editar, Eliminar).

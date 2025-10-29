@@ -58,6 +58,27 @@ const ListManagerContent = ({
         setIsEditing(false);
         setError('');
     };
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        
+        // 1. Definir la Expresión Regular:
+        // /^[a-zA-Z0-9.\-]*$/
+        // ^: Inicio de la cadena
+        // [a-zA-Z0-9.\-]: Coincide con letras (mayúsculas/minúsculas), números, punto y guion.
+        // *: Cero o más ocurrencias del patrón.
+        // $: Fin de la cadena
+        const regex = /^[a-zA-Z0-9.\- ñÑáéíóúüÁÉÍÓÚÜ]*$/; // NOTA: Agregué un espacio " " para permitir espacios entre palabras.
+        
+        // 2. Aplicar la restricción
+        if (regex.test(value)) {
+            // Si el valor es válido, actualiza el estado y borra errores
+            setInputName(value);
+            setError(''); 
+        } else {
+            // Opcional: Mostrar un mensaje si el usuario intenta ingresar un carácter no permitido.
+            // setError("Solo se permiten letras, números, guiones, puntos y espacios.");
+        }
+    };
 
     return (
         <div className={styles['list-manager-container']}>
@@ -68,8 +89,9 @@ const ListManagerContent = ({
                     id="manager-input"
                     type="text"
                     value={inputName}
-                    onChange={(e) => {setInputName(e.target.value); setError('');}}
-                    placeholder={`Ingrese el nombre o descripción`}
+                    onChange={handleInputChange}
+                    placeholder={`Ingrese el nombre`}
+                    maxLength={40}
                     // Opcional: Para permitir guardar con Enter incluso sin form
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {

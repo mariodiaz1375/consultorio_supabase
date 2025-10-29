@@ -1,11 +1,151 @@
 import React, { useState, useEffect, useCallback } from 'react'; // 👈 Se añadió 'useCallback'
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
+import ModalAdd from '../modalAdd/ModalAdd';
+import ListManagerContent from '../listaMaestra/ListManagerContent';
+import { 
+    // 🚨 FUNCIONES GET AÑADIDAS
+    getObrasSociales, createObraSocial, updateObraSocial, deleteObraSocial,
+    getAntecedentes, createAntecedente, updateAntecedente, deleteAntecedente,
+    getAnalisisFuncional, createAnalisisFuncional, updateAnalisisFuncional, deleteAnalisisFuncional,
+    // ... otras funciones si son necesarias
+} from '../../api/pacientes.api.js';
 
 const Dashboard = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [isOsModalOpen, setIsOsModalOpen] = useState(false);
+  const [isAntecedenteModalOpen, setIsAntecedenteModalOpen] = useState(false);
+  const [isAnalisisFuncionalModalOpen, setIsAnalisisFuncionalModalOpen] = useState(false);
+  
+  const [obrasSociales, setObrasSociales] = useState([]);
+  const [antecedentes, setAntecedentes] = useState([]);
+  const [analisisFuncional, setAnalisisFuncional] = useState([]);
+
+  // 🚨 4. FUNCIÓN PARA CARGAR TODAS LAS LISTAS MAESTRAS
+  const loadMasterOptions = useCallback(async () => {
+    try {
+        const [osList, antList, afList] = await Promise.all([
+            getObrasSociales(),
+            getAntecedentes(),
+            getAnalisisFuncional(),
+        ]);
+        
+        // Actualizar estados
+        setObrasSociales(osList);
+        setAntecedentes(antList);
+        setAnalisisFuncional(afList);
+    } catch (error) {
+        console.error("Error al cargar las listas maestras:", error);
+    }
+  }, []);
+
+  const handleManipulateList = async (listType, action, id, newName) => {
+    try {
+        // Mapeo para estandarizar el nombre del campo que lleva el nombre en la API
+        const nameFieldMap = {
+            os: 'nombre_os',
+            antecedentes: 'nombre_ant',
+            analisisFuncional: 'nombre_analisis',
+        };
+
+        const nameField = nameFieldMap[listType];
+        const actionType = `${listType}-${action}`;
+
+        let list;
+        let originalName = newName; // Usamos newName por defecto para 'add'
+        
+        // Determinar qué lista usar
+        if (listType === 'os') list = obrasSociales;
+        else if (listType === 'antecedentes') list = antecedentes;
+        else if (listType === 'analisisFuncional') list = analisisFuncional;
+        
+        // Si la acción es editar o borrar, buscamos el nombre original
+        if (action === 'edit' || action === 'delete') {
+            const item = list?.find(item => item.id === id);
+            if (item) {
+                originalName = item[nameField]; // Guardamos el nombre actual/original
+            }
+        }
+        // El nuevo nombre o descripción se envía como un objeto con el nombre de campo correcto
+        const data = { [nameField]: newName };
+        const listName = listType === 'os' ? 'Obra Social' : listType === 'antecedentes' ? 'Antecedente' : 'Análisis Funcional';
+
+        switch (actionType) {
+            case 'os-add':
+                await createObraSocial(data);
+                break;
+            case 'os-edit':
+                await updateObraSocial(id, data);
+                break;
+            case 'os-delete':
+                await deleteObraSocial(id);
+                break;
+            
+            case 'antecedentes-add':
+                await createAntecedente(data);
+                break;
+            case 'antecedentes-edit':
+                await updateAntecedente(id, data);
+                break;
+            case 'antecedentes-delete':
+                await deleteAntecedente(id);
+                break;
+
+            case 'analisisFuncional-add':
+                await createAnalisisFuncional(data);
+                break;
+            case 'analisisFuncional-edit':
+                await updateAnalisisFuncional(id, data);
+                break;
+            case 'analisisFuncional-delete':
+                await deleteAnalisisFuncional(id);
+                break;
+
+            default:
+                console.warn(`Acción desconocida: ${actionType}`);
+                return;
+        }
+
+        // 🏆 ÉXITO: Recargar las listas para actualizar el ListManagerContent en el modal
+        await loadMasterOptions();
+
+        if (action === 'add') {
+            alert(`${listName} "${newName}" registrado(a) con éxito.`);
+        } else if (action === 'edit') {
+            alert(`${listName} "${newName}" (ID: ${id}) editado(a) con éxito.`);
+        } else if (action === 'delete') {
+            alert(`${listName} "${originalName}" (ID: ${id}) eliminado(a) con éxito.`);
+        }
+        
+    } catch (error) {
+        console.error(`Error al ejecutar ${action} en ${listType}:`, error);
+        
+        let errorMessage = `Ocurrió un error en la operación de ${action} de ${listType}.`;
+
+        // 🚨 MANEJO ESPECÍFICO DEL ERROR DE LLAVE FORÁNEA (RESTRICT)
+        // Esto asume que la API de Django/DRF devuelve un error 400 o 409 (Conflict) 
+        // con un mensaje específico o una estructura reconocible cuando una restricción falla.
+        
+        // La lógica de "no se puede borrar porque pertenece a uno o más pacientes" aplica a:
+        if (action === 'delete' && (listType === 'antecedentes' || listType === 'analisisFuncional')) {
+            // Intenta obtener el mensaje de error de la respuesta de la API (si está disponible)
+            const errorDetail = error.response?.data?.detail || error.message || 'Error desconocido';
+
+            // Revisamos el error para ver si es un problema de relación (llave foránea)
+            // Esto es un ejemplo, el mensaje de error real depende del backend (Django/DRF)
+            if (errorDetail.includes('llave foránea') || errorDetail.includes('violates foreign key')) {
+                errorMessage = `Error: No se puede eliminar el elemento (ID: ${id}) de ${listType}. Pertenece a uno o más pacientes. Debe eliminar la relación en los pacientes primero.`;
+            } else {
+                errorMessage = `Error al eliminar ${listType}: ${errorDetail}`;
+            }
+        }
+        
+        // Si no es un error de borrado restringido o es Obra Social, usamos un mensaje genérico.
+        alert(errorMessage);
+    }
+  };
 
   // 1. Manejar el Logout con useCallback
   const handleLogout = useCallback(() => {
@@ -73,7 +213,8 @@ const Dashboard = () => {
   // 3. useEffect corregido: se llama solo cuando loadUserInfo cambie (lo cual es raro gracias a useCallback)
   useEffect(() => {
     loadUserInfo();
-  }, [loadUserInfo]); // 👈 Se añadió 'loadUserInfo'
+    loadMasterOptions();
+  }, [loadUserInfo, loadMasterOptions]); // 👈 Se añadió 'loadUserInfo'
 
   if (loading) {
     return (
@@ -177,6 +318,31 @@ const Dashboard = () => {
 
         </div>
 
+        {userRole === 'Admin' && (
+            <div className="user-details" style={{margin: '20px 0', padding: '15px', border: '1px solid #ddd', borderRadius: '5px', display: 'flex', gap: '10px', justifyContent: 'center'}}>
+                <button 
+                    onClick={() => setIsOsModalOpen(true)} 
+                    className="card-button" 
+                    style={{backgroundColor: '#007bff'}}
+                >
+                    Administrar Obras Sociales
+                </button>
+                <button 
+                    onClick={() => setIsAntecedenteModalOpen(true)} 
+                    className="card-button"
+                    style={{backgroundColor: '#28a745'}}
+                >
+                    Administrar Antecedentes
+                </button>
+                <button 
+                    onClick={() => setIsAnalisisFuncionalModalOpen(true)} 
+                    className="card-button"
+                    style={{backgroundColor: '#ffc107'}}
+                >
+                    Administrar Análisis Funcional
+                </button>
+            </div>
+        )}
         {/* Información del usuario actual */}
         <div className="user-details">
           <h4>Información de sesión:</h4>
@@ -187,6 +353,49 @@ const Dashboard = () => {
             <p><strong>Email:</strong> {userInfo.email}</p>
           )}
         </div>
+        <ModalAdd
+              isOpen={isOsModalOpen}
+              onClose={() => setIsOsModalOpen(false)}
+              title="Administrar Obras Sociales"
+          >
+            <ListManagerContent 
+                list={obrasSociales}
+                nameField="nombre_os"
+                onAdd={(name) => handleManipulateList('os', 'add', null, name)}
+                onEdit={(id, name) => handleManipulateList('os', 'edit', id, name)}
+                onDelete={(id) => handleManipulateList('os', 'delete', id)}
+            />
+        </ModalAdd>
+
+        {/* Modal para Antecedentes */}
+        <ModalAdd
+            isOpen={isAntecedenteModalOpen}
+            onClose={() => setIsAntecedenteModalOpen(false)}
+            title="Administrar Antecedentes"
+        >
+            <ListManagerContent 
+                list={antecedentes}
+                nameField="nombre_ant"
+                onAdd={(name) => handleManipulateList('antecedentes', 'add', null, name)}
+                onEdit={(id, name) => handleManipulateList('antecedentes', 'edit', id, name)}
+                onDelete={(id) => handleManipulateList('antecedentes', 'delete', id)}
+            />
+        </ModalAdd>
+        
+        {/* Modal para Análisis Funcional */}
+        <ModalAdd
+            isOpen={isAnalisisFuncionalModalOpen}
+            onClose={() => setIsAnalisisFuncionalModalOpen(false)}
+            title="Administrar Análisis Funcional"
+        >
+            <ListManagerContent 
+                list={analisisFuncional}
+                nameField="nombre_analisis"
+                onAdd={(name) => handleManipulateList('analisisFuncional', 'add', null, name)}
+                onEdit={(id, name) => handleManipulateList('analisisFuncional', 'edit', id, name)}
+                onDelete={(id) => handleManipulateList('analisisFuncional', 'delete', id)}
+            />
+        </ModalAdd>
       </main>
     </div>
   );
