@@ -1,6 +1,6 @@
 // src/components/turnosCard/TurnoCard.jsx
 
-import React, { useState } from 'react';
+import React from 'react';
 // IMPORTANTE: Reutilizamos los estilos de la lista para no crear un nuevo archivo CSS solo para la tarjeta.
 import styles from '../turnosList/TurnosList.module.css'; 
 

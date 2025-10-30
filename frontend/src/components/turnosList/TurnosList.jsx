@@ -10,6 +10,16 @@ import {
 import { getPacientes } from '../../api/pacientes.api'; 
 import { getPersonal } from '../../api/personal.api'; // Necesitas crear esta API
 
+const getTodayDateString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); 
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+};
+const TODAY_DATE = getTodayDateString();
+
 export default function TurnosList() {
     const [turnos, setTurnos] = useState([]);
     const [editingTurno, setEditingTurno] = useState(null);
@@ -23,7 +33,7 @@ export default function TurnosList() {
     const [horariosFijosOptions, setHorariosFijosOptions] = useState([]);
     const [estadosTurnoOptions, setEstadosTurnoOptions] = useState([]);
 
-    const [filterDate, setFilterDate] = useState('');      // Para filtrar por fecha
+    const [filterDate, setFilterDate] = useState(TODAY_DATE);      // Para filtrar por fecha
     const [filterOdontologo, setFilterOdontologo] = useState(''); // Para filtrar por odontólogo ID
     const [filterPaciente, setFilterPaciente] = useState('');   // Para filtrar por paciente ID
     const [filterEstado, setFilterEstado] = useState('');

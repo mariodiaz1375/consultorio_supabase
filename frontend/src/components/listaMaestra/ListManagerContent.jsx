@@ -78,6 +78,20 @@ const ListManagerContent = ({
         setError('');
     };
 
+    const handleDeleteConfirmation = (id, name) => {
+        // Usamos window.confirm() para mostrar el diálogo.
+        // Si el usuario presiona 'Aceptar', confirm() devuelve true.
+        const isConfirmed = window.confirm(
+            `¿Estás seguro de que deseas eliminar "${name}" (ID: ${id})?\n\n¡Esta acción es irreversible y podría generar errores si el elemento está en uso por un paciente!`
+        );
+
+        if (isConfirmed) {
+            // Si el usuario confirma, llamamos a la prop onDelete.
+            onDelete(id);
+        }
+        // Si no confirma, no hacemos nada.
+    };
+
     const handleCancelEdit = () => {
         setEditId(null);
         setInputName('');
@@ -157,7 +171,7 @@ const ListManagerContent = ({
                         </button>
                         <button 
                             type="button" 
-                            onClick={() => onDelete(item[idField])}
+                            onClick={() => handleDeleteConfirmation(item[idField], item[nameField])}
                             className={styles['delete-btn']}
                         >
                             Eliminar
