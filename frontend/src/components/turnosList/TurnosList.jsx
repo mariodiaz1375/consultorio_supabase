@@ -233,7 +233,7 @@ export default function TurnosList() {
     };
 
     const filteredTurnos = React.useMemo(() => {
-        return turnos.filter(turno => {
+        const filtered = turnos.filter(turno => {
             let matches = true;
 
             // Filtro por Fecha (YYYY-MM-DD)
@@ -262,6 +262,29 @@ export default function TurnosList() {
 
             return matches;
         });
+
+        // 🚨 PASO DE ORDENAMIENTO: Ordenar por Fecha y luego por Hora (Ascendente)
+        return filtered.sort((a, b) => {
+            // 1. ORDENAR POR FECHA (a.fecha_turno es YYYY-MM-DD)
+            if (a.fecha_turno < b.fecha_turno) {
+                return -1; // 'a' va antes que 'b'
+            }
+            if (a.fecha_turno > b.fecha_turno) {
+                return 1; // 'b' va antes que 'a'
+            }
+
+            // 2. SI LAS FECHAS SON IGUALES, ORDENAR POR HORA (a.horario_display es HH:MM)
+            if (a.horario_display < b.horario_display) {
+                return -1; // 'a' (hora temprana) va antes que 'b'
+            }
+            if (a.horario_display > b.horario_display) {
+                return 1; // 'b' (hora temprana) va antes que 'a'
+            }
+            
+            // 3. SI FECHA Y HORA SON IGUALES, no hay cambio de orden (o usa el ID como desempate)
+            return a.id - b.id; // Desempate por ID
+        });
+
     }, [turnos, filterDate, filterOdontologo, filterPaciente, filterEstado]);
 
     // ========================================================

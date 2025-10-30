@@ -49,6 +49,7 @@ export default function TurnosForm({
 
     const [searchTerm, setSearchTerm] = useState('');
     const [formData, setFormData] = useState(initialFormData);
+    const [dateError, setDateError] = useState('');
 
     const horariosDisponibles = React.useMemo(() => {
         const { odontologo, fecha_turno } = formData;
@@ -128,6 +129,21 @@ export default function TurnosForm({
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        let newValue = value;
+        setDateError(''); // Limpiar errores previos
+
+        // 🚨 LÓGICA DE VALIDACIÓN DE DÍA DE SEMANA 🚨
+        if (name === 'fecha_turno') {
+            const selectedDate = new Date(value + 'T00:00:00'); // T00:00:00 para evitar problemas de zona horaria
+            const dayOfWeek = selectedDate.getUTCDay(); // 0 = Domingo, 6 = Sábado
+
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                // Si es Sábado o Domingo, establecer el error
+                setDateError('🚫 No se pueden agendar turnos en Sábados ni Domingos.');
+            } else {
+                setDateError('');
+            }
+        }
         const parsedValue = (name === 'paciente' || name === 'odontologo' || name === 'horario_turno' || name === 'estado_turno') && value !== ''
             ? parseInt(value, 10)
             : value;
@@ -139,6 +155,11 @@ export default function TurnosForm({
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        // 🚨 VALIDACIÓN: Bloquear el envío si hay error de fecha.
+        if (dateError) {
+             alert(dateError);
+             return;
+        }
 
         if (!formData.paciente || !formData.odontologo || !formData.fecha_turno || !formData.horario_turno || !formData.estado_turno) {
             alert('Por favor, complete todos los campos obligatorios (Paciente, Odontólogo, Fecha y Horario).');
@@ -233,6 +254,8 @@ export default function TurnosForm({
                 min={TODAY_DATE}
                 required
             />
+
+            {dateError && <p className={styles['error-message']}>{dateError}</p>}
 
                 {/* Selector de HORARIO */}
              <label htmlFor="horario_turno">Horario (*)</label>
