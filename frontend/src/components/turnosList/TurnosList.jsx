@@ -27,10 +27,87 @@ export default function TurnosList() {
     const [filterOdontologo, setFilterOdontologo] = useState(''); // Para filtrar por odontólogo ID
     const [filterPaciente, setFilterPaciente] = useState('');   // Para filtrar por paciente ID
     const [filterEstado, setFilterEstado] = useState('');
+    const [selectedTurnos, setSelectedTurnos] = useState(new Set()); // 🚨 NUEVO ESTADO
 
     const isEditing = !!editingTurno;
 
+    const handleToggleSelect = useCallback((id, isSelected) => {
+        setSelectedTurnos(prevSelected => {
+            const newSet = new Set(prevSelected);
+            if (isSelected) {
+                newSet.add(id);
+            } else {
+                newSet.delete(id);
+            }
+            return newSet;
+        });
+    }, []);
 
+    // Función para seleccionar/deseleccionar todos los turnos visibles
+    const handleToggleSelectAll = () => {
+        const allVisibleIds = filteredTurnos.map(t => t.id);
+        
+        if (selectedTurnos.size > 0 && selectedTurnos.size === allVisibleIds.length) {
+            // Deseleccionar todo
+            setSelectedTurnos(new Set());
+        } else {
+            // Seleccionar todo (de la lista visible)
+            setSelectedTurnos(new Set(allVisibleIds));
+        }
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedTurnos.size === 0) return;
+
+        if (!window.confirm(`¿Está seguro de que desea eliminar ${selectedTurnos.size} turno(s) seleccionado(s)? Esta acción es irreversible.`)) {
+            return;
+        }
+
+        try {
+            // Convertimos el Set a Array para el mapeo
+            const deletePromises = Array.from(selectedTurnos).map(id => deleteTurno(id));
+            await Promise.all(deletePromises);
+
+            alert(`${selectedTurnos.size} turno(s) eliminados correctamente.`);
+            setSelectedTurnos(new Set()); // Limpiar selección
+            await loadData(); // Recargar la lista
+        } catch (err) {
+            console.error("Error al eliminar turnos en lote:", err);
+            alert("Hubo un error al eliminar los turnos. Intente nuevamente.");
+        }
+    };
+    
+    // 🚨 NUEVA FUNCIÓN: Cancelar Múltiples Turnos (Estado ID 3 es 'Cancelado'?)
+    // Asumo que el ID para "Cancelado" es conocido (ej: ID 4). 
+    // Revisa tu lista `estadosTurnoOptions` para el ID correcto.
+    const CANCELADO_ESTADO_ID = '1'; // 🚨 DEBES CONFIRMAR ESTE ID
+
+    const handleBulkCancel = async () => {
+        if (selectedTurnos.size === 0) return;
+
+        if (!window.confirm(`¿Está seguro de que desea CANCELAR ${selectedTurnos.size} turno(s) seleccionado(s)?`)) {
+            return;
+        }
+
+        try {
+            // Preparamos los datos para la actualización: solo el nuevo estado
+            const updatePayload = {
+                estado_turno: CANCELADO_ESTADO_ID, 
+            };
+            
+            const updatePromises = Array.from(selectedTurnos).map(id => 
+                updateTurno(id, updatePayload)
+            );
+            await Promise.all(updatePromises);
+
+            alert(`${selectedTurnos.size} turno(s) cancelados correctamente.`);
+            setSelectedTurnos(new Set()); // Limpiar selección
+            await loadData(); // Recargar la lista
+        } catch (err) {
+            console.error("Error al cancelar turnos en lote:", err);
+            alert("Hubo un error al cancelar los turnos. Verifique los datos.");
+        }
+    };
 
     // ========================================================
     // 1. CARGA INICIAL DE DATOS
@@ -311,10 +388,42 @@ export default function TurnosList() {
                     <button onClick={handleClearFilters} className={styles['clear-btn']}>
                         Limpiar Filtros
                     </button>
+                    {/* ======================= 🚨 NUEVOS BOTONES DE ACCIÓN POR LOTE 🚨 ======================= */}
+                    <div className={styles['bulk-actions']}> 
+
+                            {/* Checkbox para SELECCIONAR/DESELECCIONAR TODOS */}
+                        <label className={styles['select-all-label']}>
+                            <input
+                                type="checkbox"
+                                checked={selectedTurnos.size > 0 && selectedTurnos.size === filteredTurnos.length}
+                                onChange={handleToggleSelectAll}
+                            />
+                            Seleccionar Todos
+                        </label>
+
+                            {/* Botón de Cancelación */}
+                        <button 
+                            onClick={handleBulkCancel} 
+                            className={styles['cancel-bulk-btn']} 
+                            disabled={selectedTurnos.size === 0}
+                        >
+                            Cancelar ({selectedTurnos.size})
+                        </button>
+
+                            {/* Botón de Eliminación */}
+                        <button 
+                            onClick={handleBulkDelete} 
+                            className={styles['delete-bulk-btn']} 
+                            disabled={selectedTurnos.size === 0}
+                        >
+                            Eliminar ({selectedTurnos.size})
+                        </button>
+                    </div>
+                        {/* ======================================================================================= */}
                 </div>
                 {/* ======================================================================= */}
 
-                <h2>Próximos Turnos ({filteredTurnos.length})</h2>
+                <h2>Turnos Listados ({filteredTurnos.length})</h2>
                 <div className={styles['turnos-list']}>
                     {filteredTurnos.length === 0 ? (
                         <p>No hay turnos registrados que coincidan con los filtros.</p>
@@ -325,6 +434,8 @@ export default function TurnosList() {
                                 turno={turno} 
                                 onDelete={handleDelete}
                                 onEdit={() => handleEdit(turno)}
+                                isSelected={selectedTurnos.has(turno.id)} 
+                                onToggleSelect={handleToggleSelect}
                             />
                         ))
                     )}

@@ -219,3 +219,65 @@
 .clear-btn:hover {
     background-color: #c82333;
 }
+
+/* ======================================================= */
+/* Estilos para Acciones por Lote (Bulk Actions) */
+/* ======================================================= */
+.bulk-actions {
+    width: 100%; /* Ocupa todo el ancho de la filter-bar */
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px dashed #ced4da; /* Separador visual */
+}
+
+/* Estilo general para botones de acción por lote */
+.bulk-actions button {
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+    border: none;
+}
+
+.bulk-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Estilo específico para Cancelar */
+.cancel-bulk-btn {
+    background-color: #f39c12; /* Naranja/Amarillo para Cancelar */
+    color: white;
+}
+
+.cancel-bulk-btn:hover:not(:disabled) {
+    background-color: #d88c12;
+}
+
+/* Estilo específico para Eliminar */
+.delete-bulk-btn {
+    background-color: #e74c3c; /* Rojo para Eliminar */
+    color: white;
+}
+
+.delete-bulk-btn:hover:not(:disabled) {
+    background-color: #c0392b;
+}
+
+/* Estilo para el label de "Seleccionar Todos" */
+.select-all-label {
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+    color: #495057;
+    cursor: pointer;
+    /* Estilizar el checkbox dentro del label para que se vea más grande/claro si es necesario */
+}
+
+.select-all-label input[type="checkbox"] {
+    margin-right: 5px;
+    /* Se puede aplicar transform: scale() aquí también si es necesario */
+}
