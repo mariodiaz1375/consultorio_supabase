@@ -2,10 +2,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import styles from './TurnosList.module.css';
 import TurnosForm from '../turnosForm/TurnosForm';
 import TurnoCard from '../turnosCard/TurnosCard'; 
+import ModalAdd from '../modalAdd/ModalAdd';
+import ListManagerContent from '../listaMaestra/ListManagerContent';
 // Importar APIs
 import { 
     getTurnos, createTurno, updateTurno, 
-    getHorariosFijos, deleteTurno, getEstadosTurno
+    getHorariosFijos, updateHorarioFijo, deleteHorarioFijo, createHorarioFijo,
+    deleteTurno, getEstadosTurno
 } from '../../api/turnos.api';
 import { getPacientes } from '../../api/pacientes.api'; 
 import { getPersonal } from '../../api/personal.api'; // Necesitas crear esta API
@@ -32,6 +35,8 @@ export default function TurnosList() {
     const [odontologosOptions, setOdontologosOptions] = useState([]);
     const [horariosFijosOptions, setHorariosFijosOptions] = useState([]);
     const [estadosTurnoOptions, setEstadosTurnoOptions] = useState([]);
+    const [horariosOptions, setHorariosOptions] = useState([]);
+    const [isHorarioModalOpen, setIsHorarioModalOpen] = useState(false);
 
     const [filterDate, setFilterDate] = useState(TODAY_DATE);      // Para filtrar por fecha
     const [filterOdontologo, setFilterOdontologo] = useState(''); // Para filtrar por odontólogo ID
@@ -164,8 +169,75 @@ export default function TurnosList() {
         }
     }, []);
 
+    const loadHorarios = useCallback(async () => {
+        try {
+            // Asumo que tienes una función getHorariosFijos importada.
+            const data = await getHorariosFijos(); 
+            setHorariosOptions(data);
+        } catch (error) {
+            console.error("Error al cargar horarios:", error);
+        }
+    }, []);
+
+    const handleManipulateHorarioList = async (action, id, newName) => {
+        try {
+            const data = { hora: newName }; 
+            
+            switch (action) {
+                case 'add':
+                    // Asumo que tienes createHorarioFijo importada.
+                    await createHorarioFijo(data); 
+                    alert(`Horario "${newName}" registrado con éxito.`);
+                    break;
+                case 'edit':
+                    // Asumo que tienes updateHorarioFijo importada.
+                    await updateHorarioFijo(id, data); 
+                    alert(`Horario "${newName}" (ID: ${id}) editado con éxito.`);
+                    break;
+                case 'delete':
+                    // Asumo que tienes deleteHorarioFijo importada.
+                    if (window.confirm(`¿Estás seguro de que quieres eliminar el horario ID ${id}?`)) {
+                        await deleteHorarioFijo(id);
+                        alert(`Horario ID ${id} eliminado con éxito.`);
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            
+         
+
+        } catch (error) {
+            // 🚨 MANEJO DE ERRORES CLAVE
+            
+            let errorMessage = `Error al ejecutar ${action} en Horarios.`;
+
+            // 1. Verificar si el error tiene una respuesta (es un error HTTP de Axios)
+            if (error.response) {
+                // 2. Intentar obtener el mensaje detallado del error 400/500
+                // Lo enviamos como {"detail": "..."} desde Django
+                if (error.response.data && error.response.data.detail) {
+                    errorMessage = error.response.data.detail;
+                } else {
+                    // Si no hay mensaje 'detail', usar el estado HTTP
+                    errorMessage = `Error ${error.response.status}: ${error.response.statusText}.`;
+                }
+            }
+            
+            // Mostrar la alerta al usuario
+            alert(errorMessage);
+            console.error(errorMessage, error);
+        } finally {
+            // Recargar la lista de horarios para reflejar los cambios (o la falta de ellos)
+            loadHorarios();
+            loadData();
+        }
+    };
+
     useEffect(() => {
         loadData();
+        loadHorarios();
         
         // Cargar información del usuario desde localStorage
         const userInfoString = localStorage.getItem('user_info');
@@ -188,7 +260,7 @@ export default function TurnosList() {
                 // Opcional: limpiar localStorage o forzar logout si la data es corrupta
             }
         }
-    }, [loadData]);
+    }, [loadHorarios, loadData]);
 
     // Helper para obtener el rol de forma segura
     const userRole = currentUser?.puesto_info?.nombre_puesto;
@@ -325,6 +397,22 @@ export default function TurnosList() {
 
     return (
         <div className={styles['turnos-container']}>
+
+            {/* 🚨 MODAL PARA HORARIOS (Nuevo) */}
+            <ModalAdd
+                isOpen={isHorarioModalOpen}
+                onClose={() => setIsHorarioModalOpen(false)}
+                title="Administrar Horarios Fijos"
+            >
+                <ListManagerContent 
+                    // 📢 CLAVE: Pasar el estado existente.
+                    list={horariosOptions}
+                    nameField="hora" // Ajusta este campo
+                    onAdd={(name) => handleManipulateHorarioList('add', null, name)}
+                    onEdit={(id, name) => handleManipulateHorarioList('edit', id, name)}
+                    onDelete={(id) => handleManipulateHorarioList('delete', id)}
+                />
+            </ModalAdd>
             
             {/* -------------------- COLUMNA IZQUIERDA: FORMULARIO -------------------- */}
             <div className={styles['form-column']}>
@@ -340,6 +428,7 @@ export default function TurnosList() {
                     loggedInUserId={loggedInUserId}
                     onCancel={handleCancelEdit}
                     estadosTurno={estadosTurnoOptions}
+                    onAddHorarioClick={() => setIsHorarioModalOpen(true)}
                     //turno={turno}
                 />
             </div>

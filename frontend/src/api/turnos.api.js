@@ -92,6 +92,41 @@ export const getHorariosFijos = async () => {
     }
 }
 
+export const createHorarioFijo = async (horarioData) => {
+    try {
+        // Endpoint: /api/turnos/horarios/ (POST)
+        const response = await turnosApi.post('/horarios/', horarioData);
+        return response.data;
+    } catch (error) {
+        console.error('Error al crear Horario Fijo:', error);
+        throw error;
+    }
+}
+
+// 🚨 NUEVO: ACTUALIZAR HORARIO FIJO (PUT/PATCH)
+export const updateHorarioFijo = async (id, horarioData) => {
+    try {
+        // Endpoint: /api/turnos/horarios/1/ (PUT o PATCH)
+        const response = await turnosApi.put(`/horarios/${id}/`, horarioData);
+        return response.data;
+    } catch (error) {
+        console.error(`Error al actualizar Horario Fijo ID ${id}:`, error);
+        throw error;
+    }
+}
+
+// 🚨 NUEVO: ELIMINAR HORARIO FIJO (DELETE)
+export const deleteHorarioFijo = async (id) => {
+    try {
+        // Endpoint: /api/turnos/horarios/1/ (DELETE)
+        const response = await turnosApi.delete(`/horarios/${id}/`);
+        return response.data; // Normalmente regresa 204 No Content
+    } catch (error) {
+        console.error(`Error al eliminar Horario Fijo ID ${id}:`, error);
+        throw error;
+    }
+}
+
 export const getEstadosTurno = async () => {
     try {
         // Asumiendo un endpoint: /api/turnos/estados-turno/

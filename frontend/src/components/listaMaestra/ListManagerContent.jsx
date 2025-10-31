@@ -107,7 +107,7 @@ const ListManagerContent = ({
         // [a-zA-Z0-9.\-]: Coincide con letras (mayúsculas/minúsculas), números, punto y guion.
         // *: Cero o más ocurrencias del patrón.
         // $: Fin de la cadena
-        const regex = /^[a-zA-Z0-9.\- ñÑáéíóúüÁÉÍÓÚÜ]*$/; // NOTA: Agregué un espacio " " para permitir espacios entre palabras.
+        const regex = /^[a-zA-Z0-9.\-\: ñÑáéíóúüÁÉÍÓÚÜ]*$/; // NOTA: Agregué un espacio " " para permitir espacios entre palabras.
         
         // 2. Aplicar la restricción
         if (regex.test(value)) {

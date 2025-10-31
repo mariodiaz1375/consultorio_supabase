@@ -4,6 +4,7 @@ from .views import (
     TurnosDetail,
     EstadosTurnosList,
     HorarioFijoList,
+    HorarioFijoDetail,
     DiaSemanaList,
 )
 
@@ -18,5 +19,6 @@ urlpatterns = [
     # Usadas por el frontend para llenar los select/dropdowns
     path('estados/', EstadosTurnosList.as_view(), name='estados-turnos-list'),
     path('horarios/', HorarioFijoList.as_view(), name='horarios-fijos-list'),
+    path('horarios/<int:pk>/', HorarioFijoDetail.as_view(), name='horariofijo-detail'),
     path('dias/', DiaSemanaList.as_view(), name='dias-semana-list'),
 ]

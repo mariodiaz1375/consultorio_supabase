@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
 from .models import Turnos, EstadosTurnos, HorarioFijo, DiaSemana 
 from .serializers import (
     TurnosSerializer, 
@@ -82,6 +83,32 @@ class HorarioFijoList(generics.ListCreateAPIView):
     # Listamos todos los horarios fijos
     queryset = HorarioFijo.objects.all()
     serializer_class = HorarioFijoSerializer
+    
+class HorarioFijoDetail(generics.RetrieveUpdateDestroyAPIView):
+    # Maneja GET (Detalle), PUT/PATCH (Editar) y DELETE (Eliminar)
+    queryset = HorarioFijo.objects.all()
+    serializer_class = HorarioFijoSerializer
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            # Respuesta exitosa (204 No Content) si la eliminación procede
+            return Response(status=status.HTTP_204_NO_CONTENT)
+            
+        except IntegrityError:
+            # 🚨 MANEJO CLAVE: Si hay IntegrityError (ej: Foreign Key Constraint)
+            # Devolvemos 400 Bad Request con un mensaje claro.
+            return Response(
+                {"detail": "No se puede eliminar este horario porque ya tiene turnos asignados."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            # Manejo de cualquier otro error no esperado.
+            print(f"Error inesperado al eliminar HorarioFijo: {e}")
+            return Response(
+                {"detail": "Ocurrió un error inesperado en el servidor."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class DiaSemanaList(generics.ListAPIView):
     # Los días de la semana no deberían ser creados/editados una vez definidos

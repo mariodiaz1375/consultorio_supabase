@@ -6,12 +6,10 @@ import styles from './TurnosForm.module.css';
 // Importamos las funciones API necesarias para crear/editar
 // 🚨 CORRECCIÓN 2: Eliminada la importación incorrecta de TurnoCard
 
-    // 💡 Función auxiliar para obtener la fecha de hoy en formato YYYY-MM-DD
+// obtener la fecha de hoy en formato YYYY-MM-DD
 const getTodayDateString = () => {
     const today = new Date();
-    // Obtener las partes
     const year = today.getFullYear();
-    // Sumamos 1 a getMonth() porque es base 0 (Enero=0). Agregamos '0' si es necesario.
     const month = String(today.getMonth() + 1).padStart(2, '0'); 
     const day = String(today.getDate()).padStart(2, '0');
     
@@ -26,8 +24,6 @@ const initialFormData = {
     odontologo: '',
     horario_turno: '',
     estado_turno: '3',
-
-    // 2. Campos de datos
     fecha_turno: TODAY_DATE,
     motivo: '',
 };
@@ -44,7 +40,8 @@ export default function TurnosForm({
     turnosExistentes = [],
     isFilterBlocked = false,
     loggedInUserId = null,
-    onCancel
+    onCancel,
+    onAddHorarioClick,
 }) {
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -258,28 +255,51 @@ export default function TurnosForm({
             {dateError && <p className={styles['error-message']}>{dateError}</p>}
 
                 {/* Selector de HORARIO */}
-             <label htmlFor="horario_turno">Horario (*)</label>
-            <select
-                id="horario_turno"
-                name="horario_turno" // 🚨 CORREGIDO
-                value={formData.horario_turno}
-                onChange={handleChange}
-                required
-            >
-                <option value="">
-                {/* Mensaje dinámico */}
-                {formData.odontologo && formData.fecha_turno 
-                    ? 'Seleccione Horario Libre' 
-                    : 'Seleccione Odontólogo y Fecha primero'}
-                </option>
-        
-            {/* 🚨 USAR LA LISTA FILTRADA 🚨 */}
-            {horariosDisponibles.map(horario => (
-                <option key={horario.id} value={horario.id}>
-                {horario.hora} 
-                </option>
-                ))}
-            </select>
+            <label htmlFor="horario_turno">Horario (*)</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '15px' }}>
+                <select
+                    id="horario_turno"
+                    name="horario_turno" // 🚨 CORREGIDO
+                    value={formData.horario_turno}
+                    onChange={handleChange}
+                    required
+                    style={{ flexGrow: 1 }} // Permite que el select ocupe el espacio
+                >
+                    <option value="">
+                        {/* Mensaje dinámico */}
+                        {formData.odontologo && formData.fecha_turno 
+                            ? 'Seleccione Horario Libre' 
+                            : 'Seleccione Odontólogo y Fecha primero'}
+                        </option>
+                
+                        {/* 🚨 USAR LA LISTA FILTRADA 🚨 */}
+                        {horariosDisponibles.map(horario => (
+                        <option key={horario.id} value={horario.id}>
+                        {horario.hora} 
+                    </option>
+                    ))}
+                </select>
+                <button 
+                type="button" 
+                onClick={onAddHorarioClick} // Llama a la función del padre (TurnosList)
+                title="Administrar Horarios"
+                style={{ 
+                        height: '38px', 
+                        width: '38px',
+                        padding: '0',
+                        fontSize: '1.2rem',
+                        backgroundColor: '#2ecc71',
+                        color: 'white',
+                        borderRadius: '4px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                        marginBottom: '16px',
+                    }}
+                >
+                    +
+                </button>
+            </div>
 
             {/* 🚨 NUEVO CAMPO: ESTADO DEL TURNO (Al final, antes de los botones) */}
             <label htmlFor="estado_turno">Estado del Turno</label>
