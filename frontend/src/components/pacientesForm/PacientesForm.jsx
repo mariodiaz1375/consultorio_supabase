@@ -669,6 +669,7 @@ export default function PacientesForm({
                     onAdd={(name) => manipulateList('os', 'add', null, name)}
                     onEdit={(id, name) => manipulateList('os', 'edit', id, name)}
                     onDelete={(id) => manipulateList('os', 'delete', id)}
+                    placeHolder={'Ingrese el nombre'}
                 />
             </ModalAdd>
 
@@ -684,6 +685,7 @@ export default function PacientesForm({
                     onAdd={(name) => manipulateList('antecedentes', 'add', null, name)}
                     onEdit={(id, name) => manipulateList('antecedentes', 'edit', id, name)}
                     onDelete={(id) => manipulateList('antecedentes', 'delete', id)}
+                    placeHolder={'Ingrese el nombre'}
                 />
             </ModalAdd>
             
@@ -699,6 +701,7 @@ export default function PacientesForm({
                     onAdd={(name) => manipulateList('analisisFuncional', 'add', null, name)}
                     onEdit={(id, name) => manipulateList('analisisFuncional', 'edit', id, name)}
                     onDelete={(id) => manipulateList('analisisFuncional', 'delete', id)}
+                    placeHolder={'Ingrese el nombre'}
                 />
             </ModalAdd>
 

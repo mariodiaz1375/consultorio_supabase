@@ -205,9 +205,8 @@ export default function TurnosList() {
                     break;
             }
 
+            await loadHorarios();
             
-         
-
         } catch (error) {
             // 🚨 MANEJO DE ERRORES CLAVE
             
@@ -411,6 +410,7 @@ export default function TurnosList() {
                     onAdd={(name) => handleManipulateHorarioList('add', null, name)}
                     onEdit={(id, name) => handleManipulateHorarioList('edit', id, name)}
                     onDelete={(id) => handleManipulateHorarioList('delete', id)}
+                    placeHolder={'Ingrese la hora'}
                 />
             </ModalAdd>
             

@@ -9,6 +9,7 @@ const ListManagerContent = ({
     onAdd, 
     onEdit, 
     onDelete,
+    placeHolder,
 }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState(null);
@@ -130,7 +131,7 @@ const ListManagerContent = ({
                     type="text"
                     value={inputName}
                     onChange={handleInputChange}
-                    placeholder={`Ingrese el nombre`}
+                    placeholder={placeHolder}
                     maxLength={40}
                     // Opcional: Para permitir guardar con Enter incluso sin form
                     onKeyDown={(e) => {

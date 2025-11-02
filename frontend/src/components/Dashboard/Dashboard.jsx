@@ -364,6 +364,7 @@ const Dashboard = () => {
                 onAdd={(name) => handleManipulateList('os', 'add', null, name)}
                 onEdit={(id, name) => handleManipulateList('os', 'edit', id, name)}
                 onDelete={(id) => handleManipulateList('os', 'delete', id)}
+                placeHolder={'Ingrese el nombre'}
             />
         </ModalAdd>
 
@@ -379,6 +380,7 @@ const Dashboard = () => {
                 onAdd={(name) => handleManipulateList('antecedentes', 'add', null, name)}
                 onEdit={(id, name) => handleManipulateList('antecedentes', 'edit', id, name)}
                 onDelete={(id) => handleManipulateList('antecedentes', 'delete', id)}
+                placeHolder={'Ingrese el nombre'}
             />
         </ModalAdd>
         
@@ -394,6 +396,7 @@ const Dashboard = () => {
                 onAdd={(name) => handleManipulateList('analisisFuncional', 'add', null, name)}
                 onEdit={(id, name) => handleManipulateList('analisisFuncional', 'edit', id, name)}
                 onDelete={(id) => handleManipulateList('analisisFuncional', 'delete', id)}
+                placeHolder={'Ingrese el nombre'}
             />
         </ModalAdd>
       </main>
