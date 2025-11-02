@@ -172,7 +172,7 @@ export default function TurnosList() {
     const loadHorarios = useCallback(async () => {
         try {
             // Asumo que tienes una función getHorariosFijos importada.
-            const data = await getHorariosFijos(); 
+            const data = await getHorariosFijos();
             setHorariosOptions(data);
         } catch (error) {
             console.error("Error al cargar horarios:", error);
@@ -220,7 +220,7 @@ export default function TurnosList() {
                     errorMessage = error.response.data.detail;
                 } else {
                     // Si no hay mensaje 'detail', usar el estado HTTP
-                    errorMessage = `Error ${error.response.status}: ${error.response.statusText}.`;
+                    errorMessage = `Error ${error.response.status}: El formato de hora es incorrecto.`;
                 }
             }
             
@@ -368,10 +368,16 @@ export default function TurnosList() {
     
     // Función para limpiar todos los filtros
     const handleClearFilters = () => {
-        setFilterDate('');
-        setFilterOdontologo('');
-        setFilterPaciente('');
-        setFilterEstado('');
+        if (isFilterBlocked) {
+            setFilterDate(TODAY_DATE);
+            setFilterPaciente('');
+            setFilterEstado('');
+        } else {
+            setFilterDate(TODAY_DATE);
+            setFilterOdontologo('');
+            setFilterPaciente('');
+            setFilterEstado('');
+        }
     };
 
     // ========================================================

@@ -25,7 +25,6 @@ class HorarioFijo(models.Model):
     class Meta:
         verbose_name = 'Horario Fijo'
         verbose_name_plural = 'Horarios Fijos'
-        # Es útil ordenar por hora por defecto
         ordering = ['hora']
 
 
