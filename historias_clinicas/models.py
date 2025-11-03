@@ -5,7 +5,7 @@ from django.utils import timezone
 
 # Create your models here.
 class PiezasDentales(models.Model):
-    codigo_pd = models.CharField(max_length=10)
+    codigo_pd = models.CharField(max_length=10, unique=True)
 
     def __str__(self):
         return self.codigo_pd
@@ -36,24 +36,29 @@ class Tratamientos(models.Model):
         verbose_name_plural = 'Tratamientos'
 
 class HistoriasClinicas(models.Model):
+    # Change 2: Added related_name
     paciente = models.ForeignKey(Pacientes, 
-                                 on_delete=models.PROTECT)
+                                 on_delete=models.PROTECT,
+                                 related_name='historias_clinicas') 
+    # Change 2: Added related_name
     odontologo = models.ForeignKey(Personal, 
-                                 on_delete=models.PROTECT)
-    desc_hc = models.TextField(max_length=200)
+                                 on_delete=models.PROTECT,
+                                 related_name='historias_atendidas') 
+    # Change 3 (Minor): Renamed field for clarity
+    descripcion = models.TextField(null=True, blank=True ,max_length=200, verbose_name='Motivo de Consulta/Descripción Inicial') 
     fecha_inicio = models.DateTimeField(auto_now_add=True)
     fecha_fin = models.DateTimeField(null=True, blank=True)
     finalizado = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.paciente.dni} {self.paciente.nombre} {self.fecha_inicio} {self.finalizado}"
+        return f"{self.paciente.dni} {self.paciente.nombre} {self.fecha_inicio.strftime('%Y-%m-%d')} ({'Finalizada' if self.finalizado else 'Abierta'})"
     
     def save(self, *args, **kwargs):
         if self.finalizado and not self.fecha_fin:
             self.fecha_fin = timezone.now()
         elif not self.finalizado:
             self.fecha_fin = None  # Opcional: Limpia la fecha_fin si se desmarca
-        super(HistoriasClinicas, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
     
     class Meta:
         verbose_name = 'Historia clinica'
@@ -61,70 +66,45 @@ class HistoriasClinicas(models.Model):
 
 
 class DetallesHC(models.Model):
+    # Change 2: Added related_name to all FKs
     tratamiento = models.ForeignKey(Tratamientos, 
-                                    on_delete=models.PROTECT)
+                                    on_delete=models.PROTECT,
+                                    related_name='detalles_hc') 
+    # Change 2: Added related_name
     cara_dental = models.ForeignKey(CarasDentales, 
-                                    on_delete=models.PROTECT)
+                                    on_delete=models.PROTECT,
+                                    related_name='detalles_hc') 
+    # Change 2: Added related_name
     pieza_dental = models.ForeignKey(PiezasDentales,
-                                    on_delete=models.PROTECT)
-    hist_clin = models.ForeignKey(HistoriasClinicas, 
-                                    on_delete=models.PROTECT)
+                                    on_delete=models.PROTECT,
+                                    related_name='detalles_hc')
+    # Change 2/3: Renamed for clarity and added related_name
+    historia_clinica = models.ForeignKey(HistoriasClinicas, 
+                                    on_delete=models.PROTECT,
+                                    related_name='detalles')
 
     # def __str__(self):
     #     return self.nombre_trat
     
     class Meta:
-        verbose_name = 'Detalle de historio clinica'
+        verbose_name = 'Detalle de historia clinica'
         verbose_name_plural = 'Detalles de historia clinica'
+        unique_together = ('historia_clinica', 'tratamiento', 'pieza_dental', 'cara_dental')
 
     def __str__(self):
-        return f'{self.hist_clin.paciente} {self.tratamiento.nombre_trat} {self.pieza_dental.codigo_pd}'
+        return f'{self.historia_clinica.paciente} | {self.tratamiento.nombre_trat} en {self.pieza_dental.codigo_pd}'
 
 
 class SeguimientoHC(models.Model):
-    hist_clin = models.ForeignKey(HistoriasClinicas, 
-                                    on_delete=models.PROTECT)
-    descripcion = models.TextField(max_length=100)
+    historia_clinica = models.ForeignKey(HistoriasClinicas, 
+                                    on_delete=models.PROTECT,
+                                    related_name='seguimientos')
+    descripcion = models.TextField(max_length=100, null=True, blank=True)
     fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.id} {self.hist_clin.id} {self.hist_clin.paciente} {self.fecha}'
+        return f'Seguimiento {self.id} | HC: {self.historia_clinica.id} | Fecha: {self.fecha.strftime("%Y-%m-%d")}'
     
     class Meta:
         verbose_name = 'Seguimiento de historia clinica'
-        verbose_name_plural = 'Seguimiento de historia clinica'
-
-
-
-# CREATE TABLE piezas_dentales (
-# id_pieza INT AUTO_INCREMENT,
-# cod_pd VARCHAR(2) NOT NULL,
-# CONSTRAINT pk_piezas PRIMARY KEY(id_pieza));
-
-# CREATE TABLE caras_dentales (
-# id_cara INT AUTO_INCREMENT,
-# nomb_cara VARCHAR(20) NOT NULL,
-# CONSTRAINT pk_cd PRIMARY KEY(id_cara));
-
-# CREATE TABLE tratamientos (
-# id_trat INT AUTO_INCREMENT,
-# nom_trat VARCHAR(50) NOT NULL,
-# desc_trat VARCHAR(100),
-# CONSTRAINT pk_trat PRIMARY KEY(id_trat));
-
-# CREATE TABLE historia_clinica (
-# id_hc INT AUTO_INCREMENT,
-# id_paciente_hc INT NOT NULL,
-# id_odon_hc INT NOT NULL,
-# desc_hc VARCHAR(100),
-# fecha_inicio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-# fecha_fin DATE,
-# CONSTRAINT pk_hc PRIMARY KEY(id_hc));
-
-# CREATE TABLE trat_pd_cd (
-# id_trat_pd_cd INT AUTO_INCREMENT,
-# id_trat INT NOT NULL,
-# id_cd INT NOT NULL,
-# id_pd INT NOT NULL,
-# id_hc INT NOT NULL,
-# CONSTRAINT pk_trat_pd_cd PRIMARY KEY(id_trat_pd_cd));
+        verbose_name_plural = 'Seguimientos de historia clinica'
