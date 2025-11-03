@@ -13,3 +13,5 @@ urlpatterns = [
     # Incluye todas las URLs generadas por el Router
     path('', include(router.urls)),
 ]
+
+# ovejardo el bestia
