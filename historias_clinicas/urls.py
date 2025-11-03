@@ -1,7 +1,15 @@
-from django.urls import path
-from .views import HistClinList
+from rest_framework.routers import DefaultRouter
+from .views import HistoriaClinicaViewSet
+from django.urls import path, include
+
+# 1. Crear el Router
+router = DefaultRouter()
+
+# 2. Registrar el ViewSet (esto crea todas las rutas CRUD automáticamente)
+# El primer argumento es el prefijo de la URL (ej: /api/historias/)
+router.register(r'', HistoriaClinicaViewSet, basename='historiasclinicas')
 
 urlpatterns = [
-    path('', HistClinList.as_view(), name='histclin_list'),
-    # path('<int:pk>/', PacienteDetail.as_view(), name='paciente_detail')
+    # Incluye todas las URLs generadas por el Router
+    path('', include(router.urls)),
 ]
