@@ -1,0 +1,257 @@
+/* =======================================
+ * ESTILOS DE MODAL (Fondo y Contenido)
+ * ======================================= */
+
+.modalBackdrop {
+    /* Cubre toda la pantalla y oscurece el fondo */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Fondo semi-transparente oscuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+}
+
+.modalContent {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 900px; /* Ancho máximo amplio para el formulario complejo */
+    max-height: 90vh; /* Altura máxima para permitir scroll */
+    overflow-y: auto; /* Scroll si el contenido es muy largo */
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.modalHeader h2 {
+    color: #007bff;
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #495057;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.closeButton:hover {
+    color: #dc3545;
+}
+
+/* =======================================
+ * ESTILOS DE FORMULARIO GENERAL
+ * ======================================= */
+
+.fieldset {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 25px;
+}
+
+.fieldset legend {
+    color: #007bff;
+    font-size: 1.1em;
+    font-weight: 600;
+    padding: 0 10px;
+}
+
+.formGroup {
+    margin-bottom: 15px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #495057;
+}
+
+.formGroup input[type="text"],
+.formGroup textarea,
+.detalleFormRow select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box; /* Incluye padding y borde en el ancho total */
+    font-size: 1em;
+    transition: border-color 0.2s;
+}
+
+.formGroup textarea {
+    resize: vertical;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus,
+.detalleFormRow select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.formGroupCheck {
+    margin-top: 15px;
+}
+
+.formGroupCheck label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+}
+
+.formGroupCheck input[type="checkbox"] {
+    margin-right: 10px;
+    width: auto;
+}
+
+/* =======================================
+ * ESTILOS PARA DETALLES (Hijos Anidados)
+ * ======================================= */
+
+.detalleFormRow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) auto; /* 3 selects y 1 botón */
+    gap: 15px;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.addButton {
+    background-color: #28a745; /* Verde */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: bold;
+}
+
+.addButton:hover {
+    background-color: #1e7e34;
+}
+
+.removeButton {
+    background-color: #dc3545; /* Rojo */
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.85em;
+}
+
+.removeButton:hover {
+    background-color: #c82333;
+}
+
+.detalleTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+.detalleTable th,
+.detalleTable td {
+    padding: 8px 10px;
+    border: 1px solid #dee2e6;
+    font-size: 0.9em;
+}
+
+.detalleTable th {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+/* =======================================
+ * FOOTER Y BOTONES DE ACCIÓN
+ * ======================================= */
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.submitButton {
+    background-color: #007bff; /* Azul primario */
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.submitButton:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+}
+
+.cancelButton {
+    background-color: #6c757d; /* Gris */
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cancelButton:hover {
+    background-color: #5a6268;
+}
+
+.errorMessage {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #007bff;
+}
+
+/* Adaptación para pantallas más pequeñas si es necesario */
+@media (max-width: 768px) {
+    .detalleFormRow {
+        grid-template-columns: 1fr; /* Apila los campos verticalmente */
+    }
+}

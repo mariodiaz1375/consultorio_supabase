@@ -1,5 +1,6 @@
 import React from 'react';
-import styles from './PacienteDetail.module.css'; 
+import styles from './PacienteDetail.module.css';
+import HistoriaClinicaList from '../historiaClinicaList/HistoriaClinicaList';
 
 // Función auxiliar para manejar la impresión de listas de info
 const renderArrayInfo = (array, keyName) => {
@@ -52,10 +53,11 @@ export default function PacienteDetail({ paciente, onBack }) {
             return word.charAt(0).toUpperCase() + word.slice(1);
         });
         
-        // 3. Unir las palabras de nuevo en una sola cadena con espacios
+        // 3. Unir las palabras de nuevo en una sola cadena con espacio
     return capitalizedWords.join(' ');
     };
 
+    const nombreCompletoPaciente = `${capitalizeName(paciente.nombre)} ${capitalizeName(paciente.apellido)}`;
 
     return (
         <div className={styles.container}>
@@ -97,6 +99,16 @@ export default function PacienteDetail({ paciente, onBack }) {
                     
                     <p><strong>Activo:</strong> {paciente.activo ? 'Sí' : 'No'}</p>
                 </div>
+            </div>
+
+            {/* Sección de Historias Clínicas */}
+            <div className={styles.dashboard}>
+                <h2>Historias Clínicas</h2>
+                {/* Llamada al nuevo componente, pasándole los datos necesarios */}
+                <HistoriaClinicaList 
+                    pacienteId={paciente.id} 
+                    nombrePaciente={nombreCompletoPaciente}
+                />
             </div>
 
             {/* Sección para futuros botones de Historia Clínica, Odontograma, etc. */}
