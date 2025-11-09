@@ -6,13 +6,11 @@ import styles from './HistoriaClinicaList.module.css'; // Debes crear este archi
 import HistoriaClinicaForm from '../historiaClinicaForm/HistoriaClinicaForm'
 
 // Componente para manejar la lista de Historias Clínicas de UN paciente
-export default function HistoriaClinicaList({ pacienteId, nombrePaciente }) {
+export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odontologoId, userRole }) {
     const [historias, setHistorias] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showForm, setShowForm] = useState(false);
-
-    const odontologoId = 18;
 
     const handleHcSave = (nuevaHc) => {
         // Añadir la nueva historia a la lista local para que aparezca inmediatamente
@@ -108,10 +106,14 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente }) {
                     </tbody>
                 </table>
             )}
-            
-            <button className={styles.newHcButton} onClick={() => setShowForm(true)}>
-                + Nueva Historia Clínica
-            </button>
+            {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
+                <button 
+                    className={styles.newHcButton} 
+                    onClick={() => setShowForm(true)} 
+                >
+                    + Nueva Historia Clínica
+                </button>
+            )}
             {/* Renderizado Condicional del Modal */}
             {showForm && (
                 <HistoriaClinicaForm

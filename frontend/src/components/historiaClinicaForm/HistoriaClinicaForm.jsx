@@ -144,7 +144,6 @@ export default function HistoriaClinicaForm({ pacienteId, odontologoId, onClose,
                                 name="descripcion"
                                 value={formData.descripcion}
                                 onChange={handleInputChange}
-                                required
                                 rows="3"
                             />
                         </div>

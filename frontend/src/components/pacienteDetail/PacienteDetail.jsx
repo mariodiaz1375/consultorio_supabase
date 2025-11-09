@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './PacienteDetail.module.css';
 import HistoriaClinicaList from '../historiaClinicaList/HistoriaClinicaList';
+import { getCurrentUser } from '../../api/personal.api';
 
 // Función auxiliar para manejar la impresión de listas de info
 const renderArrayInfo = (array, keyName) => {
@@ -12,6 +13,26 @@ const renderArrayInfo = (array, keyName) => {
 };
 
 export default function PacienteDetail({ paciente, onBack }) {
+    const [currentUser, setCurrentUser] = useState(null);
+    const [loadingUser, setLoadingUser] = useState(true);
+    const [errorUser, setErrorUser] = useState(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                // Llama a la API para obtener los datos del usuario autenticado
+                const user = await getCurrentUser();
+                setCurrentUser(user);
+            } catch (err) {
+                console.error("Error al cargar el usuario logueado:", err);
+                setErrorUser("No se pudo cargar la información de su usuario.");
+            } finally {
+                setLoadingUser(false);
+            }
+        };
+        fetchUser();
+    }, []);
+
     if (!paciente) {
         return (
             <div className={styles.container}>
@@ -20,6 +41,18 @@ export default function PacienteDetail({ paciente, onBack }) {
             </div>
         );
     }
+
+    if (loadingUser) {
+        return (
+            <div className={styles.container}>
+                <p>Cargando información del paciente y el odontólogo...</p>
+                <button onClick={onBack}>Volver a la Lista</button>
+            </div>
+        );
+    }
+
+    const odontologoId = currentUser ? currentUser.id : null;
+    const userRole = currentUser ? currentUser.puesto_info.nombre_puesto : null;
     
     // ⭐ Extracción de datos para simplificar la lectura
     // Se usa el operador `?` (optional chaining) para evitar errores si el objeto es nulo
@@ -30,7 +63,7 @@ export default function PacienteDetail({ paciente, onBack }) {
     // Conversión de arrays de información clínica a strings
     const antecedentesStr = renderArrayInfo(paciente.antecedentes_info, 'nombre_ant');
     const analisisFuncionalStr = renderArrayInfo(paciente.analisis_funcional_info, 'nombre_analisis');
-    
+
     const osForm = (obraSocialInfo) => {
         if (obraSocialInfo && obraSocialInfo.length > 0) {
             return obraSocialInfo.map((os, id) => (
@@ -108,6 +141,8 @@ export default function PacienteDetail({ paciente, onBack }) {
                 <HistoriaClinicaList 
                     pacienteId={paciente.id} 
                     nombrePaciente={nombreCompletoPaciente}
+                    odontologoId={odontologoId}
+                    userRole={userRole}
                 />
             </div>
 
