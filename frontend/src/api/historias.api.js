@@ -22,7 +22,7 @@ const historiasApi = axios.create({
 export const getHistoriasClinicas = async () => {
     try {
         // GET a /api/historias_clinicas/
-        const response = await historiasApi.get('/');
+        const response = await historiasApi.get('/historias/');
         return response.data;
     } catch (error) {
         console.error('Error al obtener la lista de historias clínicas:', error.response?.data || error);
@@ -37,7 +37,7 @@ export const getHistoriasClinicas = async () => {
 export const getHistoriaClinicaById = async (id) => {
     try {
         // GET a /api/historias_clinicas/ID/
-        const response = await historiasApi.get(`/${id}/`);
+        const response = await historiasApi.get(`/historias/${id}/`);
         return response.data;
     } catch (error) {
         console.error(`Error al obtener la historia clínica ${id}:`, error.response?.data || error);
@@ -59,7 +59,7 @@ export const getHistoriaClinicaById = async (id) => {
 export const createHistoriaClinica = async (historiaData) => {
     try {
         // POST a /api/historias_clinicas/
-        const response = await historiasApi.post('/', historiaData);
+        const response = await historiasApi.post('/historias/', historiaData);
         return response.data; // Retorna la nueva historia creada
     } catch (error) {
         console.error('Error al crear la historia clínica:', error.response?.data || error);
@@ -125,5 +125,46 @@ export const createSeguimiento = async (historiaId, seguimientoData) => {
     }
 };
 
-// ... (Puedes añadir funciones para editar o eliminar seguimientos, 
-// o CRUD completo para PiezasDentales/Tratamientos si los necesitas como catálogo)
+// ... (Puedes añadir funciones para editar o eliminar seguimientos,
+
+/**
+ * Obtiene la lista de todos los tratamientos dentales.
+ */
+export const getTratamientos = async () => {
+    try {
+        // GET a /api/historias_clinicas/tratamientos/
+        const response = await historiasApi.get('/tratamientos/');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener la lista de tratamientos:', error.response?.data || error);
+        throw error;
+    }
+};
+
+/**
+ * Obtiene la lista de todas las piezas dentales.
+ */
+export const getPiezasDentales = async () => {
+    try {
+        // GET a /api/historias_clinicas/piezas/
+        const response = await historiasApi.get('/piezas/');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener la lista de piezas dentales:', error.response?.data || error);
+        throw error;
+    }
+};
+
+/**
+ * Obtiene la lista de todas las caras dentales.
+ */
+export const getCarasDentales = async () => {
+    try {
+        // GET a /api/historias_clinicas/caras/
+        const response = await historiasApi.get('/caras/');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener la lista de caras dentales:', error.response?.data || error);
+        throw error;
+    }
+};

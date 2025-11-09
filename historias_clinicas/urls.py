@@ -1,17 +1,25 @@
 from rest_framework.routers import DefaultRouter
-from .views import HistoriaClinicaViewSet
+from .views import (
+    HistoriaClinicaViewSet,
+    TratamientoViewSet, 
+    PiezaDentalViewSet, 
+    CaraDentalViewSet
+)
 from django.urls import path, include
 
-# 1. Crear el Router
 router = DefaultRouter()
 
-# 2. Registrar el ViewSet (esto crea todas las rutas CRUD automáticamente)
-# El primer argumento es el prefijo de la URL (ej: /api/historias/)
-router.register(r'', HistoriaClinicaViewSet, basename='historiasclinicas')
+# 1. HC Principal: Ahora usa el prefijo 'historias'. 
+# URL final: /api/historias_clinicas/historias/
+router.register(r'historias', HistoriaClinicaViewSet, basename='historiasclinicas')
+
+# 2. Catálogos: Estos prefijos ahora funcionarán correctamente.
+# URL final: /api/historias_clinicas/tratamientos/
+router.register(r'tratamientos', TratamientoViewSet, basename='tratamientos')
+router.register(r'piezas', PiezaDentalViewSet, basename='piezasdentales')
+router.register(r'caras', CaraDentalViewSet, basename='carasdentales')
+
 
 urlpatterns = [
-    # Incluye todas las URLs generadas por el Router
     path('', include(router.urls)),
 ]
-
-# ovejardo el bestia
