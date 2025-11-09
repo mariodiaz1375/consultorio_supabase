@@ -99,6 +99,9 @@ class SeguimientoHC(models.Model):
     historia_clinica = models.ForeignKey(HistoriasClinicas, 
                                     on_delete=models.PROTECT,
                                     related_name='seguimientos')
+    odontologo = models.ForeignKey(Personal, 
+                                   on_delete=models.PROTECT, 
+                                   related_name='seguimientos_creados')
     descripcion = models.TextField(max_length=100, null=True, blank=True)
     fecha = models.DateTimeField(auto_now_add=True)
 

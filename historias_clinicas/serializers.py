@@ -35,11 +35,19 @@ class DetalleHCSerializer(serializers.ModelSerializer):
         ]
 
 class SeguimientoHCSerializer(serializers.ModelSerializer):
+    odontologo_nombre = serializers.CharField(source='odontologo.__str__', read_only=True)
     class Meta:
         model = SeguimientoHC
-        fields = '__all__'
+        fields = [
+            'id', 
+            'descripcion', 
+            'fecha', 
+            'historia_clinica',
+            'odontologo',  
+            'odontologo_nombre'
+        ]
         # Excluimos 'historia_clinica' ya que se establecerá automáticamente al crear el seguimiento anidado
-        read_only_fields = ('fecha', 'historia_clinica')
+        read_only_fields = ('fecha', 'historia_clinica', 'odontologo_nombre')
 
 
 class HistClinSerializer(serializers.ModelSerializer):
