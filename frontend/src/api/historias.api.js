@@ -117,7 +117,7 @@ export const createSeguimiento = async (historiaId, seguimientoData) => {
     try {
         // POST a /api/historias_clinicas/ID/seguimientos/
         // Esto requiere un ViewSet de Seguimiento anidado o un @action custom
-        const response = await historiasApi.post(`/${historiaId}/seguimientos/`, seguimientoData); 
+        const response = await historiasApi.post(`/historias/${historiaId}/seguimientos/`, seguimientoData); 
         return response.data;
     } catch (error) {
         console.error(`Error al crear seguimiento para HC ${historiaId}:`, error.response?.data || error);

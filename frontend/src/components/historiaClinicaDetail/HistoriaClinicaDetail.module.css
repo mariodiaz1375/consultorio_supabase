@@ -1,0 +1,227 @@
+/* src/components/HistoriaClinica/HistoriaDetail.module.css */
+
+.container {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    color: #0056b3;
+    font-size: 1.8em;
+}
+
+.backButton {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.backButton:hover {
+    background-color: #5a6268;
+}
+
+/* --- Info General --- */
+.infoGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-left: 5px solid #007bff;
+    border-radius: 4px;
+}
+
+.card h3 {
+    color: #007bff;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.finalizada {
+    padding: 3px 6px;
+    border-radius: 4px;
+    background-color: #28a745; 
+    color: white;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.abierta {
+    padding: 3px 6px;
+    border-radius: 4px;
+    background-color: #ffc107; 
+    color: #343a40;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+/* --- Secciones y Tablas --- */
+.section {
+    margin-bottom: 30px;
+}
+
+.section h3 {
+    color: #343a40;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 5px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 10px 15px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table th {
+    background-color: #e9ecef;
+}
+
+/* --- Seguimientos --- */
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    border-bottom: 2px solid #ced4da;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.newSeguimientoButton {
+    background-color: #17a2b8; /* Azul cian */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.newSeguimientoButton:hover {
+    background-color: #138496;
+}
+
+.seguimientoList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.seguimientoCard {
+    border: 1px solid #ced4da;
+    padding: 15px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+}
+
+.seguimientoDesc {
+    margin-top: 10px;
+    white-space: pre-wrap; /* Respeta saltos de línea y formato */
+}
+
+
+/* --- Estilos de Modal de Seguimiento (Reutilizados del Formulario) --- */
+
+.modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1010; 
+}
+
+.modalContentSmall {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px; /* Más pequeño para el seguimiento */
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.formGroup textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 15px;
+    margin-top: 15px;
+    border-top: 1px solid #e9ecef;
+}
+
+.submitButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.cancelButton {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}

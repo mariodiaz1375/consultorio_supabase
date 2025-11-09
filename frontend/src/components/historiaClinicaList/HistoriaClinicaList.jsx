@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { getHistoriasClinicas } from '../../api/historias.api'; 
 import styles from './HistoriaClinicaList.module.css'; // Debes crear este archivo CSS
 import HistoriaClinicaForm from '../historiaClinicaForm/HistoriaClinicaForm'
+import HistoriaDetail from '../historiaClinicaDetail/HistoriaClinicaDetail';
 
 // Componente para manejar la lista de Historias Clínicas de UN paciente
 export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odontologoId, userRole }) {
@@ -11,6 +12,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showForm, setShowForm] = useState(false);
+    const [selectedHcId, setSelectedHcId] = useState(null);
 
     const handleHcSave = (nuevaHc) => {
         // Añadir la nueva historia a la lista local para que aparezca inmediatamente
@@ -50,6 +52,25 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
             setLoading(false);
         }
     }, [pacienteId]); // Dependencia clave
+
+    const handleViewDetail = (hcId) => {
+        setSelectedHcId(hcId); // Muestra el componente de detalle
+    };
+    
+    const handleBackToList = () => {
+        setSelectedHcId(null); // Vuelve a mostrar la lista
+        // Opcional: Re-fetch para actualizar la lista después de volver
+        // fetchHistorias(); 
+    };
+    
+    // 1. Mostrar el Detalle si hay un ID seleccionado
+    if (selectedHcId) {
+        return <HistoriaDetail 
+        historiaId={selectedHcId} 
+        onBack={handleBackToList}
+        odontologoId={odontologoId}
+        />;
+    }
 
     if (loading) {
         return <p>Cargando historias clínicas...</p>;
@@ -98,7 +119,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                                     {/* Aquí se agregará la lógica para ver el detalle */}
                                     <button 
                                         className={styles.viewButton}
-                                        onClick={() => alert(`Ver detalle de HC ${hc.id}`)}
+                                        onClick={() => handleViewDetail(hc.id)}
                                     >
                                         Ver
                                     </button>
