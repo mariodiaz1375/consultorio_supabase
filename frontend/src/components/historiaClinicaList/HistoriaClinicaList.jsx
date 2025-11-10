@@ -1,7 +1,7 @@
 // src/components/HistoriaClinica/HistoriaClinicaList.jsx
 
 import React, { useState, useEffect } from 'react';
-import { getHistoriasClinicas } from '../../api/historias.api'; 
+import { getHistoriasClinicas, updateHistoriaClinica } from '../../api/historias.api'; 
 import styles from './HistoriaClinicaList.module.css'; // Debes crear este archivo CSS
 import HistoriaClinicaForm from '../historiaClinicaForm/HistoriaClinicaForm'
 import HistoriaDetail from '../historiaClinicaDetail/HistoriaClinicaDetail';
@@ -13,11 +13,46 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
     const [error, setError] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [selectedHcId, setSelectedHcId] = useState(null);
+    const [editingHc, setEditingHc] = useState(null);
 
     const handleHcSave = (nuevaHc) => {
-        // Añadir la nueva historia a la lista local para que aparezca inmediatamente
-        setHistorias([nuevaHc, ...historias]);
-        // Se podría añadir lógica para re-fetch si se prefiere
+        // Si se crea una nueva, la añadimos a la lista
+        if (!editingHc) {
+            setHistorias(prev => [nuevaHc, ...prev]);
+        } else {
+            // Si se edita, la reemplazamos
+            setHistorias(prev => prev.map(hc => hc.id === nuevaHc.id ? nuevaHc : hc));
+        }
+        setShowForm(false);
+        setEditingHc(null); // Limpiar el estado de edición
+    };
+
+    const handleEdit = (hc) => {
+        setEditingHc(hc); // Guarda el objeto HC para pasar al formulario
+        setShowForm(true); // Abre el formulario
+    };
+
+    const handleCancelEdit = () => {
+        setEditingHc(null); // Limpia el objeto
+        setShowForm(false); // Cierra el formulario
+    };
+    
+    const handleFinalizarHc = async (hc) => {
+        // Lógica simple para finalizar/abrir directamente desde la lista (Opcional)
+        // Podrías pedir confirmación aquí
+        try {
+            const dataToUpdate = { finalizado: !hc.finalizado };
+            const updatedHc = await updateHistoriaClinica(hc.id, dataToUpdate);
+            
+            // Actualiza el estado de la lista
+            setHistorias(prev => prev.map(item => 
+                item.id === hc.id ? { ...item, finalizado: updatedHc.finalizado } : item
+            ));
+            alert(`Historia Clínica N° ${hc.id} ${updatedHc.finalizado ? 'Finalizada' : 'Re-abierta'} con éxito.`);
+        } catch (err) {
+            console.error("Error al cambiar estado de HC:", err);
+            alert("Error al intentar cambiar el estado de la Historia Clínica.");
+        }
     };
 
     // useEffect se dispara cuando el pacienteId cambia
@@ -128,6 +163,20 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                                     >
                                         Ver
                                     </button>
+                                    <button 
+                                        className={styles.editButton}
+                                        onClick={() => handleEdit(hc)} 
+                                    >
+                                        Editar
+                                    </button>
+                                    
+                                    {/* ⭐ BOTÓN FINALIZAR/REABRIR */}
+                                    <button 
+                                        className={hc.finalizado ? styles.reabrirButton : styles.finalizarButton}
+                                        onClick={() => handleFinalizarHc(hc)}
+                                    >
+                                        {hc.finalizado ? 'Re-abrir' : 'Finalizar'}
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -147,7 +196,9 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                 <HistoriaClinicaForm
                     pacienteId={pacienteId}
                     odontologoId={odontologoId}
-                    onClose={() => setShowForm(false)}
+                    isEditing={!!editingHc} // Pasa true si hay un objeto en editingHc
+                    initialData={editingHc} // Pasa el objeto para precargar
+                    onClose={handleCancelEdit} // Usamos el manejador de cancelación
                     onSave={handleHcSave}
                 />
             )}

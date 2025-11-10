@@ -75,7 +75,7 @@ export const createHistoriaClinica = async (historiaData) => {
 export const updateHistoriaClinica = async (id, updatedFields) => {
     try {
         // PATCH a /api/historias_clinicas/ID/
-        const response = await historiasApi.patch(`/${id}/`, updatedFields);
+        const response = await historiasApi.patch(`/historias/${id}/`, updatedFields);
         return response.data; // Devuelve la historia actualizada
     } catch (error) {
         console.error(`Error al actualizar la historia clínica ${id}:`, error.response?.data || error);

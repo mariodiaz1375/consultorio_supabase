@@ -88,6 +88,52 @@
 .viewButton:hover {
     background-color: #0056b3;
 }
+.editButton {
+    /* Botón para ver el detalle de una HC */
+    background-color: #c97304;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.85em;
+}
+
+.editButton:hover {
+    background-color: #9e5b03;
+}
+.reabrirButton {
+    /* Botón para ver el detalle de una HC */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.85em;
+}
+
+.reabrirButton:hover {
+    background-color: #0056b3;
+}
+
+.finalizarButton {
+    /* Botón para ver el detalle de una HC */
+    background-color: #ee2501;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.85em;
+}
+
+.finalizarButton:hover {
+    background-color: #b91e02;
+}
 
 .newHcButton {
     /* Botón principal para crear una nueva HC */
