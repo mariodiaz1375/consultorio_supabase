@@ -5,19 +5,39 @@ import {
     createHistoriaClinica,
     getTratamientos, 
     getPiezasDentales, 
-    getCarasDentales
+    getCarasDentales,
+    updateHistoriaClinica
  } from '../../api/historias.api';
+ import styles from './HistoriaClinicaForm.module.css';
 // IMPORTANTE: Necesitas estas APIs para llenar los selectores (dropdowns)
 // Asumo que tienes APIs de catálogo:
 
-import styles from './HistoriaClinicaForm.module.css'; // Debes crear este archivo CSS
+const initialFormData = {
+    descripcion: '',
+    finalizado: false,
+    detalles: [] // Array de DetallesHC
+};
 
-export default function HistoriaClinicaForm({ pacienteId, odontologoId, onClose, onSave }) {
+export default function HistoriaClinicaForm({ 
+    pacienteId, 
+    odontologoId, 
+    onClose, 
+    onSave,
+    isEditing = false, 
+    initialData = null 
+}) {
     // 1. Estados del Formulario Principal
-    const [formData, setFormData] = useState({
-        descripcion: '',
-        finalizado: false,
-    });
+    const [formData, setFormData] = useState(
+        isEditing && initialData 
+            ? { 
+                ...initialData,
+                // Mapeo específico si los campos son diferentes de los de la API (ej: desc_hc -> descripcion)
+                descripcion: initialData.descripcion || initialData.desc_hc,
+                // Si la edición incluye Detalles, cargarlos
+                detalles: initialData.detalles || [] 
+              }
+            : initialFormData
+    );
     
     // 2. Estado para la lista de DetallesHC (los hijos)
     const [detalles, setDetalles] = useState([]);
@@ -69,6 +89,14 @@ export default function HistoriaClinicaForm({ pacienteId, odontologoId, onClose,
         });
     };
 
+    const handleFinalizadoChange = (e) => {
+        // Maneja el checkbox 'Finalizado'
+        setFormData(prev => ({
+            ...prev,
+            finalizado: e.target.checked
+        }));
+    };
+
     const handleDetalleChange = (e) => {
         const { name, value } = e.target;
         setNuevoDetalle({
@@ -100,24 +128,42 @@ export default function HistoriaClinicaForm({ pacienteId, odontologoId, onClose,
     // --- Manejador de Envío Principal ---
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         setError(null);
         
         // El objeto de datos final para el API (padre + hijos)
-        const dataToSubmit = {
-            ...formData,
+        const payload = {
             paciente: pacienteId,
             odontologo: odontologoId,
-            detalles: detalles, // Array de detallesHC
+            descripcion: formData.descripcion,
+            finalizado: formData.finalizado,
+            fecha_fin: formData.finalizado ? new Date().toISOString() : null, // Opcional: registrar fecha de fin
+            detalles: formData.detalles.map(d => ({
+                // Solo enviamos los IDs para los detalles
+                tratamiento: d.tratamiento,
+                cara_dental: d.cara_dental,
+                pieza_dental: d.pieza_dental,
+            }))
         };
 
         try {
-            const nuevaHC = await createHistoriaClinica(dataToSubmit);
-            alert(`Historia Clínica ${nuevaHC.id} creada con éxito.`);
-            onSave(nuevaHC); // Notificar al padre (PacienteDetail) para actualizar la lista
-            onClose(); // Cerrar el modal
+            let result;
+            if (isEditing) {
+                // ⭐ LÓGICA DE EDICIÓN
+                result = await updateHistoriaClinica(initialData.id, payload);
+                alert(`Historia Clínica N° ${result.id} actualizada con éxito.`);
+            } else {
+                // LÓGICA DE CREACIÓN
+                result = await createHistoriaClinica(payload);
+                alert(`Historia Clínica N° ${result.id} creada con éxito.`);
+            }
+
+            onSave(result); // Pasa la HC actualizada/creada al componente padre
         } catch (err) {
-            setError("Error al registrar la Historia Clínica. Revise los datos.");
-            console.error("Error al enviar HC:", err);
+            setError(`Error al ${isEditing ? 'actualizar' : 'crear'} la Historia Clínica.`);
+            console.error(`Error de API (${isEditing ? 'UPDATE' : 'CREATE'} HC):`, err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -128,7 +174,7 @@ export default function HistoriaClinicaForm({ pacienteId, odontologoId, onClose,
         <div className={styles.modalBackdrop}>
             <div className={styles.modalContent}>
                 <div className={styles.modalHeader}>
-                    <h2>Nueva Historia Clínica (HC)</h2>
+                    <h2>{isEditing ? `Editar HC N° ${initialData.id}` : `Nueva Historia Clínica`}</h2>
                     <button onClick={onClose} className={styles.closeButton}>&times;</button>
                 </div>
 
@@ -147,6 +193,7 @@ export default function HistoriaClinicaForm({ pacienteId, odontologoId, onClose,
                                 rows="3"
                             />
                         </div>
+                        {!isEditing && (
                         <div className={styles.formGroupCheck}>
                             <label htmlFor="finalizado">
                                 <input
@@ -159,6 +206,22 @@ export default function HistoriaClinicaForm({ pacienteId, odontologoId, onClose,
                                 Marcar como finalizada inmediatamente
                             </label>
                         </div>
+                        )}
+                        {/* Campo de Finalizado (Solo visible en edición) */}
+                    {isEditing && (
+                        <div className={styles.formRow}>
+                            <div className={styles.formGroupCheckbox}>
+                                <input
+                                    type="checkbox"
+                                    id="finalizado"
+                                    name="finalizado"
+                                    checked={formData.finalizado}
+                                    onChange={handleFinalizadoChange}
+                                />
+                                <label htmlFor="finalizado">Historia Clínica Finalizada</label>
+                            </div>
+                        </div>
+                    )}
                     </fieldset>
 
                     {/* Sección 2: Creación de DetallesHC Anidados */}
@@ -223,8 +286,8 @@ export default function HistoriaClinicaForm({ pacienteId, odontologoId, onClose,
                     
                     <div className={styles.modalFooter}>
                         <button type="button" onClick={onClose} className={styles.cancelButton}>Cancelar</button>
-                        <button type="submit" className={styles.submitButton} disabled={detalles.length === 0}>
-                            Crear Historia Clínica
+                        <button type="submit" className={styles.submitButton} disabled={detalles.length === 0 }>
+                            {loading ? 'Guardando...' : isEditing ? 'Guardar Cambios' : 'Crear Historia Clínica'}
                         </button>
                     </div>
                 </form>
