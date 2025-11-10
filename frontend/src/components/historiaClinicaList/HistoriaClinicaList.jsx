@@ -102,7 +102,12 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                         {historias.map((hc) => (
                             <tr key={hc.id}>
                                 <td>{hc.odontologo_nombre}</td>
-                                <td>{hc.detalles[0].tratamiento_nombre}</td>
+                                <td>
+                                    {hc.detalles && hc.detalles.length > 0
+                                        ? hc.detalles[0].tratamiento_nombre
+                                        : 'Sin detalles'
+                                    }
+                                </td>
                                 <td>{new Date(hc.fecha_inicio).toLocaleDateString()}</td>
                                 {/* Mostrar el último tratamiento registrado */}
                                 <td>
