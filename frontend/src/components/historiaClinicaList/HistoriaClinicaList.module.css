@@ -105,7 +105,7 @@
 }
 .reabrirButton {
     /* Botón para ver el detalle de una HC */
-    background-color: #007bff;
+    background-color: #38c002;
     color: white;
     border: none;
     padding: 6px 12px;
@@ -116,7 +116,7 @@
 }
 
 .reabrirButton:hover {
-    background-color: #0056b3;
+    background-color: #197901;
 }
 
 .finalizarButton {

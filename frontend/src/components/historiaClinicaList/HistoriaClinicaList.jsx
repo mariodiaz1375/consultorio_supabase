@@ -14,6 +14,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
     const [showForm, setShowForm] = useState(false);
     const [selectedHcId, setSelectedHcId] = useState(null);
     const [editingHc, setEditingHc] = useState(null);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const handleHcSave = (nuevaHc) => {
         // Si se crea una nueva, la añadimos a la lista
@@ -37,21 +38,37 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
         setShowForm(false); // Cierra el formulario
     };
     
-    const handleFinalizarHc = async (hc) => {
-        // Lógica simple para finalizar/abrir directamente desde la lista (Opcional)
-        // Podrías pedir confirmación aquí
+    const handleFinalizarHc = async (historia) => {
         try {
-            const dataToUpdate = { finalizado: !hc.finalizado };
-            const updatedHc = await updateHistoriaClinica(hc.id, dataToUpdate);
+            // 1. Determinar el nuevo estado
+            const nuevoFinalizado = !historia.finalizado;
             
-            // Actualiza el estado de la lista
-            setHistorias(prev => prev.map(item => 
-                item.id === hc.id ? { ...item, finalizado: updatedHc.finalizado } : item
-            ));
-            alert(`Historia Clínica N° ${hc.id} ${updatedHc.finalizado ? 'Finalizada' : 'Re-abierta'} con éxito.`);
+            // Determinar la fecha de finalización (solo si se está finalizando)
+            const nuevaFechaFin = nuevoFinalizado ? new Date().toISOString().split('T')[0] : null; 
+
+            const updatedData = {
+                // Se envían solo los campos a modificar
+                finalizado: nuevoFinalizado,
+                fecha_fin: nuevaFechaFin, 
+                // Opcional: descripción
+                // descripcion: historia.descripcion // Asegúrate de incluir campos requeridos si la API lo necesita
+            };
+            
+            // 2. Llamar a la API de actualización
+            // La API debe devolver el objeto de Historia Clínica ya actualizado (updatedHc)
+            const updatedHc = await updateHistoriaClinica(historia.id, updatedData);
+
+            // 3. ✅ ACTUALIZACIÓN CLAVE: Reemplazar el objeto antiguo en el estado
+            setHistorias(prev => 
+                prev.map(hc => hc.id === updatedHc.id ? updatedHc : hc)
+            );
+
+            // Opcional: Notificación de éxito
+            console.log(`Historia Clínica ${historia.id} actualizada.`);
         } catch (err) {
-            console.error("Error al cambiar estado de HC:", err);
-            alert("Error al intentar cambiar el estado de la Historia Clínica.");
+            console.error("Error al finalizar/reabrir HC:", err);
+            // Manejo de error
+            // setError("Error al actualizar la Historia Clínica.");
         }
     };
 
@@ -86,7 +103,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
         } else {
             setLoading(false);
         }
-    }, [pacienteId]); // Dependencia clave
+    }, [pacienteId, refreshKey]); // Dependencia clave
 
     const handleViewDetail = (hcId) => {
         setSelectedHcId(hcId); // Muestra el componente de detalle
