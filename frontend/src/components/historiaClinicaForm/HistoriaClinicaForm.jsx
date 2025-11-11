@@ -125,6 +125,13 @@ export default function HistoriaClinicaForm({
         setDetalles(detalles.filter((_, i) => i !== index));
     };
 
+    const handleDetalleRemove = (indexToRemove) => {
+        setFormData(prev => ({
+            ...prev,
+            detalles: prev.detalles.filter((_, index) => index !== indexToRemove)
+        }));
+    };
+
     // --- Manejador de Envío Principal ---
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -247,6 +254,42 @@ export default function HistoriaClinicaForm({
                                             <td>{catalogos.caras.find(c => c.id === d.cara_dental)?.nombre_cara || 'N/A'}</td>
                                             <td>
                                                 <button type="button" onClick={() => removeDetalle(index)} className={styles.removeButton}>
+                                                    Eliminar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                        {formData.detalles.length > 0 && (
+                            <table className={styles.detalleTable}>
+                                <thead>
+                                    <tr>
+                                        <th>Tratamiento</th>
+                                        <th>Pieza Dental</th>
+                                        <th>Cara</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {formData.detalles.map((detalle, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                {detalle.tratamiento_nombre}
+                                            </td>
+                                            <td>
+                                                {detalle.pieza_codigo}
+                                            </td>
+                                            <td>
+                                                {detalle.cara_nombre}
+                                            </td>
+                                            <td>
+                                                <button 
+                                                    type="button" 
+                                                    onClick={() => handleDetalleRemove(index)}
+                                                    className={styles.removeButton}
+                                                >
                                                     Eliminar
                                                 </button>
                                             </td>
