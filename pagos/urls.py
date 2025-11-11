@@ -1,4 +1,3 @@
-# pagos/urls.py (Actualizado)
 from django.urls import path
 from .views import (
     PagosList, 
@@ -16,11 +15,11 @@ urlpatterns = [
 
     # --- 2. Catálogos ---
     
-    # Entregas (Listar/Crear y Detalle/Editar/Eliminar)
+    # Entregas (CRUD completo)
     path('entregas/', EntregasList.as_view(), name='entregas_list'),
     path('entregas/<int:pk>/', EntregasDetail.as_view(), name='entrega_detail'),
     
-    # Cuotas (Listar/Crear y Detalle/Editar/Eliminar)
+    # Cuotas (CRUD completo)
     path('cuotas/', CuotasList.as_view(), name='cuotas_list'),
     path('cuotas/<int:pk>/', CuotasDetail.as_view(), name='cuota_detail'),
 ]
