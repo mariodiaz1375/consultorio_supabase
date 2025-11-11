@@ -1,6 +1,26 @@
-from django.urls import path, include
-from .views import PagosList
+# pagos/urls.py (Actualizado)
+from django.urls import path
+from .views import (
+    PagosList, 
+    PagosDetail, 
+    EntregasList,
+    EntregasDetail,
+    CuotasList,
+    CuotasDetail
+)
 
 urlpatterns = [
-    path('', PagosList.as_view(), name='pagos_list')
+    # --- 1. CRUD de Pagos (Endpoints principales) ---
+    path('', PagosList.as_view(), name='pagos_list'),
+    path('<int:pk>/', PagosDetail.as_view(), name='pago_detail'),
+
+    # --- 2. Catálogos ---
+    
+    # Entregas (Listar/Crear y Detalle/Editar/Eliminar)
+    path('entregas/', EntregasList.as_view(), name='entregas_list'),
+    path('entregas/<int:pk>/', EntregasDetail.as_view(), name='entrega_detail'),
+    
+    # Cuotas (Listar/Crear y Detalle/Editar/Eliminar)
+    path('cuotas/', CuotasList.as_view(), name='cuotas_list'),
+    path('cuotas/<int:pk>/', CuotasDetail.as_view(), name='cuota_detail'),
 ]

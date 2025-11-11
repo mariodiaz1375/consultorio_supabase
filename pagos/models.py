@@ -2,6 +2,7 @@ from django.db import models
 from historias_clinicas.models import HistoriasClinicas
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
+from personal.models import Personal
 
 # Create your models here.
 
@@ -21,13 +22,21 @@ class Cuotas(models.Model):
 
 class Pagos(models.Model):
     entrega = models.ForeignKey(Entregas, 
-                              on_delete=models.PROTECT)
+                                 on_delete=models.PROTECT,
+                                 null=True, blank=True)
+    # 🚨 CAMBIO SOLICITADO: Permitir NULL en 'cuota'
     cuota = models.ForeignKey(Cuotas, 
-                              on_delete=models.PROTECT)
+                              on_delete=models.PROTECT,
+                              null=True, blank=True) 
     hist_clin = models.ForeignKey(HistoriasClinicas, 
-                              on_delete=models.PROTECT)
-    fecha_limite = models.DateField()
-    fecha_pago = models.DateTimeField()
+                                 on_delete=models.PROTECT,
+                                 null=True, blank=True)
+    registrado_por = models.ForeignKey(Personal,
+                                       on_delete=models.PROTECT,
+                                       related_name='pagos_registrados',
+                                       default=18)
+    #fecha_limite = models.DateField(null=True, blank=True)
+    fecha_pago = models.DateTimeField(null=True, blank=True)
     pagado = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
@@ -42,14 +51,17 @@ class Pagos(models.Model):
                     total_pagos = Pagos.objects.filter(entrega=self.entrega).count()
                     self.fecha_limite = fecha_actual + relativedelta(months=total_pagos)  # Incrementa un mes por cada cuota existente
 
-        if self.pagado and not self.fecha_fin:
-            self.fecha_fin = timezone.now()
-        elif not self.finalizado:
-            self.fecha_fin = None  # Opcional: Limpia la fecha_fin si se desmarca
+        # 🚨 CORRECCIÓN DE BUG: Se reemplazó 'fecha_fin' por 'fecha_pago' y 'finalizado' por 'pagado'
+        if self.pagado and not self.fecha_pago:
+            self.fecha_pago = timezone.now()
+        elif not self.pagado:
+            self.fecha_pago = None  # Limpia la fecha_pago si se desmarca
+            
         super(Pagos, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.hist_clin.paciente
+        # Asumiendo que self.hist_clin puede ser nulo ahora
+        return self.hist_clin.paciente if self.hist_clin else f"Pago sin HC ({self.id})"
 
     class Meta:
         verbose_name = 'Pago'
