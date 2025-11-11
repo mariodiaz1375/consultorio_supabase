@@ -91,3 +91,25 @@ class HistClinSerializer(serializers.ModelSerializer):
             DetallesHC.objects.create(historia_clinica=historia_clinica, **detalle_data)
             
         return historia_clinica
+    
+    def update(self, instance, validated_data):
+        # 1. Extraer los datos de 'detalles' si existen
+        detalles_data = validated_data.pop('detalles', None)
+        
+        # 2. Actualizar los campos simples de la Historia Clínica
+        instance.descripcion = validated_data.get('descripcion', instance.descripcion)
+        instance.finalizado = validated_data.get('finalizado', instance.finalizado)
+        instance.fecha_fin = validated_data.get('fecha_fin', instance.fecha_fin)
+        instance.save()
+        
+        # 3. Si se enviaron detalles, actualizar la relación
+        if detalles_data is not None:
+            # Opción A: Eliminar los detalles existentes y crear los nuevos
+            instance.detalles.all().delete()
+            for detalle_data in detalles_data:
+                DetallesHC.objects.create(historia_clinica=instance, **detalle_data)
+            
+            # Opción B (más compleja): Actualizar/crear/eliminar según corresponda
+            # Esta opción preserva los IDs existentes si es necesario
+        
+        return instance

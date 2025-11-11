@@ -14,7 +14,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
     const [showForm, setShowForm] = useState(false);
     const [selectedHcId, setSelectedHcId] = useState(null);
     const [editingHc, setEditingHc] = useState(null);
-    const [refreshKey, setRefreshKey] = useState(0);
+    // const [refreshKey, setRefreshKey] = useState(0);
 
     const handleHcSave = (nuevaHc) => {
         // Si se crea una nueva, la añadimos a la lista
@@ -103,7 +103,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
         } else {
             setLoading(false);
         }
-    }, [pacienteId, refreshKey]); // Dependencia clave
+    }, [pacienteId]); // Dependencia clave
 
     const handleViewDetail = (hcId) => {
         setSelectedHcId(hcId); // Muestra el componente de detalle
