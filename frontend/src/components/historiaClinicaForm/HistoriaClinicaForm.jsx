@@ -9,13 +9,11 @@ import {
     updateHistoriaClinica
  } from '../../api/historias.api';
  import styles from './HistoriaClinicaForm.module.css';
-// IMPORTANTE: Necesitas estas APIs para llenar los selectores (dropdowns)
-// Asumo que tienes APIs de catálogo:
 
 const initialFormData = {
     descripcion: '',
     finalizado: false,
-    detalles: [] // Array de DetallesHC
+    detalles: [] // Array ÚNICO de DetallesHC
 };
 
 export default function HistoriaClinicaForm({ 
@@ -26,30 +24,26 @@ export default function HistoriaClinicaForm({
     isEditing = false, 
     initialData = null 
 }) {
-    // 1. Estados del Formulario Principal
-    const [formData, setFormData] = useState(
-        isEditing && initialData 
-            ? { 
-                ...initialData,
-                // Mapeo específico si los campos son diferentes de los de la API (ej: desc_hc -> descripcion)
-                descripcion: initialData.descripcion || initialData.desc_hc,
-                // Si la edición incluye Detalles, cargarlos
-                detalles: initialData.detalles || [] 
-              }
-            : initialFormData
-    );
+    // ✅ UN SOLO ESTADO para todo el formulario
+    const [formData, setFormData] = useState(() => {
+        if (isEditing && initialData) {
+            return {
+                descripcion: initialData.descripcion || '',
+                finalizado: initialData.finalizado || false,
+                detalles: initialData.detalles || [] // Cargamos los detalles existentes
+            };
+        }
+        return initialFormData;
+    });
     
-    // 2. Estado para la lista de DetallesHC (los hijos)
-    const [detalles, setDetalles] = useState([]);
-
-    // 3. Estado del Detalle en curso (para agregar uno nuevo)
+    // Estado del Detalle en curso (para agregar uno nuevo)
     const [nuevoDetalle, setNuevoDetalle] = useState({
         tratamiento: '',
         pieza_dental: '',
         cara_dental: '',
     });
 
-    // 4. Estados de catálogos (para los <select>)
+    // Estados de catálogos
     const [catalogos, setCatalogos] = useState({
         tratamientos: [],
         piezas: [],
@@ -63,7 +57,6 @@ export default function HistoriaClinicaForm({
     useEffect(() => {
         const fetchCatalogos = async () => {
             try {
-                // Asumiendo que tienes endpoints de catálogo funcionales
                 const [tratamientos, piezas, caras] = await Promise.all([
                     getTratamientos(),
                     getPiezasDentales(),
@@ -80,40 +73,49 @@ export default function HistoriaClinicaForm({
         fetchCatalogos();
     }, []);
 
-    // --- Manejadores de Cambio ---
+    // --- Manejadores ---
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData({
-            ...formData,
-            [name]: type === 'checkbox' ? checked : value,
-        });
-    };
-
-    const handleFinalizadoChange = (e) => {
-        // Maneja el checkbox 'Finalizado'
         setFormData(prev => ({
             ...prev,
-            finalizado: e.target.checked
+            [name]: type === 'checkbox' ? checked : value,
         }));
     };
 
     const handleDetalleChange = (e) => {
         const { name, value } = e.target;
-        setNuevoDetalle({
-            ...nuevoDetalle,
-            [name]: value === '' ? '' : parseInt(value), // Convertir a entero para FKs
-        });
+        setNuevoDetalle(prev => ({
+            ...prev,
+            [name]: value === '' ? '' : parseInt(value),
+        }));
     };
 
+    // ✅ Agregar detalle al array ÚNICO
     const addDetalle = () => {
-        // Validación básica antes de agregar el detalle
         if (!nuevoDetalle.tratamiento || !nuevoDetalle.pieza_dental || !nuevoDetalle.cara_dental) {
             alert("Debe seleccionar Tratamiento, Pieza y Cara.");
             return;
         }
 
-        setDetalles([...detalles, nuevoDetalle]);
-        // Resetear el detalle en curso para agregar el siguiente
+        // Buscar los nombres para mostrar en la tabla
+        const tratamientoNombre = catalogos.tratamientos.find(t => t.id === nuevoDetalle.tratamiento)?.nombre_trat;
+        const piezaCodigo = catalogos.piezas.find(p => p.id === nuevoDetalle.pieza_dental)?.codigo_pd;
+        const caraNombre = catalogos.caras.find(c => c.id === nuevoDetalle.cara_dental)?.nombre_cara;
+
+        // Agregar al formData con los datos completos
+        setFormData(prev => ({
+            ...prev,
+            detalles: [...prev.detalles, {
+                tratamiento: nuevoDetalle.tratamiento,
+                pieza_dental: nuevoDetalle.pieza_dental,
+                cara_dental: nuevoDetalle.cara_dental,
+                tratamiento_nombre: tratamientoNombre,
+                pieza_codigo: piezaCodigo,
+                cara_nombre: caraNombre
+            }]
+        }));
+
+        // Resetear el formulario de nuevo detalle
         setNuevoDetalle({
             tratamiento: '',
             pieza_dental: '',
@@ -121,46 +123,48 @@ export default function HistoriaClinicaForm({
         });
     };
 
+    // ✅ Eliminar detalle del array ÚNICO
     const removeDetalle = (index) => {
-        setDetalles(detalles.filter((_, i) => i !== index));
-    };
-
-    const handleDetalleRemove = (indexToRemove) => {
         setFormData(prev => ({
             ...prev,
-            detalles: prev.detalles.filter((_, index) => index !== indexToRemove)
+            detalles: prev.detalles.filter((_, i) => i !== index)
         }));
     };
 
-    // --- Manejador de Envío Principal ---
+    // --- Manejador de Envío ---
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (formData.detalles.length === 0) {
+            alert("Debe agregar al menos un detalle de tratamiento.");
+            return;
+        }
+
         setLoading(true);
         setError(null);
         
-        // El objeto de datos final para el API (padre + hijos)
+        // Preparar el payload para la API
         const payload = {
             paciente: pacienteId,
             odontologo: odontologoId,
             descripcion: formData.descripcion,
             finalizado: formData.finalizado,
-            fecha_fin: formData.finalizado ? new Date().toISOString() : null, // Opcional: registrar fecha de fin
+            fecha_fin: formData.finalizado ? new Date().toISOString().split('T')[0] : null,
             detalles: formData.detalles.map(d => ({
-                // Solo enviamos los IDs para los detalles
                 tratamiento: d.tratamiento,
                 cara_dental: d.cara_dental,
                 pieza_dental: d.pieza_dental,
             }))
         };
 
+        console.log("📤 Payload enviado:", payload); // Para debug
+
         try {
             let result;
             if (isEditing) {
-                // ⭐ LÓGICA DE EDICIÓN
                 result = await updateHistoriaClinica(initialData.id, payload);
                 alert(`Historia Clínica N° ${result.id} actualizada con éxito.`);
             } else {
-                // LÓGICA DE CREACIÓN
                 result = await createHistoriaClinica(payload);
                 alert(`Historia Clínica N° ${result.id} creada con éxito.`);
             }
@@ -169,14 +173,17 @@ export default function HistoriaClinicaForm({
         } catch (err) {
             setError(`Error al ${isEditing ? 'actualizar' : 'crear'} la Historia Clínica.`);
             console.error(`Error de API (${isEditing ? 'UPDATE' : 'CREATE'} HC):`, err);
+            console.error("Respuesta del servidor:", err.response?.data);
         } finally {
             setLoading(false);
         }
     };
 
-    if (loading) return <div className={styles.loading}>Cargando datos de catálogo...</div>;
+    if (loading && catalogos.tratamientos.length === 0) {
+        return <div className={styles.loading}>Cargando datos de catálogo...</div>;
+    }
 
-    // --- Renderizado del Formulario ---
+    // --- Renderizado ---
     return (
         <div className={styles.modalBackdrop}>
             <div className={styles.modalContent}>
@@ -187,7 +194,7 @@ export default function HistoriaClinicaForm({
 
                 <form onSubmit={handleSubmit}>
                     
-                    {/* Sección 1: Datos Principales de la HC */}
+                    {/* Sección 1: Datos Principales */}
                     <fieldset className={styles.fieldset}>
                         <legend>Datos de la Consulta</legend>
                         <div className={styles.formGroup}>
@@ -200,7 +207,7 @@ export default function HistoriaClinicaForm({
                                 rows="3"
                             />
                         </div>
-                        {!isEditing && (
+                        
                         <div className={styles.formGroupCheck}>
                             <label htmlFor="finalizado">
                                 <input
@@ -210,58 +217,16 @@ export default function HistoriaClinicaForm({
                                     checked={formData.finalizado}
                                     onChange={handleInputChange}
                                 />
-                                Marcar como finalizada inmediatamente
+                                {isEditing ? 'Historia Clínica Finalizada' : 'Marcar como finalizada inmediatamente'}
                             </label>
                         </div>
-                        )}
-                        {/* Campo de Finalizado (Solo visible en edición) */}
-                    {isEditing && (
-                        <div className={styles.formRow}>
-                            <div className={styles.formGroupCheckbox}>
-                                <input
-                                    type="checkbox"
-                                    id="finalizado"
-                                    name="finalizado"
-                                    checked={formData.finalizado}
-                                    onChange={handleFinalizadoChange}
-                                />
-                                <label htmlFor="finalizado">Historia Clínica Finalizada</label>
-                            </div>
-                        </div>
-                    )}
                     </fieldset>
 
-                    {/* Sección 2: Creación de DetallesHC Anidados */}
+                    {/* Sección 2: Tabla ÚNICA de Detalles */}
                     <fieldset className={styles.fieldset}>
-                        <legend>Plan de Tratamiento Inicial (Detalles HC)</legend>
+                        <legend>Plan de Tratamiento (Detalles HC)</legend>
                         
-                        {/* Tabla de Detalles Agregados */}
-                        {detalles.length > 0 && (
-                            <table className={styles.detalleTable}>
-                                <thead>
-                                    <tr>
-                                        <th>Tratamiento</th>
-                                        <th>Pieza Dental</th>
-                                        <th>Cara</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {detalles.map((d, index) => (
-                                        <tr key={index}>
-                                            <td>{catalogos.tratamientos.find(t => t.id === d.tratamiento)?.nombre_trat || 'N/A'}</td>
-                                            <td>{catalogos.piezas.find(p => p.id === d.pieza_dental)?.codigo_pd || 'N/A'}</td>
-                                            <td>{catalogos.caras.find(c => c.id === d.cara_dental)?.nombre_cara || 'N/A'}</td>
-                                            <td>
-                                                <button type="button" onClick={() => removeDetalle(index)} className={styles.removeButton}>
-                                                    Eliminar
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        )}
+                        {/* ✅ TABLA ÚNICA para mostrar detalles */}
                         {formData.detalles.length > 0 && (
                             <table className={styles.detalleTable}>
                                 <thead>
@@ -275,19 +240,13 @@ export default function HistoriaClinicaForm({
                                 <tbody>
                                     {formData.detalles.map((detalle, index) => (
                                         <tr key={index}>
-                                            <td>
-                                                {detalle.tratamiento_nombre}
-                                            </td>
-                                            <td>
-                                                {detalle.pieza_codigo}
-                                            </td>
-                                            <td>
-                                                {detalle.cara_nombre}
-                                            </td>
+                                            <td>{detalle.tratamiento_nombre || 'N/A'}</td>
+                                            <td>{detalle.pieza_codigo || 'N/A'}</td>
+                                            <td>{detalle.cara_nombre || 'N/A'}</td>
                                             <td>
                                                 <button 
                                                     type="button" 
-                                                    onClick={() => handleDetalleRemove(index)}
+                                                    onClick={() => removeDetalle(index)}
                                                     className={styles.removeButton}
                                                 >
                                                     Eliminar
@@ -329,7 +288,11 @@ export default function HistoriaClinicaForm({
                     
                     <div className={styles.modalFooter}>
                         <button type="button" onClick={onClose} className={styles.cancelButton}>Cancelar</button>
-                        <button type="submit" className={styles.submitButton} disabled={detalles.length === 0 }>
+                        <button 
+                            type="submit" 
+                            className={styles.submitButton} 
+                            disabled={loading || formData.detalles.length === 0}
+                        >
                             {loading ? 'Guardando...' : isEditing ? 'Guardar Cambios' : 'Crear Historia Clínica'}
                         </button>
                     </div>
