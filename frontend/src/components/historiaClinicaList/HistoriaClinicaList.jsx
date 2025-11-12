@@ -18,6 +18,19 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
     // const [refreshKey, setRefreshKey] = useState(0);
     const [pagosModalHc, setPagosModalHc] = useState(null);
 
+    // 🚨 NUEVA FUNCIÓN: Determina si la HC contiene tratamiento de ortodoncia
+    const esOrtodoncia = (historiaClinica) => {
+        if (!historiaClinica.detalles || historiaClinica.detalles.length === 0) {
+            return false;
+        }
+        
+        // Busca si algún detalle tiene un tratamiento con nombre que incluya "ortodoncia"
+        return historiaClinica.detalles.some(detalle => {
+            const tratamientoNombre = detalle.tratamiento_nombre?.toLowerCase() || '';
+            return tratamientoNombre.includes('ortodoncia');
+        });
+    };
+
     const handleHcSave = (nuevaHc) => {
         // Si se crea una nueva, la añadimos a la lista
         if (!editingHc) {
@@ -231,6 +244,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                 <PagosModal
                     historiaClinica={pagosModalHc} // Pasa el objeto HC
                     currentPersonalId={odontologoId}
+                    esOrtodoncia={esOrtodoncia(pagosModalHc)}
                     onClose={() => setPagosModalHc(null)}
                 />
             )}

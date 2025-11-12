@@ -1,6 +1,12 @@
 /* Reutiliza estilos de tabla de HistoriaClinicaList.module.css */
+.title {
+    align-self: center;
+}
+
 .pagosContainer {
     padding: 10px 0;
+    max-height: 60vh;
+    overflow-y: auto;
 }
 
 .pagosTable {
