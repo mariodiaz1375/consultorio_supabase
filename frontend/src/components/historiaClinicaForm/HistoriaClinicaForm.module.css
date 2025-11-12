@@ -255,3 +255,21 @@
         grid-template-columns: 1fr; /* Apila los campos verticalmente */
     }
 }
+.otroTratamientoWarning {
+    color: #e63946;
+    font-size: 0.9em;
+    margin-left: 15px;
+    font-weight: normal;
+}
+
+.ortodonciaWarning {
+    color: #06a77d;
+    font-size: 0.9em;
+    margin-left: 15px;
+    font-weight: normal;
+}
+
+.lockedSelect {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
