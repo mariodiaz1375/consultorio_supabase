@@ -136,6 +136,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
         historiaId={selectedHcId} 
         onBack={handleBackToList}
         odontologoId={odontologoId}
+        userRole={userRole}
         />;
     }
 
@@ -195,20 +196,22 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                                     >
                                         Ver
                                     </button>
-                                    <button 
-                                        className={styles.editButton}
-                                        onClick={() => handleEdit(hc)} 
-                                    >
-                                        Editar
-                                    </button>
-                                    
-                                    {/* ⭐ BOTÓN FINALIZAR/REABRIR */}
-                                    <button 
-                                        className={hc.finalizado ? styles.reabrirButton : styles.finalizarButton}
-                                        onClick={() => handleFinalizarHc(hc)}
-                                    >
-                                        {hc.finalizado ? 'Re-abrir' : 'Finalizar'}
-                                    </button>
+                                    {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
+                                        <button 
+                                            className={styles.editButton}
+                                            onClick={() => handleEdit(hc)} 
+                                        >
+                                            Editar
+                                        </button>
+                                    )}
+                                    {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
+                                        <button 
+                                            className={hc.finalizado ? styles.reabrirButton : styles.finalizarButton}
+                                            onClick={() => handleFinalizarHc(hc)}
+                                        >
+                                            {hc.finalizado ? 'Re-abrir' : 'Finalizar'}
+                                        </button>
+                                    )}
                                     <button
                                         className={styles.pagosButton} // Necesitaremos este estilo
                                         onClick={() => setPagosModalHc(hc)} // Pasa el objeto HC completo

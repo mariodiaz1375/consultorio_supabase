@@ -6,7 +6,7 @@ import styles from './HistoriaClinicaDetail.module.css'; // Crear este archivo C
 import SeguimientoForm from './SeguimientoForm'; // Componente que crearemos a continuación
 
 // Recibe el ID de la HC a mostrar y una función para volver a la lista
-export default function HistoriaDetail({ historiaId, onBack, odontologoId}) {
+export default function HistoriaDetail({ historiaId, onBack, odontologoId, userRole}) {
     const [historia, setHistoria] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -92,12 +92,14 @@ export default function HistoriaDetail({ historiaId, onBack, odontologoId}) {
 
             <div className={styles.sectionHeader}>
                 <h3>Seguimientos y Evolución ({historia.seguimientos.length})</h3>
-                <button 
-                    className={styles.newSeguimientoButton}
-                    onClick={() => setShowSeguimientoForm(true)}
-                >
-                    + Agregar Seguimiento
-                </button>
+                {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
+                    <button 
+                        className={styles.newSeguimientoButton}
+                        onClick={() => setShowSeguimientoForm(true)}
+                    >
+                        + Agregar Seguimiento
+                    </button>
+                )}
             </div>
 
             {/* Modal de Seguimiento */}
