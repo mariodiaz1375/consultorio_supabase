@@ -1,54 +1,57 @@
 from rest_framework import serializers
-from .models import Pagos, Entregas, Cuotas
-from personal.serializers import Personal1Serializer # Asegúrate de que este serializer exista
-from historias_clinicas.models import HistoriasClinicas
+from .models import Pagos, TiposPagos
+# Importar modelos relacionados de otras aplicaciones para acceso (aunque usamos StringRelatedField)
+# from historias_clinicas.models import HistoriasClinicas # Asumimos que existe
+# from personal.models import Personal # Asumimos que existe
 
-# --- Serializers de Catálogo ---
-class EntregasSerializer(serializers.ModelSerializer):
+# --- Serializer para Tablas Maestras ---
+class TiposPagosSerializer(serializers.ModelSerializer):
+    """
+    Serializer para el modelo TiposPagos.
+    Usado para llenar select/dropdowns en el frontend.
+    """
     class Meta:
-        model = Entregas
-        fields = ('id', 'nombre_ent')
+        model = TiposPagos
+        fields = '__all__'
 
-class CuotasSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cuotas
-        fields = ('id', 'nombre_cuota')
 
 # --- Serializer Principal de Pagos ---
 class PagosSerializer(serializers.ModelSerializer):
     
-    # --- CAMPOS DE LECTURA (GET) ---
-    entrega_info = EntregasSerializer(source='entrega', read_only=True)
-    cuota_info = CuotasSerializer(source='cuota', read_only=True)
-    hist_clin_paciente = serializers.CharField(source='hist_clin.paciente.__str__', read_only=True)
-    registrado_por_info = Personal1Serializer(source='registrado_por', read_only=True)
+    # 1. CAMPOS DE LECTURA (GET): Muestran el nombre legible de las relaciones.
+    
+    # Asume que el modelo HistoriasClinicas tiene un método __str__ que incluye el paciente
+    hist_clin_display = serializers.StringRelatedField(source='hist_clin', read_only=True)
+    # Muestra el nombre del Tipo de Pago
+    tipo_pago_nombre = serializers.StringRelatedField(source='tipo_pago', read_only=True)
+    # Muestra el nombre del Personal que registró el pago
+    registrado_por_nombre = serializers.StringRelatedField(source='registrado_por', read_only=True)
 
-    # --- CAMPOS DE ESCRITURA (POST/PUT) ---
-    entrega_id = serializers.IntegerField(write_only=True, source='entrega', allow_null=True, required=False)
-    cuota_id = serializers.IntegerField(write_only=True, source='cuota', allow_null=True, required=False)
-    
-    # 🚨 CAMBIO AQUÍ: Campo ahora obligatorio
-    hist_clin_id = serializers.IntegerField(write_only=True, source='hist_clin') # Se quitaron allow_null y required=False
-    
     class Meta:
         model = Pagos
         fields = (
             'id', 
+            'pagado', 
             'fecha_pago', 
-            'pagado',
             
-            # Lectura
-            'entrega_info',
-            'cuota_info',
-            'hist_clin_paciente',
-            'registrado_por_info',
-            
-            # Escritura
-            'entrega_id',
-            'cuota_id',
-            'hist_clin_id', # <-- Ahora requerido
-            
+            # Foreign Keys (para envío de IDs en POST/PUT)
+            'tipo_pago', 
+            'hist_clin', 
             'registrado_por',
+            
+            # Campos Read-Only para la visualización
+            'hist_clin_display', 
+            'tipo_pago_nombre',
+            'registrado_por_nombre',
         )
         
-        read_only_fields = ('registrado_por', 'fecha_pago')
+        # 'fecha_pago' se sigue manejando en el modelo/vista.
+        # read_only_fields = ('fecha_pago',)
+        # Aseguramos que 'id' y campos display sean read-only
+        read_only_fields = ('id', 'hist_clin_display', 'tipo_pago_nombre', 'registrado_por_nombre')
+
+
+    def update(self, instance, validated_data):
+        # Si 'pagado' cambia a True y 'fecha_pago' es None, el método .save() del modelo
+        # (que incluye la lógica de timezone.now()) se encargará de actualizar 'fecha_pago'.
+        return super().update(instance, validated_data)

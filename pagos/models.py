@@ -6,27 +6,27 @@ from personal.models import Personal
 
 # Create your models here.
 
-class Entregas(models.Model):
-    nombre_ent = models.CharField(max_length=20)
+class TiposPagos(models.Model):
+    nombre_tipo_pago = models.CharField(max_length=20)
 
     class Meta:
-        verbose_name = 'Entrega'
-        verbose_name_plural = 'Entregas'
+        verbose_name = 'Tipo de pagos'
+        verbose_name_plural = 'Tipos de pagos'
 
-class Cuotas(models.Model):
-    nombre_cuota = models.CharField(max_length=20)
+# class Cuotas(models.Model):
+#     nombre_cuota = models.CharField(max_length=20)
 
-    class Meta:
-        verbose_name = 'Cuota'
-        verbose_name_plural = 'Cuotas'
+#     class Meta:
+#         verbose_name = 'Cuota'
+#         verbose_name_plural = 'Cuotas'
 
 class Pagos(models.Model):
-    entrega = models.ForeignKey(Entregas, 
+    tipo_pago = models.ForeignKey(TiposPagos, 
                                  on_delete=models.PROTECT,
                                  null=True, blank=True)
-    cuota = models.ForeignKey(Cuotas, 
-                              on_delete=models.PROTECT,
-                              null=True, blank=True) 
+    # cuota = models.ForeignKey(Cuotas, 
+    #                           on_delete=models.PROTECT,
+    #                           null=True, blank=True) 
     
     # 🚨 CAMBIO AQUÍ: Campo ahora obligatorio
     hist_clin = models.ForeignKey(HistoriasClinicas, 
@@ -57,7 +57,6 @@ class Pagos(models.Model):
     class Meta:
         verbose_name = 'Pago'
         verbose_name_plural = 'Pagos'
-
 
 
 

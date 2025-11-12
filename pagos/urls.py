@@ -1,25 +1,14 @@
 from django.urls import path
-from .views import (
-    PagosList, 
-    PagosDetail, 
-    EntregasList,
-    EntregasDetail,
-    CuotasList,
-    CuotasDetail
-)
+from .views import PagosList, PagosDetail, TiposPagosList
 
 urlpatterns = [
-    # --- 1. CRUD de Pagos (Endpoints principales) ---
-    path('', PagosList.as_view(), name='pagos_list'),
-    path('<int:pk>/', PagosDetail.as_view(), name='pago_detail'),
-
-    # --- 2. Catálogos ---
+    # 1. Rutas Principales (CRUD de Pagos)
+    # GET (Listar) y POST (Crear)
+    path('', PagosList.as_view(), name='pagos-list'), 
+    # GET (Detalle), PUT/PATCH (Actualizar) y DELETE (Eliminar)
+    path('<int:pk>/', PagosDetail.as_view(), name='pagos-detail'),
     
-    # Entregas (CRUD completo)
-    path('entregas/', EntregasList.as_view(), name='entregas_list'),
-    path('entregas/<int:pk>/', EntregasDetail.as_view(), name='entrega_detail'),
-    
-    # Cuotas (CRUD completo)
-    path('cuotas/', CuotasList.as_view(), name='cuotas_list'),
-    path('cuotas/<int:pk>/', CuotasDetail.as_view(), name='cuota_detail'),
+    # 2. Rutas para Listados de Opciones (Tablas Maestras)
+    # Usadas por el frontend para llenar los select/dropdowns
+    path('tipos/', TiposPagosList.as_view(), name='tipos-pagos-list'),
 ]

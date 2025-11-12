@@ -5,6 +5,7 @@ import { getHistoriasClinicas, updateHistoriaClinica } from '../../api/historias
 import styles from './HistoriaClinicaList.module.css'; // Debes crear este archivo CSS
 import HistoriaClinicaForm from '../historiaClinicaForm/HistoriaClinicaForm'
 import HistoriaDetail from '../historiaClinicaDetail/HistoriaClinicaDetail';
+import PagosModal from '../pagosModal/PagosModal';
 
 // Componente para manejar la lista de Historias Clínicas de UN paciente
 export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odontologoId, userRole }) {
@@ -15,6 +16,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
     const [selectedHcId, setSelectedHcId] = useState(null);
     const [editingHc, setEditingHc] = useState(null);
     // const [refreshKey, setRefreshKey] = useState(0);
+    const [pagosModalHc, setPagosModalHc] = useState(null);
 
     const handleHcSave = (nuevaHc) => {
         // Si se crea una nueva, la añadimos a la lista
@@ -194,6 +196,12 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                                     >
                                         {hc.finalizado ? 'Re-abrir' : 'Finalizar'}
                                     </button>
+                                    <button
+                                        className={styles.pagosButton} // Necesitaremos este estilo
+                                        onClick={() => setPagosModalHc(hc)} // Pasa el objeto HC completo
+                                    >
+                                        Pagos
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -217,6 +225,12 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                     initialData={editingHc} // Pasa el objeto para precargar
                     onClose={handleCancelEdit} // Usamos el manejador de cancelación
                     onSave={handleHcSave}
+                />
+            )}
+            {pagosModalHc && (
+                <PagosModal
+                    historiaClinica={pagosModalHc} // Pasa el objeto HC
+                    onClose={() => setPagosModalHc(null)}
                 />
             )}
         </div>
