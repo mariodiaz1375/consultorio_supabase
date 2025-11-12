@@ -230,6 +230,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
             {pagosModalHc && (
                 <PagosModal
                     historiaClinica={pagosModalHc} // Pasa el objeto HC
+                    currentPersonalId={odontologoId}
                     onClose={() => setPagosModalHc(null)}
                 />
             )}

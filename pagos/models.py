@@ -9,6 +9,9 @@ from personal.models import Personal
 class TiposPagos(models.Model):
     nombre_tipo_pago = models.CharField(max_length=20)
 
+    def __str__(self):
+        return self.nombre_tipo_pago
+
     class Meta:
         verbose_name = 'Tipo de pagos'
         verbose_name_plural = 'Tipos de pagos'
