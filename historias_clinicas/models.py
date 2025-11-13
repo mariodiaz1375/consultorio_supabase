@@ -103,7 +103,7 @@ class SeguimientoHC(models.Model):
                                    on_delete=models.PROTECT, 
                                    related_name='seguimientos_creados')
     descripcion = models.TextField(max_length=100, null=True, blank=True)
-    fecha = models.DateTimeField(auto_now_add=True)
+    fecha = models.DateTimeField()
 
     def __str__(self):
         return f'Seguimiento {self.id} | HC: {self.historia_clinica.id} | Fecha: {self.fecha.strftime("%Y-%m-%d")}'

@@ -5,7 +5,8 @@ from .models import (
     HistoriasClinicas, 
     PiezasDentales, 
     CarasDentales, 
-    Tratamientos
+    Tratamientos,
+    SeguimientoHC
 )
 from .serializers import (
     HistClinSerializer,
@@ -54,6 +55,32 @@ class HistoriaClinicaViewSet(viewsets.ModelViewSet):
             seguimiento = serializer.save(historia_clinica=historia)
             # 4. Devolvemos el Seguimiento recién creado
             return Response(SeguimientoHCSerializer(seguimiento).data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['patch'], url_path='seguimientos/(?P<seguimiento_id>[^/.]+)')
+    def update_seguimiento(self, request, pk=None, seguimiento_id=None):
+        """
+        Actualiza un SeguimientoHC específico de una Historia Clínica.
+        URL generada: /historias/{pk}/seguimientos/{seguimiento_id}/ [PATCH]
+        
+        Al editar, se actualiza el odontólogo al que está editando.
+        """
+        try:
+            historia = HistoriasClinicas.objects.get(pk=pk)
+            seguimiento = SeguimientoHC.objects.get(pk=seguimiento_id, historia_clinica=historia)
+        except HistoriasClinicas.DoesNotExist:
+            return Response({'detail': 'Historia Clínica no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+        except SeguimientoHC.DoesNotExist:
+            return Response({'detail': 'Seguimiento no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Serializar con datos parciales
+        serializer = SeguimientoHCSerializer(seguimiento, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            # ✅ El odontólogo se actualiza automáticamente desde request.data
+            seguimiento_actualizado = serializer.save()
+            return Response(SeguimientoHCSerializer(seguimiento_actualizado).data, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

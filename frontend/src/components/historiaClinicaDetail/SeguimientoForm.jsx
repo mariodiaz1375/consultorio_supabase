@@ -1,34 +1,55 @@
 // src/components/HistoriaClinica/SeguimientoForm.jsx
 
 import React, { useState } from 'react';
-import { createSeguimiento } from '../../api/historias.api';
-import styles from './HistoriaClinicaDetail.module.css'; // Reutilizaremos los estilos del modal
+import { createSeguimiento, updateSeguimiento } from '../../api/historias.api';
+import styles from './HistoriaClinicaDetail.module.css';
 
-export default function SeguimientoForm({ historiaId, odontologoId, onClose, onSave }) {
-    const [descripcion, setDescripcion] = useState('');
+export default function SeguimientoForm({ 
+    historiaId, 
+    odontologoId, 
+    onClose, 
+    onSave,
+    isEditing = false,
+    initialData = null 
+}) {
+    const [descripcion, setDescripcion] = useState(initialData?.descripcion || '');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!descripcion.trim()) return;
+        if (!descripcion.trim()) {
+            alert("La descripción no puede estar vacía.");
+            return;
+        }
 
         setLoading(true);
         setError(null);
         
         const seguimientoData = {
             descripcion: descripcion,
-            // Los campos FK necesarios para la API
             historia_clinica: historiaId, 
-            odontologo: odontologoId 
+            odontologo: odontologoId, // ✅ Siempre se actualiza al odontólogo que está editando/creando
+            fecha: new Date().toISOString() // ✅ Actualizar la fecha al momento actual
         };
 
         try {
-            const nuevoSeguimiento = await createSeguimiento(historiaId, seguimientoData);
-            onSave(nuevoSeguimiento); // Actualiza la lista en el padre (HistoriaDetail)
+            let resultado;
+            
+            if (isEditing) {
+                // ✅ MODO EDICIÓN: Actualiza descripción Y odontólogo
+                resultado = await updateSeguimiento(historiaId, initialData.id, seguimientoData);
+                alert("Seguimiento actualizado correctamente.");
+            } else {
+                // MODO CREACIÓN
+                resultado = await createSeguimiento(historiaId, seguimientoData);
+                alert("Seguimiento creado correctamente.");
+            }
+            
+            onSave(resultado, isEditing);
         } catch (err) {
-            setError("Error al registrar el seguimiento. Intente nuevamente.");
-            console.error("Error al crear seguimiento:", err);
+            setError(`Error al ${isEditing ? 'actualizar' : 'registrar'} el seguimiento. Intente nuevamente.`);
+            console.error("Error en seguimiento:", err);
         } finally {
             setLoading(false);
         }
@@ -36,9 +57,9 @@ export default function SeguimientoForm({ historiaId, odontologoId, onClose, onS
 
     return (
         <div className={styles.modalBackdrop}>
-            <div className={styles.modalContentSmall}> {/* Usamos una clase más pequeña */}
+            <div className={styles.modalContentSmall}>
                 <div className={styles.modalHeader}>
-                    <h2>Nuevo Seguimiento/Evolución</h2>
+                    <h2>{isEditing ? 'Editar Seguimiento' : 'Nuevo Seguimiento/Evolución'}</h2>
                     <button onClick={onClose} className={styles.closeButton}>&times;</button>
                 </div>
                 
@@ -53,13 +74,23 @@ export default function SeguimientoForm({ historiaId, odontologoId, onClose, onS
                             required
                         />
                     </div>
+                    
+                    {/* Mostrar información original si es edición */}
+                    {isEditing && initialData && (
+                        <div className={styles.editInfo}>
+                            <p><small>Creado originalmente por: {initialData.odontologo_nombre}</small></p>
+                            <p><small>Fecha original: {new Date(initialData.fecha).toLocaleString()}</small></p>
+                        </div>
+                    )}
+                    
                     {error && <p className={styles.errorMessage}>{error}</p>}
+                    
                     <div className={styles.modalFooter}>
                         <button type="button" onClick={onClose} className={styles.cancelButton} disabled={loading}>
                             Cancelar
                         </button>
                         <button type="submit" className={styles.submitButton} disabled={loading || !descripcion.trim()}>
-                            {loading ? 'Guardando...' : 'Guardar Seguimiento'}
+                            {loading ? 'Guardando...' : isEditing ? 'Actualizar Seguimiento' : 'Guardar Seguimiento'}
                         </button>
                     </div>
                 </form>

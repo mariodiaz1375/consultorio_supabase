@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { getHistoriaClinicaById } from '../../api/historias.api';
-import styles from './HistoriaClinicaDetail.module.css'; // Crear este archivo CSS
-import SeguimientoForm from './SeguimientoForm'; // Componente que crearemos a continuación
+import styles from './HistoriaClinicaDetail.module.css';
+import SeguimientoForm from './SeguimientoForm';
 
-// Recibe el ID de la HC a mostrar y una función para volver a la lista
-export default function HistoriaDetail({ historiaId, onBack, odontologoId, userRole}) {
+export default function HistoriaDetail({ historiaId, onBack, odontologoId, userRole }) {
     const [historia, setHistoria] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showSeguimientoForm, setShowSeguimientoForm] = useState(false);
+    const [editingSeguimiento, setEditingSeguimiento] = useState(null);
 
     const fetchHistoria = async () => {
         setLoading(true);
@@ -30,21 +30,43 @@ export default function HistoriaDetail({ historiaId, onBack, odontologoId, userR
         fetchHistoria();
     }, [historiaId]);
 
-    // Manejador para agregar un nuevo seguimiento a la lista local
-    const handleAddSeguimiento = (nuevoSeguimiento) => {
-        // Actualiza el estado de la HC con el nuevo seguimiento
-        setHistoria(prev => ({
-            ...prev,
-            seguimientos: [nuevoSeguimiento, ...prev.seguimientos] // Añadir al inicio de la lista
-        }));
+    // ✅ Manejador para agregar O editar seguimiento
+    const handleSaveSeguimiento = (seguimientoActualizado, isEditing) => {
+        if (isEditing) {
+            // Actualizar el seguimiento existente en la lista
+            setHistoria(prev => ({
+                ...prev,
+                seguimientos: prev.seguimientos.map(s => 
+                    s.id === seguimientoActualizado.id ? seguimientoActualizado : s
+                )
+            }));
+        } else {
+            // Agregar nuevo seguimiento al inicio
+            setHistoria(prev => ({
+                ...prev,
+                seguimientos: [seguimientoActualizado, ...prev.seguimientos]
+            }));
+        }
         setShowSeguimientoForm(false);
+        setEditingSeguimiento(null);
+    };
+
+    // ✅ Manejador para abrir el formulario de edición
+    const handleEditSeguimiento = (seguimiento) => {
+        setEditingSeguimiento(seguimiento);
+        setShowSeguimientoForm(true);
+    };
+
+    // ✅ Manejador para cerrar formulario
+    const handleCloseForm = () => {
+        setShowSeguimientoForm(false);
+        setEditingSeguimiento(null);
     };
 
     if (loading) return <div className={styles.loading}>Cargando Historia Clínica...</div>;
     if (error) return <div className={styles.error}>{error}</div>;
     if (!historia) return <div className={styles.container}><p>Historia Clínica no encontrada.</p></div>;
 
-    // --- Renderizado del Detalle ---
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -95,20 +117,25 @@ export default function HistoriaDetail({ historiaId, onBack, odontologoId, userR
                 {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
                     <button 
                         className={styles.newSeguimientoButton}
-                        onClick={() => setShowSeguimientoForm(true)}
+                        onClick={() => {
+                            setEditingSeguimiento(null);
+                            setShowSeguimientoForm(true);
+                        }}
                     >
                         + Agregar Seguimiento
                     </button>
                 )}
             </div>
 
-            {/* Modal de Seguimiento */}
+            {/* Modal de Seguimiento (Crear o Editar) */}
             {showSeguimientoForm && (
                 <SeguimientoForm 
                     historiaId={historia.id} 
                     odontologoId={odontologoId}
-                    onClose={() => setShowSeguimientoForm(false)}
-                    onSave={handleAddSeguimiento}
+                    onClose={handleCloseForm}
+                    onSave={handleSaveSeguimiento}
+                    isEditing={!!editingSeguimiento}
+                    initialData={editingSeguimiento}
                 />
             )}
             
@@ -117,17 +144,29 @@ export default function HistoriaDetail({ historiaId, onBack, odontologoId, userR
                 {historia.seguimientos.length === 0 ? (
                     <p>No hay seguimientos registrados para esta Historia Clínica.</p>
                 ) : (
-                    // Muestra los seguimientos del más reciente al más antiguo
                     historia.seguimientos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).map((seguimiento) => (
                         <div key={seguimiento.id} className={styles.seguimientoCard}>
-                            <p><strong>Odontólogo:</strong> {seguimiento.odontologo_nombre}</p>
-                            <p><strong>Fecha:</strong> {new Date(seguimiento.fecha).toLocaleString()}</p>
+                            <div className={styles.seguimientoHeader}>
+                                <div>
+                                    <p><strong>Odontólogo:</strong> {seguimiento.odontologo_nombre}</p>
+                                    <p><strong>Fecha:</strong> {new Date(seguimiento.fecha).toLocaleString()}</p>
+                                </div>
+                                {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
+                                    <div className={styles.seguimientoActions}>
+                                        <button 
+                                            className={styles.editBtn}
+                                            onClick={() => handleEditSeguimiento(seguimiento)}
+                                        >
+                                            Editar
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                             <p className={styles.seguimientoDesc}>{seguimiento.descripcion}</p>
                         </div>
                     ))
                 )}
             </div>
-
         </div>
     );
 }

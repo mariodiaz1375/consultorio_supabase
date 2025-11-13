@@ -125,6 +125,31 @@ export const createSeguimiento = async (historiaId, seguimientoData) => {
     }
 };
 
+/**
+ * ✅ Actualiza un seguimiento existente.
+ * Al editar, actualiza el odontólogo al que está editando.
+ * @param {number} historiaId - ID de la Historia Clínica
+ * @param {number} seguimientoId - ID del Seguimiento a editar
+ * @param {object} seguimientoData - Debe incluir:
+ * {
+ *   descripcion: '...',
+ *   odontologo: <ID> // El nuevo odontólogo que está editando
+ * }
+ */
+export const updateSeguimiento = async (historiaId, seguimientoId, seguimientoData) => {
+    try {
+        const response = await historiasApi.patch(
+            `/historias/${historiaId}/seguimientos/${seguimientoId}/`, 
+            seguimientoData
+        );
+        console.log(`✅ Seguimiento ${seguimientoId} actualizado:`, response.data);
+        return response.data;
+    } catch (error) {
+        console.error(`Error al actualizar seguimiento ${seguimientoId}:`, error.response?.data || error);
+        throw error;
+    }
+};
+
 // ... (Puedes añadir funciones para editar o eliminar seguimientos,
 
 /**

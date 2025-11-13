@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import HistoriasClinicas, DetallesHC, SeguimientoHC, PiezasDentales, CarasDentales, Tratamientos
-
+from django.utils import timezone
 # Serializers para entidades simples o de catálogo (opcional, pero útil)
 class PiezaDentalSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,8 +46,21 @@ class SeguimientoHCSerializer(serializers.ModelSerializer):
             'odontologo',  
             'odontologo_nombre'
         ]
-        # Excluimos 'historia_clinica' ya que se establecerá automáticamente al crear el seguimiento anidado
-        read_only_fields = ('fecha', 'historia_clinica', 'odontologo_nombre')
+        # Excluimos 'historia_clinica' ya que se establecerÃ¡ automÃ¡ticamente al crear el seguimiento anidado
+        read_only_fields = ('historia_clinica', 'odontologo_nombre')
+
+    def create(self, validated_data):
+    # Si no viene fecha, asignar la actual
+        if 'fecha' not in validated_data:
+            validated_data['fecha'] = timezone.now()
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        instance.descripcion = validated_data.get('descripcion', instance.descripcion)
+        instance.odontologo = validated_data.get('odontologo', instance.odontologo)
+        instance.fecha = validated_data.get('fecha', instance.fecha)  # <-- Actualizar fecha
+        instance.save(update_fields=['descripcion', 'odontologo', 'fecha'])
+        return instance
 
 
 class HistClinSerializer(serializers.ModelSerializer):
