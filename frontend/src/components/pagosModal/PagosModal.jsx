@@ -62,7 +62,8 @@ export default function PagosModal({ historiaClinica, currentPersonalId, esOrtod
                         pagoId: pagoExistente.id,
                         pagado: pagoExistente.pagado,
                         fecha_pago: pagoExistente.fecha_pago,
-                        registrado_por_nombre: pagoExistente.registrado_por_nombre,
+                        // 🚨 USAR EL NOMBRE CORRECTO DEL SERIALIZER
+                        registrado_por_nombre: pagoExistente.registrado_por_nombre || 'N/A',
                         existe: true
                     };
                 } else {
@@ -95,8 +96,21 @@ export default function PagosModal({ historiaClinica, currentPersonalId, esOrtod
     const handleTogglePagado = async (itemPagoDisplay) => {
         if (saving) return;
         
-        setSaving(true);
         const nuevoEstado = !itemPagoDisplay.pagado;
+        
+        // 🚨 CONFIRMACIÓN ANTES DE CAMBIAR EL ESTADO
+        //const accion = nuevoEstado ? 'registrar' : 'desmarcar';
+        const mensaje = nuevoEstado 
+            ? `¿Está seguro de registrar el pago de "${itemPagoDisplay.tipoPagoNombre}"?`
+            : `¿Está seguro de desmarcar el pago de "${itemPagoDisplay.tipoPagoNombre}"?\n\nEsto eliminará el registro de pago.`;
+        
+        const confirmado = window.confirm(mensaje);
+        
+        if (!confirmado) {
+            return; // Si el usuario cancela, no hacer nada
+        }
+        
+        setSaving(true);
 
         // Actualización optimista (UI instantánea)
         setPagosDisplay(prevPagos => 
@@ -170,7 +184,7 @@ export default function PagosModal({ historiaClinica, currentPersonalId, esOrtod
         <ModalAdd 
             isOpen={true} 
             onClose={onClose} 
-            title={`Pagos de HC N° ${historiaClinica.id} - ${pacienteNombre}`}
+            title={`Pagos de HC N° ${historiaClinica.id} - ${pacienteNombre} `}
         >
             <div className={styles.pagosContainer}>
                 {loading && <p>Cargando pagos...</p>}
