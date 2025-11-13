@@ -12,6 +12,7 @@ export default function HistoriaDetail({ historiaId, onBack, odontologoId, userR
     const [showSeguimientoForm, setShowSeguimientoForm] = useState(false);
     const [editingSeguimiento, setEditingSeguimiento] = useState(null);
 
+useEffect(() => {
     const fetchHistoria = async () => {
         setLoading(true);
         setError(null);
@@ -25,10 +26,9 @@ export default function HistoriaDetail({ historiaId, onBack, odontologoId, userR
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        fetchHistoria();
-    }, [historiaId]);
+    
+    fetchHistoria();
+}, [historiaId]);
 
     // ✅ Manejador para agregar O editar seguimiento
     const handleSaveSeguimiento = (seguimientoActualizado, isEditing) => {
