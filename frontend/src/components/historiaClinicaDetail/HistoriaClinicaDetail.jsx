@@ -153,16 +153,22 @@ useEffect(() => {
                                 </div>
                                 {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
                                     <div className={styles.seguimientoActions}>
-                                        <button 
-                                            className={styles.editBtn}
+                                        {/* <button 
+                                            className={styles.editButton}
                                             onClick={() => handleEditSeguimiento(seguimiento)}
                                         >
                                             Editar
-                                        </button>
+                                        </button> */}
                                     </div>
                                 )}
                             </div>
                             <p className={styles.seguimientoDesc}>{seguimiento.descripcion}</p>
+                            <button 
+                                className={styles.editButton}
+                                onClick={() => handleEditSeguimiento(seguimiento)}
+                            >
+                                Editar
+                            </button>
                         </div>
                     ))
                 )}

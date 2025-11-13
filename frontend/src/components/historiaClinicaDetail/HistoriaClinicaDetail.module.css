@@ -37,6 +37,22 @@
     background-color: #5a6268;
 }
 
+.editButton {
+    /* Botón para ver el detalle de una HC */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.85em;
+}
+
+.editButton:hover {
+    background-color: #0056b3;
+}
+
 /* --- Info General --- */
 .infoGrid {
     display: grid;
