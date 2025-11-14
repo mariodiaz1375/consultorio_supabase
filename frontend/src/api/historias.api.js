@@ -165,6 +165,37 @@ export const getTratamientos = async () => {
         throw error;
     }
 };
+export const createTratamiento = async (data) => {
+    try {
+        // data debe ser { nombre_ant: 'Nuevo Nombre' }
+        const response = await historiasApi.post('/tratamientos/', data);
+        return response.data;
+    } catch (error) {
+        console.error("Error al crear Tratamiento:", error);
+        throw error;
+    }
+};
+
+export const updateTratamientos = async (id, data) => {
+    try {
+        const response = await historiasApi.patch(`/tratamientos/${id}/`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error al editar Tratamiento:", error);
+        throw error;
+    }
+};
+
+export const deleteTratamientos = async (id) => {
+    try {
+        await historiasApi.delete(`/tratamientos/${id}/`);
+        return true;
+    } catch (error) {
+        console.error("Error al eliminar Tratamiento:", error);
+        throw error;
+    }
+};
+
 
 /**
  * Obtiene la lista de todas las piezas dentales.

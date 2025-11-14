@@ -10,6 +10,9 @@ import {
     getAnalisisFuncional, createAnalisisFuncional, updateAnalisisFuncional, deleteAnalisisFuncional,
     // ... otras funciones si son necesarias
 } from '../../api/pacientes.api.js';
+import {
+  getTratamientos, createTratamiento, updateTratamientos, deleteTratamientos,
+} from '../../api/historias.api.js';
 
 const Dashboard = () => {
   const [userInfo, setUserInfo] = useState(null);
@@ -18,24 +21,28 @@ const Dashboard = () => {
   const [isOsModalOpen, setIsOsModalOpen] = useState(false);
   const [isAntecedenteModalOpen, setIsAntecedenteModalOpen] = useState(false);
   const [isAnalisisFuncionalModalOpen, setIsAnalisisFuncionalModalOpen] = useState(false);
+  const [isTratModalOpen, setIsTratModalOpen] = useState(false);
   
   const [obrasSociales, setObrasSociales] = useState([]);
   const [antecedentes, setAntecedentes] = useState([]);
   const [analisisFuncional, setAnalisisFuncional] = useState([]);
+  const [tratamientos, setTratamientos] = useState([]);
 
   // 🚨 4. FUNCIÓN PARA CARGAR TODAS LAS LISTAS MAESTRAS
   const loadMasterOptions = useCallback(async () => {
     try {
-        const [osList, antList, afList] = await Promise.all([
+        const [osList, antList, afList, tratList] = await Promise.all([
             getObrasSociales(),
             getAntecedentes(),
             getAnalisisFuncional(),
+            getTratamientos(),
         ]);
         
         // Actualizar estados
         setObrasSociales(osList);
         setAntecedentes(antList);
         setAnalisisFuncional(afList);
+        setTratamientos(tratList)
     } catch (error) {
         console.error("Error al cargar las listas maestras:", error);
     }
@@ -48,6 +55,7 @@ const Dashboard = () => {
             os: 'nombre_os',
             antecedentes: 'nombre_ant',
             analisisFuncional: 'nombre_analisis',
+            tratamientos: 'nombre_trat',
         };
 
         const nameField = nameFieldMap[listType];
@@ -60,6 +68,7 @@ const Dashboard = () => {
         if (listType === 'os') list = obrasSociales;
         else if (listType === 'antecedentes') list = antecedentes;
         else if (listType === 'analisisFuncional') list = analisisFuncional;
+        else if (listType === 'tratamientos') list = tratamientos;
         
         // Si la acción es editar o borrar, buscamos el nombre original
         if (action === 'edit' || action === 'delete') {
@@ -70,8 +79,7 @@ const Dashboard = () => {
         }
         // El nuevo nombre o descripción se envía como un objeto con el nombre de campo correcto
         const data = { [nameField]: newName };
-        const listName = listType === 'os' ? 'Obra Social' : listType === 'antecedentes' ? 'Antecedente' : 'Análisis Funcional';
-
+        const listName = listType === 'os' ? 'Obra Social' : listType === 'antecedentes' ? 'Antecedente' : listType === 'analisisFuncional' ? 'Analisis Funcional' : 'Tratamientos';
         switch (actionType) {
             case 'os-add':
                 await createObraSocial(data);
@@ -103,6 +111,16 @@ const Dashboard = () => {
                 await deleteAnalisisFuncional(id);
                 break;
 
+            case 'tratamientos-add':
+                await createTratamiento(data);
+                break;
+            case 'tratamientos-edit':
+                await updateTratamientos(id, data);
+                break;
+            case 'tratamientos-delete':
+                await deleteTratamientos(id);
+                break;
+
             default:
                 console.warn(`Acción desconocida: ${actionType}`);
                 return;
@@ -129,7 +147,7 @@ const Dashboard = () => {
         // con un mensaje específico o una estructura reconocible cuando una restricción falla.
         
         // La lógica de "no se puede borrar porque pertenece a uno o más pacientes" aplica a:
-        if (action === 'delete' && (listType === 'antecedentes' || listType === 'analisisFuncional')) {
+        if (action === 'delete' && (listType === 'antecedentes' || listType === 'analisisFuncional' || listType === 'tratamientos')) {
             // Intenta obtener el mensaje de error de la respuesta de la API (si está disponible)
             const errorDetail = error.response?.data?.detail || error.message || 'Error desconocido';
 
@@ -341,6 +359,14 @@ const Dashboard = () => {
                 >
                     Administrar Análisis Funcional
                 </button>
+                <button 
+                    onClick={() => setIsTratModalOpen(true)} 
+                    className="card-button"
+                    style={{backgroundColor: '#ffc107'}}
+                >
+                    Administrar Tratamientos
+                </button>
+
             </div>
         )}
         {/* Información del usuario actual */}
@@ -396,6 +422,20 @@ const Dashboard = () => {
                 onAdd={(name) => handleManipulateList('analisisFuncional', 'add', null, name)}
                 onEdit={(id, name) => handleManipulateList('analisisFuncional', 'edit', id, name)}
                 onDelete={(id) => handleManipulateList('analisisFuncional', 'delete', id)}
+                placeHolder={'Ingrese el nombre'}
+            />
+        </ModalAdd>
+        <ModalAdd
+            isOpen={isTratModalOpen}
+            onClose={() => setIsTratModalOpen(false)}
+            title="Administrar Tratamientos"
+        >
+            <ListManagerContent 
+                list={tratamientos}
+                nameField="nombre_trat"
+                onAdd={(name) => handleManipulateList('tratamientos', 'add', null, name)}
+                onEdit={(id, name) => handleManipulateList('tratamientos', 'edit', id, name)}
+                onDelete={(id) => handleManipulateList('tratamientos', 'delete', id)}
                 placeHolder={'Ingrese el nombre'}
             />
         </ModalAdd>
