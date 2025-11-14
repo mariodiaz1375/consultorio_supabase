@@ -62,38 +62,76 @@ class Pagos(models.Model):
         verbose_name_plural = 'Pagos'
 
 
+# ============================================
+# MODELO DE AUDITORÍA
+# ============================================
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# CREATE TABLE entregas (
-# id_entrega INT AUTO_INCREMENT,
-# nom_entrega VARCHAR(20) NOT NULL,
-# CONSTRAINT pk_entregas PRIMARY KEY(id_entrega));
-
-# CREATE TABLE cuotas (
-# id_cuota INT AUTO_INCREMENT,
-# nom_cuota VARCHAR(20),
-# CONSTRAINT pk_cuotas PRIMARY KEY(id_cuota));
-
-# CREATE TABLE pagos (
-# id_pago INT AUTO_INCREMENT,
-# id_cuota INT NOT NULL,
-# id_entrega INT NOT NULL,
-# id_hc INT NOT NULL,
-# pagado BOOLEAN,
-# fecha_limite DATE,
-# fecha_pago DATETIME,
-# CONSTRAINT pk_pagos PRIMARY KEY(id_pago));
+class AuditoriaPagos(models.Model):
+    """
+    Tabla de auditoría que registra todos los cambios en los pagos.
+    Se llena automáticamente mediante signals (triggers de Django).
+    Solo registra cuando un pago se marca como pagado (REGISTRO) 
+    o cuando se desmarca (CANCELACION).
+    """
+    
+    ACCIONES = [
+        ('REGISTRO', 'Pago Registrado'),
+        ('CANCELACION', 'Pago Cancelado'),
+    ]
+    
+    # Información del pago
+    pago = models.ForeignKey(
+        Pagos, 
+        on_delete=models.SET_NULL,  # Si se elimina el pago, mantener el registro de auditoría
+        null=True,
+        related_name='auditoria_registros'
+    )
+    
+    # Información de la acción
+    accion = models.CharField(max_length=20, choices=ACCIONES)
+    fecha_accion = models.DateTimeField(auto_now_add=True)
+    
+    # Usuario que realizó la acción
+    usuario = models.ForeignKey(
+        Personal,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='acciones_auditoria_pagos'
+    )
+    
+    # 🚨 RELACIÓN CON HISTORIA CLÍNICA
+    hist_clin = models.ForeignKey(
+        HistoriasClinicas,
+        on_delete=models.SET_NULL,  # Si se elimina la HC, mantener el registro
+        null=True,
+        blank=True,
+        related_name='auditoria_pagos'
+    )
+    
+    # Datos del contexto (desnormalizados para histórico)
+    tipo_pago_nombre = models.CharField(max_length=50, null=True, blank=True)
+    hist_clin_numero = models.IntegerField(null=True, blank=True)  # 🚨 RENOMBRADO: Backup del ID de HC
+    paciente_nombre = models.CharField(max_length=255, null=True, blank=True)
+    paciente_dni = models.CharField(max_length=20, null=True, blank=True)
+    
+    # Estado del pago en el momento de la acción
+    estado_pagado = models.BooleanField(default=False)
+    fecha_pago = models.DateTimeField(null=True, blank=True)
+    
+    # Información adicional (opcional)
+    observaciones = models.TextField(blank=True, null=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.accion} - {self.tipo_pago_nombre} - {self.fecha_accion.strftime('%d/%m/%Y %H:%M')}"
+    
+    class Meta:
+        verbose_name = 'Auditoría de Pago'
+        verbose_name_plural = 'Auditorías de Pagos'
+        ordering = ['-fecha_accion']  # Más recientes primero
+        indexes = [
+            models.Index(fields=['fecha_accion']),
+            models.Index(fields=['pago']),
+            models.Index(fields=['hist_clin_id']),
+        ]
