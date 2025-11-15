@@ -99,7 +99,6 @@ export default function PagosModal({ historiaClinica, currentPersonalId, esOrtod
         const nuevoEstado = !itemPagoDisplay.pagado;
         
         // 🚨 CONFIRMACIÓN ANTES DE CAMBIAR EL ESTADO
-        //const accion = nuevoEstado ? 'registrar' : 'desmarcar';
         const mensaje = nuevoEstado 
             ? `¿Está seguro de registrar el pago de "${itemPagoDisplay.tipoPagoNombre}"?`
             : `¿Está seguro de desmarcar el pago de "${itemPagoDisplay.tipoPagoNombre}"?\n\nEsto eliminará el registro de pago.`;
@@ -128,7 +127,8 @@ export default function PagosModal({ historiaClinica, currentPersonalId, esOrtod
                 // Lógica de actualización (PATCH)
                 const payload = {
                     pagado: nuevoEstado,
-                    registrado_por: nuevoEstado ? currentPersonalId : null
+                    // 🚨 SIEMPRE ENVIAR EL USUARIO ACTUAL (quien hace la acción)
+                    registrado_por: currentPersonalId
                 };
                 pagoActualizadoServidor = await patchPago(itemPagoDisplay.pagoId, payload);
             
@@ -184,7 +184,7 @@ export default function PagosModal({ historiaClinica, currentPersonalId, esOrtod
         <ModalAdd 
             isOpen={true} 
             onClose={onClose} 
-            title={`Pagos de HC N° ${historiaClinica.id} - ${pacienteNombre} `}
+            title={`Pagos de HC N° ${historiaClinica.id} - (${pacienteNombre})`}
         >
             <div className={styles.pagosContainer}>
                 {loading && <p>Cargando pagos...</p>}
@@ -204,7 +204,7 @@ export default function PagosModal({ historiaClinica, currentPersonalId, esOrtod
                             <thead>
                                 <tr>
                                     <th>Concepto (Tipo de Pago)</th>
-                                    <th>Registrado Por</th>
+                                    <th>Registrado / Cancelado por</th>
                                     <th>Pagado</th>
                                     <th>Fecha de Pago</th>
                                 </tr>
