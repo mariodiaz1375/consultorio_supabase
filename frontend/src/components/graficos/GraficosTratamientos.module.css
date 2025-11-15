@@ -1,0 +1,84 @@
+/* GraficosTurnos.module.css */
+
+.graficos-container {
+    padding: 20px;
+    /* margin: 20px auto; <--- Eliminado. El layout principal (estadisticas-layout) lo maneja */
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* max-width: 900px; <--- Eliminado. Ocupará el 100% de su columna */
+    width: 100%;
+}
+
+.error {
+    /* Estilos adicionales para cuando hay un error */
+    border: 2px solid #ff4d4f;
+    color: #ff4d4f;
+    background-color: #ffeaea;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* 🚨 NUEVO ESTILO: Contenedor para manejar el layout de ambos gráficos */
+.estadisticas-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas iguales */
+    gap: 20px; /* Espacio entre los dos componentes */
+    margin: 30px auto;
+    max-width: 1840px; /* Ancho suficiente para ambos + gap */
+    padding: 0 20px;
+}
+
+/* Media Query para pantallas pequeñas (ej. tablets/móviles) */
+@media (max-width: 1000px) {
+    .estadisticas-layout {
+        grid-template-columns: 1fr; /* Apilar los gráficos en una sola columna */
+    }
+}
+
+
+.graficos-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+}
+
+.graficos-controls {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.filter-group label {
+    font-weight: bold;
+    margin-right: 10px;
+    color: #555;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    min-width: 150px; 
+}
+
+.grafico-wrapper {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.data-summary {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.1em;
+    color: #333;
+    padding: 10px;
+    border-top: 1px dashed #ccc;
+}

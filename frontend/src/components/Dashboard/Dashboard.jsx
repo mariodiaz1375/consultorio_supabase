@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import ModalAdd from '../modalAdd/ModalAdd';
 import ListManagerContent from '../listaMaestra/ListManagerContent';
+import GraficosTurnos from '../graficos/GraficosTurnos.jsx';
+import GraficosTratamientos from '../graficos/GraficosTratamientos.jsx';
 import { 
     // 🚨 FUNCIONES GET AÑADIDAS
     getObrasSociales, createObraSocial, updateObraSocial, deleteObraSocial,
@@ -377,13 +379,8 @@ const Dashboard = () => {
         )}
         {/* Información del usuario actual */}
         <div className="user-details">
-          <h4>Información de sesión:</h4>
-          <p><strong>Usuario:</strong> {userInfo?.nombre}</p> {/* 👈 Uso seguro */}
-          <p><strong>Puesto:</strong> {userRole || 'N/A'}</p> {/* 👈 Uso seguro de userRole */}
-    
-          {userInfo?.email && (
-            <p><strong>Email:</strong> {userInfo.email}</p>
-          )}
+          <GraficosTurnos />
+          <GraficosTratamientos />
         </div>
         <ModalAdd
               isOpen={isOsModalOpen}
