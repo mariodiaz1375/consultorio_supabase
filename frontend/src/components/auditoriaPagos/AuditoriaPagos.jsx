@@ -149,7 +149,7 @@ export default function AuditoriaPagos({ historiaClinicaId = null }) {
                             <th>Paciente</th>
                             <th>HC</th>
                             <th>Usuario</th>
-                            <th>Estado</th>
+                            {/* <th>Estado</th> */}
                         </tr>
                     </thead>
                     <tbody>
@@ -179,13 +179,13 @@ export default function AuditoriaPagos({ historiaClinicaId = null }) {
                                     </td>
                                     <td>HC #{auditoria.hist_clin_numero}</td>
                                     <td>{auditoria.usuario_nombre}</td>
-                                    <td>
+                                    {/* <td>
                                         {auditoria.estado_pagado ? (
                                             <span className={styles.estadoPagado}>Pagado</span>
                                         ) : (
                                             <span className={styles.estadoPendiente}>Pendiente</span>
                                         )}
-                                    </td>
+                                    </td> */}
                                 </tr>
                             ))
                         )}

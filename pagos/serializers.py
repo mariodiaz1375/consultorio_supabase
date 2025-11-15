@@ -29,7 +29,7 @@ class AuditoriaPagosSerializer(serializers.ModelSerializer):
             'fecha_pago',
             'observaciones',
         )
-        read_only_fields = '__all__'
+        # 🚨 CORRECCIÓN: Sin read_only_fields o usar tupla
     
     def get_usuario_nombre(self, obj):
         if obj.usuario:
@@ -39,19 +39,18 @@ class AuditoriaPagosSerializer(serializers.ModelSerializer):
 # --- Serializer Principal de Pagos ---
 class PagosSerializer(serializers.ModelSerializer):
     
-    # 🚨 CAMPOS DE LECTURA (para que el frontend los vea)
     registrado_por_nombre = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = Pagos
         fields = (
             'id',
-            'tipo_pago',  # 🚨 ID numérico
-            'hist_clin',  # 🚨 ID numérico
-            'registrado_por',  # 🚨 ID numérico
+            'tipo_pago',
+            'hist_clin',
+            'registrado_por',
             'pagado',
             'fecha_pago',
-            'registrado_por_nombre',  # 🚨 Nombre completo (read-only)
+            'registrado_por_nombre',
         )
         read_only_fields = ('fecha_pago',)
     
