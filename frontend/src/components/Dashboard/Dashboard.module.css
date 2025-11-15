@@ -1,4 +1,4 @@
-/* Dashboard.css */
+/* Dashboard.module.css */
 .dashboard {
   min-height: 100vh;
   background-color: #f5f7fa;
@@ -174,6 +174,23 @@
 
 .user-details strong {
   color: #333;
+}
+
+.chart-container {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e1e5e9;
+
+  /* === LA SOLUCIÓN === */
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Opcional: añade espacio entre tus dos gráficos */
+}
+.chart-wrapper {
+  position: relative; /* 👈 Absolutamente crucial */
+  width: 100%;       /* 👈 Ocupa todo el ancho del contenedor flex */
 }
 
 /* Responsive */

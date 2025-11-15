@@ -128,6 +128,7 @@ export default function GraficosTratamientos() {
     const chartOptions = {
         indexAxis: 'y', // Hace el gráfico de barras horizontal
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: {
                 position: 'bottom',

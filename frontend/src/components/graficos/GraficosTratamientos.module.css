@@ -7,6 +7,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     /* max-width: 900px; <--- Eliminado. Ocupará el 100% de su columna */
+    position: relative;
     width: 100%;
 }
 
@@ -72,6 +73,10 @@
     padding: 20px;
     border-radius: 6px;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    position: relative; /* 1. Para que el gráfico sepa dónde está */
+    width: 100%;       /* 2. Para que ocupe el ancho */
+    height: 400px;     /* 3. Una altura fija para que el gráfico la llene */
 }
 
 .data-summary {

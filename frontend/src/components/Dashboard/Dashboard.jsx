@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react'; // 👈 Se añadió 'useCallback'
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Dashboard.css';
+import styles from './Dashboard.module.css'; // 👈 CAMBIO: Importación de CSS Module
 import ModalAdd from '../modalAdd/ModalAdd';
 import ListManagerContent from '../listaMaestra/ListManagerContent';
 import GraficosTurnos from '../graficos/GraficosTurnos.jsx';
 import GraficosTratamientos from '../graficos/GraficosTratamientos.jsx';
 import { 
-    // 🚨 FUNCIONES GET AÑADIDAS
     getObrasSociales, createObraSocial, updateObraSocial, deleteObraSocial,
     getAntecedentes, createAntecedente, updateAntecedente, deleteAntecedente,
     getAnalisisFuncional, createAnalisisFuncional, updateAnalisisFuncional, deleteAnalisisFuncional,
-    // ... otras funciones si son necesarias
 } from '../../api/pacientes.api.js';
 import {
   getTratamientos, createTratamiento, updateTratamientos, deleteTratamientos,
@@ -30,7 +28,7 @@ const Dashboard = () => {
   const [analisisFuncional, setAnalisisFuncional] = useState([]);
   const [tratamientos, setTratamientos] = useState([]);
 
-  // 🚨 4. FUNCIÓN PARA CARGAR TODAS LAS LISTAS MAESTRAS
+  // (El resto de la lógica de React permanece igual...)
   const loadMasterOptions = useCallback(async () => {
     try {
         const [osList, antList, afList, tratList] = await Promise.all([
@@ -40,7 +38,6 @@ const Dashboard = () => {
             getTratamientos(),
         ]);
         
-        // Actualizar estados
         setObrasSociales(osList);
         setAntecedentes(antList);
         setAnalisisFuncional(afList);
@@ -52,7 +49,6 @@ const Dashboard = () => {
 
   const handleManipulateList = async (listType, action, id, newName) => {
     try {
-        // Mapeo para estandarizar el nombre del campo que lleva el nombre en la API
         const nameFieldMap = {
             os: 'nombre_os',
             antecedentes: 'nombre_ant',
@@ -64,22 +60,19 @@ const Dashboard = () => {
         const actionType = `${listType}-${action}`;
 
         let list;
-        let originalName = newName; // Usamos newName por defecto para 'add'
+        let originalName = newName; 
         
-        // Determinar qué lista usar
         if (listType === 'os') list = obrasSociales;
         else if (listType === 'antecedentes') list = antecedentes;
         else if (listType === 'analisisFuncional') list = analisisFuncional;
         else if (listType === 'tratamientos') list = tratamientos;
         
-        // Si la acción es editar o borrar, buscamos el nombre original
         if (action === 'edit' || action === 'delete') {
             const item = list?.find(item => item.id === id);
             if (item) {
-                originalName = item[nameField]; // Guardamos el nombre actual/original
+                originalName = item[nameField]; 
             }
         }
-        // El nuevo nombre o descripción se envía como un objeto con el nombre de campo correcto
         const data = { [nameField]: newName };
         const listName = listType === 'os' ? 'Obra Social' : listType === 'antecedentes' ? 'Antecedente' : listType === 'analisisFuncional' ? 'Analisis Funcional' : 'Tratamientos';
         switch (actionType) {
@@ -128,7 +121,6 @@ const Dashboard = () => {
                 return;
         }
 
-        // 🏆 ÉXITO: Recargar las listas para actualizar el ListManagerContent en el modal
         await loadMasterOptions();
 
         if (action === 'add') {
@@ -144,17 +136,8 @@ const Dashboard = () => {
         
         let errorMessage = `Ocurrió un error en la operación de ${action} de ${listType}.`;
 
-        // 🚨 MANEJO ESPECÍFICO DEL ERROR DE LLAVE FORÁNEA (RESTRICT)
-        // Esto asume que la API de Django/DRF devuelve un error 400 o 409 (Conflict) 
-        // con un mensaje específico o una estructura reconocible cuando una restricción falla.
-        
-        // La lógica de "no se puede borrar porque pertenece a uno o más pacientes" aplica a:
         if (action === 'delete' && (listType === 'antecedentes' || listType === 'analisisFuncional' || listType === 'tratamientos')) {
-            // Intenta obtener el mensaje de error de la respuesta de la API (si está disponible)
             const errorDetail = error.response?.data?.detail || error.message || 'Error desconocido';
-
-            // Revisamos el error para ver si es un problema de relación (llave foránea)
-            // Esto es un ejemplo, el mensaje de error real depende del backend (Django/DRF)
             if (errorDetail.includes('llave foránea') || errorDetail.includes('violates foreign key')) {
                 errorMessage = `Error: No se puede eliminar el elemento (ID: ${id}) de ${listType}. Pertenece a uno o más pacientes. Debe eliminar la relación en los pacientes primero.`;
             } else {
@@ -162,36 +145,28 @@ const Dashboard = () => {
             }
         }
         
-        // Si no es un error de borrado restringido o es Obra Social, usamos un mensaje genérico.
         alert(errorMessage);
     }
   };
 
-  // 1. Manejar el Logout con useCallback
   const handleLogout = useCallback(() => {
-    // Limpiar localStorage
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_info');
-    
-    // Redirigir al login
     navigate('/login');
-  }, [navigate]); // Dependencia: navigate
+  }, [navigate]); 
 
-  // 2. Manejar la Carga de Información del Usuario con useCallback
   const loadUserInfo = useCallback(async () => {
     const token = localStorage.getItem('access_token');
     
-    // 🚨 1. VERIFICACIÓN CRÍTICA: Si no hay token, forzar logout/redirección.
     if (!token) {
         console.error("Token de acceso no encontrado. Redirigiendo a login.");
         setLoading(false);
-        handleLogout(); // Usamos la función memoizada para salir
+        handleLogout(); 
         return; 
     }
 
     try {
-      // 💥 USO DE LA NUEVA RUTA EFICIENTE /me/
       const response = await fetch('http://localhost:8000/api/personal/me/', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -202,14 +177,11 @@ const Dashboard = () => {
       if (response.ok) {
         const currentUser = await response.json();
         setUserInfo(currentUser);
-        // 💾 Guardar información para que RoleProtectedRoute la use rápidamente
         localStorage.setItem('user_info', JSON.stringify(currentUser)); 
       } else if (response.status === 401) {
-        // 🚨 2. MANEJO DE 401: Token inválido/expirado
         console.error('Token expirado o inválido. Redirigiendo al login.');
-        handleLogout(); // Usamos la función memoizada para salir
+        handleLogout(); 
       } else {
-        // 3. Fallo en la API (usar info básica del token como fallback)
         console.warn(`Fallo al obtener info de personal (HTTP ${response.status}). Usando datos del token.`);
         
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -220,7 +192,6 @@ const Dashboard = () => {
           user: payload.user_id,
         };
         setUserInfo(fallbackInfo);
-        // Guardar la info básica también, aunque es menos útil
         localStorage.setItem('user_info', JSON.stringify(fallbackInfo)); 
       }
     } catch (error) {
@@ -228,40 +199,35 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [handleLogout]); // Dependencia: handleLogout
+  }, [handleLogout]); 
 
-  // 3. useEffect corregido: se llama solo cuando loadUserInfo cambie (lo cual es raro gracias a useCallback)
   useEffect(() => {
     loadUserInfo();
     loadMasterOptions();
-  }, [loadUserInfo, loadMasterOptions]); // 👈 Se añadió 'loadUserInfo'
+  }, [loadUserInfo, loadMasterOptions]); 
 
   if (loading) {
     return (
-      <div className="dashboard-loading">
-        <div className="spinner-large"></div>
+      // 👇 CAMBIO: Aplicando clases con `styles`
+      <div className={styles['dashboard-loading']}>
+        <div className={styles['spinner-large']}></div>
         <p>Cargando dashboard...</p>
       </div>
     );
   }
-
-  // ⚠️ 4. USO SEGURO DE PROPIEDADES (Se asume que userInfo existe después de `if (loading)`)
-  // Si usaste el fallback, puesto_info no existirá, por eso es importante el encadenamiento opcional.
   
-  // Extraemos el rol para el botón de control de acceso
   const userRole = userInfo?.puesto_info?.nombre_puesto; 
   
-
-
   return (
-    <div className="dashboard">
+    // 👇 CAMBIOS: Aplicando clases con `styles`
+    <div className={styles.dashboard}>
       {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-content">
+      <header className={styles['dashboard-header']}>
+        <div className={styles['header-content']}>
           <h1>Consultorio Odontológico</h1>
-          <div className="user-info">
+          <div className={styles['user-info']}>
             <span>Bienvenido/a, {userInfo?.nombre} {userInfo?.apellido}</span>
-            <button onClick={handleLogout} className="logout-btn">
+            <button onClick={handleLogout} className={styles['logout-btn']}>
               Cerrar Sesión
             </button>
           </div>
@@ -269,18 +235,18 @@ const Dashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="dashboard-main">
-        <div className="dashboard-grid">
+      <main className={styles['dashboard-main']}>
+        <div className={styles['dashboard-grid']}>
           
           {/* Tarjeta Pacientes */}
-          <div className="dashboard-card">
-            <div className="card-header">
+          <div className={styles['dashboard-card']}>
+            <div className={styles['card-header']}>
               <h3>👥 Pacientes</h3>
             </div>
-            <div className="card-content">
+            <div className={styles['card-content']}>
               <p>Gestión de pacientes</p>
               <button 
-                className="card-button"
+                className={styles['card-button']}
                 onClick={() => navigate('/pacientes')}
               >
                 Ver Pacientes
@@ -289,14 +255,14 @@ const Dashboard = () => {
           </div>
 
           {/* Tarjeta Turnos */}
-          <div className="dashboard-card">
-            <div className="card-header">
+          <div className={styles['dashboard-card']}>
+            <div className={styles['card-header']}>
               <h3>📅 Turnos</h3>
             </div>
-            <div className="card-content">
+            <div className={styles['card-content']}>
               <p>Programación y gestión de citas</p>
               <button 
-                className="card-button"
+                className={styles['card-button']}
                 onClick={() => navigate('/turnos')}
               >
                 Ver Turnos
@@ -305,14 +271,14 @@ const Dashboard = () => {
           </div>
 
           {/* Tarjeta Historias Clínicas */}
-          <div className="dashboard-card">
-            <div className="card-header">
+          <div className={styles['dashboard-card']}>
+            <div className={styles['card-header']}>
               <h3>📋 Historias Clínicas</h3>
             </div>
-            <div className="card-content">
+            <div className={styles['card-content']}>
               <p>Registros médicos y tratamientos</p>
               <button 
-                className="card-button"
+                className={styles['card-button']}
                 onClick={() => navigate('/historias')}
               >
                 Ver Historias
@@ -321,14 +287,14 @@ const Dashboard = () => {
           </div>
 
            {/* Tarjeta Personal */}
-          <div className="dashboard-card">
-            <div className="card-header">
+          <div className={styles['dashboard-card']}>
+            <div className={styles['card-header']}>
               <h3>👨‍⚕️ Personal</h3>
             </div>
-            <div className="card-content">
+            <div className={styles['card-content']}>
               <p>Gestión del personal médico</p>
               <button 
-                className="card-button"
+                className={styles['card-button']}
                 onClick={() => navigate('/personal')}
               >
                 Ver Personal
@@ -339,38 +305,38 @@ const Dashboard = () => {
         </div>
 
         {userRole === 'Admin' && (
-            <div className="user-details" style={{margin: '20px 0', padding: '15px', border: '1px solid #ddd', borderRadius: '5px', display: 'flex', gap: '10px', justifyContent: 'center'}}>
+            <div className={styles['user-details']} style={{margin: '20px 0', padding: '15px', border: '1px solid #ddd', borderRadius: '5px', display: 'flex', gap: '10px', justifyContent: 'center'}}>
                 <button 
                     onClick={() => setIsOsModalOpen(true)} 
-                    className="card-button" 
+                    className={styles['card-button']} 
                     style={{backgroundColor: '#007bff'}}
                 >
                     Administrar Obras Sociales
                 </button>
                 <button 
                     onClick={() => setIsAntecedenteModalOpen(true)} 
-                    className="card-button"
+                    className={styles['card-button']}
                     style={{backgroundColor: '#28a745'}}
                 >
                     Administrar Antecedentes
                 </button>
                 <button 
                     onClick={() => setIsAnalisisFuncionalModalOpen(true)} 
-                    className="card-button"
+                    className={styles['card-button']}
                     style={{backgroundColor: '#ffc107'}}
                 >
                     Administrar Análisis Funcional
                 </button>
                 <button 
                     onClick={() => setIsTratModalOpen(true)} 
-                    className="card-button"
+                    className={styles['card-button']}
                     style={{backgroundColor: '#ffc107'}}
                 >
                     Administrar Tratamientos
                 </button>
                 <button 
                     onClick={() => navigate('/auditoria_pagos')}
-                    className="card-button"
+                    className={styles['card-button']}
                     style={{backgroundColor: '#28a745'}}
                 >
                     Auditar Pagos
@@ -378,10 +344,12 @@ const Dashboard = () => {
             </div>
         )}
         {/* Información del usuario actual */}
-        <div className="user-details">
+        <div className={styles['chart-container']}>
           <GraficosTurnos />
           <GraficosTratamientos />
         </div>
+        
+        {/* (Los Modales no tienen clases de Dashboard.css, por lo que no necesitan cambios) */}
         <ModalAdd
               isOpen={isOsModalOpen}
               onClose={() => setIsOsModalOpen(false)}

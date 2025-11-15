@@ -173,6 +173,7 @@ export default function GraficosTurnos() {
 
     const chartOptions = {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: {
                 position: 'top',
