@@ -366,7 +366,13 @@ const Dashboard = () => {
                 >
                     Administrar Tratamientos
                 </button>
-
+                <button 
+                    onClick={() => navigate('/auditoria_pagos')}
+                    className="card-button"
+                    style={{backgroundColor: '#28a745'}}
+                >
+                    Auditar Pagos
+                </button>
             </div>
         )}
         {/* Información del usuario actual */}

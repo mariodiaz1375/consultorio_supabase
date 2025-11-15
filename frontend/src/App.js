@@ -14,6 +14,7 @@ import PacientesPagina from './pages/pacientesPagina/PacientesPagina';
 import PersonalPagina from './pages/personalPagina/PersonalPagina';
 import RoleProtectedRoute from './components/Auth/RoleProtectedRoute';
 import TurnosPagina from './pages/turnosPagina/TurnosPagina';
+import AuditoriaPagosPagina from './pages/auditoriaPagos/AuditoriaPagosPagina';
 
 
 function App() {
@@ -43,6 +44,11 @@ function App() {
         <Route path="/turnos" element={
           <ProtectedRoute>
             <TurnosPagina />
+          </ProtectedRoute>
+        } />
+        <Route path="/auditoria_pagos" element={
+          <ProtectedRoute>
+            <AuditoriaPagosPagina />
           </ProtectedRoute>
         } />
         <Route path="/" element={<Login />} />
