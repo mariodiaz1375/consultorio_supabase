@@ -2,28 +2,28 @@
 
 .pacientes-list-container {
   padding: 100px;
-  max-width: 1200px; /* Limita el ancho para una mejor lectura en pantallas grandes */
-  margin: 0 auto; /* Centra el contenedor */
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .title {
-  color: #2c3e50; /* Color del texto del título */
-  text-align: center; /* Centra el título */
+  color: #2c3e50;
+  text-align: center;
   font-size: 2.5rem;
-  margin-bottom: 30px; /* Espacio debajo del título */
+  margin-bottom: 30px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding-bottom: 10px;
 }
 
 .pacientes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Crea una cuadrícula adaptable */
-  gap: 20px; /* Espacio entre las tarjetas */
-  justify-content: center; /* Centra las tarjetas si hay menos de las que llenan una fila */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  justify-content: center;
 }
 
 .register-button {
-  background-color: #27ae60; /* Un verde vibrante y amigable */
+  background-color: #27ae60;
   color: white;
   border: none;
   padding: 12px 25px;
@@ -32,26 +32,9 @@
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para darle profundidad */
-  margin-bottom: 20px; /* Espacio debajo del botón */
-  display: block; /* Para que ocupe todo el ancho y se centre */
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.cerrar {
-  background-color: #f35829; /* Un verde vibrante y amigable */
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 5px;
-  font-size: 2rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para darle profundidad */
-  margin-bottom: 20px; /* Espacio debajo del botón */
-  display: block; /* Para que ocupe todo el ancho y se centre */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+  display: block;
   margin-left: auto;
   margin-right: auto;
 }
@@ -66,60 +49,13 @@
 }
 
 .register-button:hover {
-  background-color: #2ecc71; /* Un verde más claro al pasar el mouse */
-  transform: translateY(-2px); /* Efecto de "levantamiento" */
+  background-color: #2ecc71;
+  transform: translateY(-2px);
 }
 
-.cerrar:hover {
-  background-color: #da7c57; /* Un verde más claro al pasar el mouse */
-  transform: translateY(-2px); /* Efecto de "levantamiento" */
-}
-
-/* Un contenedor para el botón para mejor alineación */
 .boton-conteiner {
   display: flex;
   margin: 20px 0px 20px 20px;
-}
-
-.cerrar-conteiner {
-  display: flex;
-  margin: 0px 0px 0px 0px;
-  padding-bottom: 50px;
-}
-
-.form-container {
-    margin-bottom: 20px;
-    padding: 15px;
-    /* ... (otros estilos de borde, fondo, etc.) ... */
-}
-
-/* 💥 NUEVOS ESTILOS PARA EDICIÓN (Sidebar/Flotante) 💥 */
-
-/* 1. Overlay (Fondo oscuro que cubre toda la pantalla) */
-.floating-overlay {
-    position: fixed; /* Fija la posición */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparente negro */
-    z-index: 1000; /* Asegura que esté por encima de todo */
-    display: flex; 
-    justify-content: flex-end; /* Alinea el sidebar a la derecha */
-    
-}
-
-/* 2. Contenedor del Formulario (La barra lateral) */
-.sidebar-form-container {
-    width: 500px; /* Ancho deseado para el panel */
-    height: 100%;
-    background-color: white; /* Color de fondo del panel */
-    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.3); /* Sombra para profundidad */
-    /* Para efecto de deslizado, empieza desde la derecha y se mueve a su posición final (0) */
-    transform: translateX(0); 
-    transition: transform 0.4s ease-out; /* Animación de deslizado */
-    padding: 20px; /* Relleno interno */
-    overflow-y: auto; /* Permite desplazamiento si el formulario es largo */
 }
 
 .search-conteiner {
@@ -127,27 +63,100 @@
   text-align: center;
 }
 
-
 .search-input {
   padding: 10px 150px;
   text-align: center;
   border: 1px solid #ccc;
-  border-radius: 20px; /* Bordes redondeados para un look moderno */
-  width: 350px; /* Un ancho razonable */
-  max-width: 100%; /* Asegura que no se desborde en móviles */
+  border-radius: 20px;
+  width: 350px;
+  max-width: 100%;
   font-size: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: border-color 0.3s ease;
 }
 
 .search-input:focus {
-  outline: none; /* Quitar el borde de foco por defecto */
-  border-color: #007bff; /* Color azul al enfocar */
+  outline: none;
+  border-color: #007bff;
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
+/* ======================================= */
+/* ESTILOS DEL MODAL CENTRADO */
+/* ======================================= */
 
-/* SwitchButton.css */
+/* Overlay del modal (fondo oscuro) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Contenedor del modal (centro de la pantalla) */
+.modal-content {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 30px;
+  position: relative;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+/* Animación de entrada del modal */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Botón de cerrar (X) */
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.modal-close-btn:hover {
+  background-color: #c0392b;
+  transform: scale(1.1);
+}
+
+/* ======================================= */
+/* SWITCH BUTTON */
+/* ======================================= */
 
 .switch-container {
   display: flex;
@@ -159,50 +168,45 @@
 }
 
 .switch-button {
-  width: 60px; /* Ancho total del interruptor */
-  height: 34px; /* Alto total */
-  border-radius: 34px; /* Bordes redondeados */
+  width: 60px;
+  height: 34px;
+  border-radius: 34px;
   padding: 0;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
-  transition: background-color 0.4s; /* Transición suave del color */
+  transition: background-color 0.4s;
   position: relative;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
 }
 
-/* Estilos cuando está APAGADO (clase .off) */
 .switch-button.off {
-  background-color: #ffffff; /* Fondo gris */
-  justify-content: flex-start; /* Mueve el "pulgar" a la izquierda */
+  background-color: #ffffff;
+  justify-content: flex-start;
 }
 
-/* Estilos cuando está ENCENDIDO (clase .on) */
 .switch-button.on {
-  background-color: #4CAF50; /* Fondo verde */
-  justify-content: flex-end; /* Mueve el "pulgar" a la derecha */
+  background-color: #4CAF50;
+  justify-content: flex-end;
 }
 
 .switch-toggle {
-  /* El "pulgar" o bolita del switch */
   width: 26px;
   height: 26px;
   background-color: white;
-  border-radius: 50%; /* Lo hace un círculo */
-  margin: 4px; /* Margen interno para que no toque los bordes */
+  border-radius: 50%;
+  margin: 4px;
   transition: transform 0.4s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .Inactivos {
-  /* Estilos específicos para el estado "apagado" (Inactivos) */
   background-color: #f32828;
   justify-content: flex-start;
 }
 
 .Activos {
-  /* Estilos específicos para el estado "encendido" (Activos) */
   background-color: #4CAF50;
   justify-content: flex-end;
 }

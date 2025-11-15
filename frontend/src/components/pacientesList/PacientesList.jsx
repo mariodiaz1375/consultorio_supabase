@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { getPacientes, createPaciente, getGeneros, getAntecedentes, getAnalisisFuncional, getObrasSociales, updatePaciente } from '../../api/pacientes.api'; 
 import styles from './PacientesList.module.css';
@@ -20,11 +18,9 @@ export default function PacientesList() {
   const [editingPaciente, setEditingPaciente] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const isEditing = showForm && editingPaciente;
-  const isCreating = showForm && !editingPaciente;
   const [viewingDetail, setViewingDetail] = useState(null);
   const [activo, setActivo] = useState(true);
-  // se agrega MasterOptions para poder actulizar el formulario cuando cambia la lista de
-  // antecedentes, os o analisis f.
+  
   const loadMasterOptions = useCallback(async () => {
         try {
             const [
@@ -50,7 +46,6 @@ export default function PacientesList() {
     }, []);
 
   const toggleSwitch = () => {
-    // Usamos el valor previo para invertirlo
     setActivo(prevActivo => !prevActivo);
   };
 
@@ -64,54 +59,32 @@ export default function PacientesList() {
   }
 
   const handleEditStart = (paciente) => {
-        // 1. Oculta la lista (si es necesario)
-        // 2. Carga los datos del paciente en el estado de edición
         setEditingPaciente(paciente);
-        // 3. Muestra el formulario
         setShowForm(true);
   };
 
-    // ==========================================================
-  // 💡 FUNCIÓN DE VERIFICACIÓN DE DNI (A PASAR AL FORMULARIO) 💡
-  // ==========================================================
-  /**
-   * Verifica si el DNI proporcionado ya existe en la lista de pacientes cargados.
-   * @param {string} dni El DNI a verificar.
-   * @returns {Promise<boolean>} Retorna true si el DNI ya existe, false si no.
-   */
   const checkDniUniqueness = async (dni) => {
-    // Convertimos el DNI a string para asegurar la comparación
     const dniString = String(dni); 
 
-    // Busca si existe algún paciente con ese DNI, excluyendo al paciente que se está editando
     const exists = pacientes.some(paciente => 
-        // 1. Coincide el DNI
         String(paciente.dni) === dniString &&
-        // 2. NO es el paciente que estamos editando actualmente
         (editingPaciente ? paciente.id !== editingPaciente.id : true) 
     );
     
-    // Console log para debug:
     console.log(`Verificando DNI: ${dniString}. Resultado: ${exists ? 'Duplicado' : 'Único'}`);
 
     return exists;
   };
 
   const handleViewDetail = (paciente) => {
-    // Asegurarse de que el formulario esté cerrado
     setShowForm(false);
     setEditingPaciente(null); 
-    // Establecer el paciente para la vista de detalle
     setViewingDetail(paciente); 
   };
-
-  // cargar todas las opciones del formulario
-
 
   useEffect(() => {
     fetchPacientes();
     loadMasterOptions();
-    // aqui cargamos la user info desde localstorage realizado en el dashboard
     const storedUserInfo = localStorage.getItem('user_info');
     if (storedUserInfo) {
         try {
@@ -126,20 +99,17 @@ export default function PacientesList() {
       try {
           let result;
           
-          // determina si es edicion (PUT) o creacion (POST)
           if (editingPaciente) {
-              // editar: usa el ID del paciente que se esta editando
               result = await updatePaciente(editingPaciente.id, pacienteData);
               alert(`Paciente ${result.nombre} ${result.apellido} actualizado con éxito.`);
           } else {
-              // crear
               result = await createPaciente(pacienteData); 
               alert(`Paciente ${result.nombre} ${result.apellido} creado con éxito.`);
           }
           
-          await fetchPacientes(); // recarga la lista
+          await fetchPacientes();
           setShowForm(false); 
-          setEditingPaciente(null); // limpiar el estado de edición
+          setEditingPaciente(null);
           
       } catch (error) {
           console.error(`Error al ${editingPaciente ? 'actualizar' : 'crear'} el paciente:`, error);
@@ -147,28 +117,21 @@ export default function PacientesList() {
       }
   };
     
-
   const handleToggleForm = () => {
-      // limpia el estado de edicionn al cerrar o abrir para registrar uno nuevo
       if (showForm) {
-          setEditingPaciente(null); // Cancelar la edicion al cerrar
+          setEditingPaciente(null);
       }
       setShowForm(!showForm);
   };
 
   const filteredPacientes = pacientes
-    // 1. PRIMER FILTRO: Por estado activo/inactivo (determinado por el switch)
     .filter(paciente => paciente.activo === activo)
-    // 2. SEGUNDO FILTRO: Por término de búsqueda
     .filter(paciente => {
         const lowerSearchTerm = searchTerm.toLowerCase();
-
-        // Comprueba si el DNI o el nombre/apellido contienen el término de búsqueda
         const matchesDni = paciente.dni ? paciente.dni.includes(lowerSearchTerm) : false;
         const matchesNombre = paciente.nombre ? paciente.nombre.toLowerCase().includes(lowerSearchTerm) : false;
         const matchesApellido = paciente.apellido ? paciente.apellido.toLowerCase().includes(lowerSearchTerm) : false;
         
-        // Filtra si coincide con DNI, Nombre o Apellido
         return matchesDni || matchesNombre || matchesApellido;
     });
 
@@ -176,39 +139,16 @@ export default function PacientesList() {
       setViewingDetail(null);
   }
 
-  // RENDERIZADO CONDICIONAL
   if (viewingDetail) {
       return <PacienteDetail paciente={viewingDetail} onBack={handleBack} />;
   }
 
-    const userRole = userInfo?.puesto_info?.nombre_puesto;
-    const renderForm = (className) => (
-      <div className={className}>
-          <PacientesForm
-              onSubmit={handleFormSubmit}
-              generos={generos}
-              antecedentes={antecedentesOptions}
-              analisisFuncional={analisisFuncionalOptions}
-              obrasSociales={obrasSocialesOptions}
-              initialData={editingPaciente}
-              isEditing={isEditing}
-              checkDniUniqueness={checkDniUniqueness}
-              userRole= {userRole}
-              onMasterListChange={loadMasterOptions}
-          />
-      </div>
-    );
-
-    // Dentro de PacientesList.jsx, antes del return:
-
-// ... (código existente, justo después de handleFormSubmit)
+  const userRole = userInfo?.puesto_info?.nombre_puesto;
 
   const handleToggleActivo = async (pacienteId, pacienteNombre, pacienteApellido, isActivoActual) => {
-      // 1. Determinar el nuevo estado objetivo
       const nuevoEstado = !isActivoActual;
       const accionTexto = nuevoEstado ? 'activar' : 'desactivar';
 
-      // 2. Confirmación
       const confirmacion = window.confirm(`¿Estás seguro de que deseas ${accionTexto} al paciente ${pacienteNombre} ${pacienteApellido}?`);
 
       if (!confirmacion) {
@@ -216,15 +156,13 @@ export default function PacientesList() {
       }
 
       try {
-          // 3. Payload con el nuevo estado
           const updateData = {
-              activo: nuevoEstado // Usa la variable booleana calculada
+              activo: nuevoEstado
           };
           
           await updatePaciente(pacienteId, updateData);
           alert(`Paciente ${pacienteNombre} ${pacienteApellido} ha sido ${accionTexto}do con éxito.`);
           
-          // Recargar la lista
           await fetchPacientes(); 
           
       } catch (error) {
@@ -232,10 +170,6 @@ export default function PacientesList() {
           alert(`Error al ${accionTexto} el paciente. Revisa la consola para más detalles.`);
       }
   };
-
-
-// ... (código restante de PacientesList, antes del return)
-
 
   return (
     <div>
@@ -258,58 +192,60 @@ export default function PacientesList() {
             type="text"
             placeholder="Buscar por DNI, nombre o apellido..."
             value={searchTerm}
-            // Actualiza el estado del término de búsqueda con cada cambio
             onChange={(e) => setSearchTerm(e.target.value)}
             className={styles['search-input']}
         />
       </div>
 
-      {/* renderizado del formulario en modo creacion con las opciones */}
-      {isCreating && (
-          renderForm(styles['form-conteiner'])
-      )}
-
-      {isEditing && (
-        <div className={styles['floating-overlay']}>
-            <div>
+      {/* MODAL ÚNICO PARA CREAR Y EDITAR */}
+      {showForm && (
+        <div className={styles['modal-overlay']} onClick={handleToggleForm}>
+            <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
                 <button 
-                className={styles['cerrar']}
-                onClick={handleToggleForm}>
-                    X
+                    className={styles['modal-close-btn']}
+                    onClick={handleToggleForm}
+                >
+                    ×
                 </button>
+                <PacientesForm
+                    onSubmit={handleFormSubmit}
+                    generos={generos}
+                    antecedentes={antecedentesOptions}
+                    analisisFuncional={analisisFuncionalOptions}
+                    obrasSociales={obrasSocialesOptions}
+                    initialData={editingPaciente}
+                    isEditing={isEditing}
+                    checkDniUniqueness={checkDniUniqueness}
+                    userRole={userRole}
+                    onMasterListChange={loadMasterOptions}
+                />
             </div>
-            {renderForm(styles['sidebar-form-container'])}
         </div>  
       )}
       
       <div className={styles["switch-container"]}>
-        {/* 3. La clase CSS se aplica condicionalmente según el estado 'isOn' */}
           <button
-            // Si 'isOn' es true, la clase es 'on'; si es false, es 'off'
             className={`${styles['switch-button']} ${activo ? styles.Activos : styles.Inactivos}`}
-            // className={`{switch-button} ${activo ? 'Activos' : 'Inactivos'}`}
             onClick={toggleSwitch}
-            role="switch" // Rol de accesibilidad
-            aria-checked={activo} // Estado de accesibilidad
+            role="switch"
+            aria-checked={activo}
           >
             <span className={styles["switch-toggle"]}></span>
           </button>
-          {/* Muestra el estado actual */}
           <h2>{activo ? 'Pacientes activos' : 'Pacientes inactivos'}</h2>
       </div>
 
-
-      {/* Listado... */}
       <div>
         {filteredPacientes.map(paciente => (
             <PacienteCard 
-            key={paciente.id} paciente={paciente} 
-            onEditStart={handleEditStart} onViewDetail={handleViewDetail}
-            onDelete={handleToggleActivo}
+                key={paciente.id} 
+                paciente={paciente} 
+                onEditStart={handleEditStart} 
+                onViewDetail={handleViewDetail}
+                onDelete={handleToggleActivo}
             />
         ))}
       </div>
     </div>
   );
 }
-// initialData

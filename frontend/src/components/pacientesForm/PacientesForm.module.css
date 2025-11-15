@@ -1,11 +1,8 @@
 .pacientes-form { 
-    max-width: 600px;
-    margin: 40px auto; 
-    padding: 30px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
-    background-color: #ffffff;
+    /* Aumento el ancho máximo para que se vea mejor en pantallas grandes */
+    max-width: 800px; /* ANCHO MODIFICADO */
+    margin: 0 auto; 
+    padding: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -13,40 +10,128 @@
 .pacientes-form h3 {
     color: #2c3e50; 
     text-align: center;
-    font-size: 2rem; 
+    font-size: 1.8rem; 
     margin-bottom: 25px;
     padding-bottom: 10px;
     border-bottom: 2px solid #27ae60;
 }
 
-/* Para asegurar que el h4 y el botón inline se alineen */
 .pacientes-form h4 {
     color: #555;
     margin-top: 20px;
     margin-bottom: 15px;
-    display: flex; /* Añadido para alinear con el botón + Agregar Nueva OS */
+    display: flex;
     align-items: center;
+    font-size: 1.1rem;
 }
 
-/* Estilos para los campos de entrada (input) y select */
-.pacientes-form input[type="text"],
-.pacientes-form input[type="email"],
-.pacientes-form input[type="password"],
-.pacientes-form input[type="date"], /* <-- Se agrega el tipo 'date' */
-.pacientes-form input[type="tel"],
-.pacientes-form select { /* <-- Se agrega el selector para selects */
-    width: 100%;
+/* ======================================= */
+/* CONTENEDOR DE CAMPOS EN DOS COLUMNAS (NUEVO) */
+/* ======================================= */
+.form-field-group {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los campos pasen a la siguiente línea */
+    justify-content: space-between;
+}
+
+/* Estilos de los campos dentro del grupo 2x2 */
+.form-field-group > label,
+.form-field-group > input,
+.form-field-group > select,
+.form-field-group > .error-message {
+    width: 48%; /* El 48% más el margen o el espacio entre ellos suman cerca del 100% */
+    margin-right: 4%; /* Espacio entre columnas */
+    box-sizing: border-box;
+}
+
+/* Eliminar el margen derecho para el segundo elemento de cada par (la columna derecha) */
+.form-field-group > label:nth-of-type(2n),
+.form-field-group > input:nth-of-type(2n) {
+    margin-right: 0;
+}
+
+.form-field-group > label {
+    margin-bottom: 5px;
+    color: #34495e;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.form-field-group > input[type="text"],
+.form-field-group > input[type="email"],
+.form-field-group > input[type="password"],
+.form-field-group > input[type="date"],
+.form-field-group > input[type="tel"],
+.form-field-group > select {
     padding: 10px 15px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
-    border-radius: 5px; 
-    box-sizing: border-box;
+    border-radius: 5px;
     transition: border-color 0.3s;
 }
 
+/* Corrección de error para que los mensajes de error se alineen con su input */
+.form-field-group > .error-message {
+    width: 48%; /* Debe coincidir con el ancho del campo */
+    margin-right: 4%;
+    margin-top: -10px; /* Subir el mensaje para que quede entre el input y el siguiente label */
+    margin-bottom: 10px;
+}
+/* Corrijo la alineación del mensaje de error de la columna derecha */
+.form-field-group > .error-message:nth-of-type(2n) {
+    margin-right: 0;
+}
+
+/* ======================================= */
+/* LAYOUT PARA CAMPOS DE ANCHO COMPLETO */
+/* Los campos que van a ancho completo no deben estar en .form-field-group */
+/* ======================================= */
+
+.pacientes-form > label,
+.pacientes-form > input,
+.pacientes-form > select,
+.pacientes-form > .error-message {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-right: 0 !important; /* Asegura ancho completo */
+    margin-left: 0 !important; /* Asegura ancho completo */
+}
+
+/* Estilos de los campos de ancho completo */
+.pacientes-form > label {
+    margin-bottom: 5px;
+    color: #34495e;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.pacientes-form > input[type="text"],
+.pacientes-form > input[type="email"],
+.pacientes-form > input[type="password"],
+.pacientes-form > input[type="date"],
+.pacientes-form > input[type="tel"],
+.pacientes-form > select {
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+
+/* Resetear los selectores originales que ya no se usan */
+.pacientes-form > label:nth-of-type(2n),
+.pacientes-form > input:nth-of-type(2n) {
+    margin-right: 0;
+    margin-left: 0; /* Lo reseteo para que no interfiera */
+}
+/* Fin de reseteo */
+
+
 /* Efecto al enfocar los campos */
 .pacientes-form input:focus,
-.pacientes-form select:focus { /* <-- Aplicar el efecto también al select */
+.pacientes-form select:focus {
     border-color: #27ae60; 
     outline: none;
     box-shadow: 0 0 5px rgba(39, 174, 96, 0.4); 
@@ -70,22 +155,13 @@
 }
 
 .pacientes-form button[type="submit"]:hover {
-    background-color: #2ecc71; /* Un verde más claro al pasar el ratón */
-    transform: translateY(-1px); /* Efecto de "levantamiento" */
+    background-color: #2ecc71;
+    transform: translateY(-1px);
 }
 
 .pacientes-form button[type="submit"]:active {
-    background-color: #1e8449; /* Verde oscuro al hacer clic */
+    background-color: #1e8449;
     transform: translateY(0);
-}
-
-/* Estilos para las etiquetas */
-.pacientes-form label {
-    display: block;
-    margin-top: 1px;
-    margin-bottom: 5px;
-    color: #34495e; /* Color oscuro para legibilidad */
-    font-weight: 600;
 }
 
 /* Estilos para la línea divisoria */
@@ -93,22 +169,28 @@
     border: 0;
     border-top: 1px solid #ddd;
     margin: 20px 0;
+    width: 100%;
+    clear: both;
 }
 
 .error-message {
-    color: #e74c3c; /* Rojo para errores */
+    color: #e74c3c;
     font-size: 0.85rem;
-    margin-top: 10px; /* Acercar al input */
-    margin-bottom: 10px; /* Separar del siguiente label */
+    margin-top: -10px;
+    margin-bottom: 10px;
     padding-left: 5px;
     font-weight: bold;
+    /* Ancho gestionado por el selector padre, aquí solo reseteo */
+    width: auto; 
+    display: block; /* Aseguro que sea un bloque para ocupar el espacio */
 }
 
+
 /* ======================================= */
-/* NUEVOS ESTILOS PARA CHECKBOXES Y BOTONES */
+/* CHECKBOXES EN MÚLTIPLES COLUMNAS */
+/* ... (El resto del CSS se mantiene igual) ... */
 /* ======================================= */
 
-/* Contenedor para el título del grupo de checkbox y el botón */
 .checkbox-group-header {
     display: flex;
     justify-content: space-between;
@@ -134,7 +216,6 @@
     background-color: #2980b9;
 }
 
-/* Botón para la sección de Obras Sociales (junto al h4) */
 .add-new-btn-inline {
     background-color: #3498db;
     color: white;
@@ -144,7 +225,7 @@
     font-size: 0.9rem;
     cursor: pointer;
     transition: background-color 0.2s;
-    margin-left: 15px; /* Separación del título h4 */
+    margin-left: 15px;
 }
 
 .add-new-btn-inline:hover {
@@ -152,14 +233,15 @@
 }
 
 .checkbox-group {
-    padding: 10px 15px; /* Padding interno */
+    padding: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    margin-bottom: 20px; /* Separación del siguiente elemento */
-    background-color: #f9f9f9; /* Fondo ligero para destacarlo */
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    width: 100%;
+    clear: both;
 }
 
-/* Etiqueta del título del grupo (p. ej., "Antecedentes") */
 .checkbox-group-label {
     display: block;
     font-size: 1rem;
@@ -170,40 +252,69 @@
     border-bottom: 1px solid #eee;
 }
 
+/* Grid de checkboxes en múltiples columnas */
+.checkbox-group > .checkbox-item {
+    display: inline-block;
+    width: 32%;
+    margin-right: 1%;
+    margin-bottom: 8px;
+    vertical-align: top;
+}
+
+/* Responsive: 2 columnas en pantallas medianas */
+@media (max-width: 900px) {
+    .checkbox-group > .checkbox-item {
+        width: 48%;
+        margin-right: 2%;
+    }
+}
+
+/* Responsive: 1 columna en pantallas pequeñas */
+@media (max-width: 600px) {
+    .checkbox-group > .checkbox-item {
+        width: 100%;
+        margin-right: 0;
+    }
+    
+    /* En móviles, los campos de 2 columnas pasan a 100% de ancho */
+    .form-field-group > label,
+    .form-field-group > input,
+    .form-field-group > select,
+    .form-field-group > .error-message {
+        width: 100% !important;
+        margin-right: 0 !important;
+    }
+}
+
 /* Contenedor de cada checkbox y su etiqueta */
 .checkbox-item {
-    display: flex; /* Para alinear el input y la etiqueta */
+    display: flex;
     align-items: center;
-    margin-bottom: 5px;
 }
 
 /* Estilo para el input checkbox */
 .checkbox-item input[type="checkbox"] {
-    /* Reinicia el estilo de input general */
     width: auto; 
-    margin-right: 8px; /* Espacio entre el checkbox y el texto */
+    margin-right: 8px;
     margin-bottom: 0;
     padding: 0;
-    /* Estilo del box */
-    appearance: none; /* Oculta el estilo nativo para estilizarlo */
+    appearance: none;
     width: 16px;
     height: 16px;
     border: 2px solid #555;
     border-radius: 3px;
     cursor: pointer;
     position: relative;
-    top: 1px;
+    flex-shrink: 0;
 }
 
-/* Estilo para el input checkbox cuando está marcado */
 .checkbox-item input[type="checkbox"]:checked {
     background-color: #27ae60;
     border-color: #27ae60;
 }
 
-/* Icono de verificación (check) cuando está marcado */
 .checkbox-item input[type="checkbox"]:checked::before {
-    content: '\2713'; /* Unicode de un tick/check mark */
+    content: '\2713';
     display: block;
     color: white;
     font-size: 12px;
@@ -212,35 +323,62 @@
     font-weight: bold;
 }
 
-/* Estilo para la etiqueta de cada opción individual */
 .checkbox-item label {
     margin: 0;
-    font-weight: normal; /* Menos énfasis que la etiqueta principal del campo */
+    font-weight: normal;
     cursor: pointer;
-    /* Permite que el texto ocupe el espacio restante */
-    flex-grow: 1; 
+    flex-grow: 1;
+    font-size: 0.9rem;
+    word-break: break-word;
 }
-
 
 /* ======================================= */
 /* ESTILOS DE OBRAS SOCIALES */
+/* ... (Se mantiene igual) ... */
 /* ======================================= */
-/* Contenedor de cada Obra Social */
+
 .os-group {
     border: 1px solid #ddd;
     padding: 15px;
     border-radius: 5px;
     margin-bottom: 15px;
     background-color: #fdfdfd;
+    width: 100%;
+    clear: both;
 }
 
-/* Separador dentro de los grupos de OS */
+/* Layout de dos columnas para campos de OS */
+.os-group label {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+    color: #34495e;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.os-group select,
+.os-group input[type="text"] {
+    width: 48%;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    margin-right: 2%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.os-group select:last-of-type,
+.os-group input[type="text"]:last-of-type {
+    margin-right: 0;
+    margin-left: 2%;
+}
+
 .os-separator {
-    border-top: 1px dashed #e0e0e0 !important; /* Usamos !important para anular el hr general */
+    border-top: 1px dashed #e0e0e0 !important;
     margin: 10px 0 !important;
 }
 
-/* Botón de eliminar Obra Social */
 .remove-os-btn {
     background-color: #e74c3c;
     color: white;
@@ -249,7 +387,7 @@
     border-radius: 5px;
     font-size: 0.9rem;
     cursor: pointer;
-    display: block; /* Ocupa todo el ancho si no se usa flexbox */
+    display: block;
     width: 100%;
     margin-top: 10px;
     transition: background-color 0.3s;
@@ -260,15 +398,14 @@
 }
 
 /* ======================================= */
-/* 🚨 ESTILOS DE MODAL FORMULARIO FALTANTES 🚨 */
+/* ESTILOS DE MODAL FORMULARIO */
+/* ... (Se mantiene igual) ... */
 /* ======================================= */
 
-/* Contenedor del formulario dentro del Modal (ej: AddOsForm) */
 .modalForm {
     padding: 5px;
 }
 
-/* Inputs dentro de los formularios del modal */
 .modalForm input {
     width: 100%;
     padding: 10px;
@@ -278,7 +415,6 @@
     box-sizing: border-box;
 }
 
-/* Etiquetas dentro de los formularios del modal */
 .modalForm label {
     display: block;
     margin-bottom: 5px;
@@ -286,7 +422,6 @@
     color: #34495e;
 }
 
-/* Botón principal (Guardar) dentro de los formularios del modal */
 .modalForm button[type="submit"] {
     width: 100%;
     background-color: #27ae60;
@@ -304,29 +439,24 @@
     background-color: #2ecc71;
 }
 
-/* Botón de cancelar (el que usa .modal-cancel-btn) */
 .modal-cancel-btn {
-    background-color: #95a5a6 !important; /* Gris */
-    margin-top: 10px; /* Asegura separación si se aplica a través de style */
+    background-color: #95a5a6 !important;
+    margin-top: 10px;
 }
 
 .modal-cancel-btn:hover {
-    background-color: #7f8c8d !important; /* Gris oscuro */
+    background-color: #7f8c8d !important;
 }
 
-
-/* PacientesForm.module.css */
-
-/* ... (Estilos existentes) ... */
-
 /* ======================================= */
-/* --- Estilos para ListManager (dentro del Modal) --- */
+/* ESTILOS PARA LISTMANAGER (DENTRO DEL MODAL) */
+/* ... (Se mantiene igual) ... */
 /* ======================================= */
 
 .list-manager-container {
-    max-height: 400px; /* Para que sea cómodo y quepa en un modal pequeño */
+    max-height: 400px;
     overflow-y: auto;
-    padding-right: 5px; /* Espacio para la barra de desplazamiento */
+    padding-right: 5px;
 }
 
 .manager-form-container {
@@ -337,7 +467,6 @@
     margin-bottom: 15px;
 }
 
-/* El formulario de edición/creación dentro del modal manager */
 .manager-form-container input[type="text"] {
     margin-bottom: 10px;
 }
@@ -351,7 +480,7 @@
 
 .manager-action-btn {
     margin: auto;
-    background-color: #007bff; /* Color azul para acción principal */
+    background-color: #007bff;
     color: white;
     width: 50%;
     padding: 10px 15px;
@@ -360,17 +489,16 @@
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.2s;
-    margin-top: 10px; /* Para separarlo del input */
+    margin-top: 10px;
 }
 
 .manager-action-btn:hover {
     background-color: #0056b3;
 }
 
-/* Estilo para el botón de Cancelar Edición */
 .modal-cancel-btn {
     margin: auto;
-    background-color: #6c757d; /* Color gris para cancelación */
+    background-color: #6c757d;
     color: white;
     width: 50%;
     padding: 10px 15px;
@@ -431,5 +559,3 @@
 .delete-btn:hover {
     background-color: #c0392b;
 }
-
-/* ... (Resto de estilos existentes) ... */

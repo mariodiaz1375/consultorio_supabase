@@ -434,68 +434,66 @@ export default function PacientesForm({
             {/* ... (Datos básicos) ... */}
             {isEditing? <h3>Editar Paciente</h3> : <h3>Registrar nuevo paciente</h3>}
             
-            <label>Nombre</label>
-            <input 
-            name="nombre" 
-            value={formData.nombre} 
-            onChange={(e) => handleNameChange(e, 'nombre')}
-            placeholder="Nombre" 
-            required 
-            />
+            {/* ======================================================== */}
+            {/* NUEVO GRUPO DE CAMPOS 2x2 (nombre, apellido, dni, telefono) */}
+            {/* ======================================================== */}
+            <div className={styles['form-field-group']}>
+                <label>Nombre</label>
+                <label>Apellido</label>
+                <input 
+                    name="nombre" 
+                    value={formData.nombre} 
+                    onChange={(e) => handleNameChange(e, 'nombre')}
+                    placeholder="Nombre" 
+                    required 
+                />
+                <input 
+                    name="apellido" 
+                    value={formData.apellido} 
+                    onChange={(e) => handleNameChange(e, 'apellido')}
+                    placeholder="Apellido"
+                    required 
+                />
+                
+                {/* Los mensajes de error también deben estar en el grupo */}
+                {nombreError && <p className={styles['error-message']}>{nombreError}</p>}
+                {apellidoError && <p className={styles['error-message']}>{apellidoError}</p>}
+                
+                <label>DNI</label>
+                <label>Teléfono</label>
+                <input 
+                    name="dni" 
+                    value={formData.dni} 
+                    onChange={handleDniChange} 
+                    placeholder="DNI" 
+                    required 
+                />
+                <input name="telefono" 
+                    value={formData.telefono} 
+                    onChange={handleChange} 
+                    placeholder="Teléfono" 
+                    required
+                />
+
+                {/* Los mensajes de error de la segunda fila */}
+                {dniError && <p className={styles['error-message']}>{dniError}</p>}
+                {telefonoError && <p className={styles['error-message']}>{telefonoError}</p>}
+            </div>
             
-            <label>Apellido</label>
-            <input 
-                name="apellido" 
-                value={formData.apellido} 
-                onChange={(e) => handleNameChange(e, 'apellido')}
-                placeholder="Apellido"
-                required 
-            />
-            
-            <label>DNI</label>
-            <input 
-                name="dni" 
-                value={formData.dni} 
-                onChange={handleDniChange} 
-                placeholder="DNI" 
-                required 
-            />
-            {dniError && <p className={styles['error-message']}>{dniError}</p>}
+            {/* ======================================================== */}
+            {/* CAMPOS INDIVIDUALES DE ANCHO COMPLETO O 2 COLUMNAS POR FILA (fecha, genero, domicilio, email) */}
+            {/* ======================================================== */}
             
             <label>Fecha de Nacimiento</label>
             <input 
-            type="date" 
-            name="fecha_nacimiento" 
-            value={formData.fecha_nacimiento} 
-            onChange={handleChange} 
-            required 
+                type="date" 
+                name="fecha_nacimiento" 
+                value={formData.fecha_nacimiento} 
+                onChange={handleChange} 
+                required 
             />
             {fechaNacimientoError && <p className={styles['error-message']}>{fechaNacimientoError}</p>}
             
-            <label>Domicilio</label>
-            <input name="domicilio" value={formData.domicilio} onChange={handleChange} placeholder="Domicilio" />
-            
-            <label>Teléfono</label>
-            <input name="telefono" 
-            value={formData.telefono} 
-            onChange={handleChange} 
-            placeholder="Teléfono" 
-            required
-            />
-            {telefonoError && <p className={styles['error-message']}>{telefonoError}</p>}
-            
-            <label>Email</label>
-            <input type="email" 
-            name="email" value={formData.email} 
-            onChange={handleChange} 
-            placeholder="Correo Electrónico" 
-            />
-            {emailError && <p className={styles['error-message']}>{emailError}</p>}
-            
-            <hr /> 
-            
-            <h4>Relaciones y Antecedentes</h4>
-
             <label>Género</label>
             <select
                 name="genero_id" 
@@ -510,6 +508,23 @@ export default function PacientesForm({
                     </option>
                 ))}
             </select>
+            {generoIdError && <p className={styles['error-message']}>{generoIdError}</p>}
+            
+
+            <label>Domicilio</label>
+            <input name="domicilio" value={formData.domicilio} onChange={handleChange} placeholder="Domicilio" />
+            
+            <label>Email</label>
+            <input type="email" 
+                name="email" value={formData.email} 
+                onChange={handleChange} 
+                placeholder="Correo Electrónico" 
+            />
+            {emailError && <p className={styles['error-message']}>{emailError}</p>}
+            
+            <hr /> 
+            
+            <h4>Antecedentes</h4>
             
             {/* ======================================================== */}
             {/* CAMPO ANTECEDENTES (CHECKBOXES) + BOTÓN AGREGAR NUEVO */}
