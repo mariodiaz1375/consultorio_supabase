@@ -82,7 +82,7 @@ class AuditoriaPagos(models.Model):
     # Información del pago
     pago = models.ForeignKey(
         Pagos, 
-        on_delete=models.SET_NULL,  # Si se elimina el pago, mantener el registro de auditoría
+        on_delete=models.SET_NULL,
         null=True,
         related_name='auditoria_registros'
     )
@@ -100,10 +100,10 @@ class AuditoriaPagos(models.Model):
         related_name='acciones_auditoria_pagos'
     )
     
-    # 🚨 RELACIÓN CON HISTORIA CLÍNICA
+    # Relación con Historia Clínica
     hist_clin = models.ForeignKey(
         HistoriasClinicas,
-        on_delete=models.SET_NULL,  # Si se elimina la HC, mantener el registro
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='auditoria_pagos'
@@ -111,7 +111,7 @@ class AuditoriaPagos(models.Model):
     
     # Datos del contexto (desnormalizados para histórico)
     tipo_pago_nombre = models.CharField(max_length=50, null=True, blank=True)
-    hist_clin_numero = models.IntegerField(null=True, blank=True)  # 🚨 RENOMBRADO: Backup del ID de HC
+    hist_clin_numero = models.IntegerField(null=True, blank=True)
     paciente_nombre = models.CharField(max_length=255, null=True, blank=True)
     paciente_dni = models.CharField(max_length=20, null=True, blank=True)
     
@@ -119,9 +119,8 @@ class AuditoriaPagos(models.Model):
     estado_pagado = models.BooleanField(default=False)
     fecha_pago = models.DateTimeField(null=True, blank=True)
     
-    # Información adicional (opcional)
+    # Información adicional
     observaciones = models.TextField(blank=True, null=True)
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
     
     def __str__(self):
         return f"{self.accion} - {self.tipo_pago_nombre} - {self.fecha_accion.strftime('%d/%m/%Y %H:%M')}"
@@ -129,9 +128,9 @@ class AuditoriaPagos(models.Model):
     class Meta:
         verbose_name = 'Auditoría de Pago'
         verbose_name_plural = 'Auditorías de Pagos'
-        ordering = ['-fecha_accion']  # Más recientes primero
+        ordering = ['-fecha_accion']
         indexes = [
             models.Index(fields=['fecha_accion']),
             models.Index(fields=['pago']),
-            models.Index(fields=['hist_clin_id']),
+            models.Index(fields=['hist_clin_numero']),
         ]

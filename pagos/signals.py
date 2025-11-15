@@ -35,12 +35,14 @@ def registrar_auditoria_pago(sender, instance, created, **kwargs):
     # Determinar si hubo cambio en el estado 'pagado'
     accion = None
     observaciones = ""
+    usuario_que_realizo_accion = instance.registrado_por  # Usuario actual por defecto
     
     if created:
         # Es un nuevo registro
         if instance.pagado:
             accion = 'REGISTRO'
             observaciones = f"Pago registrado como pagado al momento de crear."
+            usuario_que_realizo_accion = instance.registrado_por
         # Si se crea sin marcar como pagado, NO registramos en auditoría
     else:
         # Es una actualización - verificar si cambió el estado
@@ -51,10 +53,13 @@ def registrar_auditoria_pago(sender, instance, created, **kwargs):
                 # Se marcó como pagado
                 accion = 'REGISTRO'
                 observaciones = f"Pago marcado como pagado."
+                usuario_que_realizo_accion = instance.registrado_por
             elif estado_anterior.pagado and not instance.pagado:
                 # Se canceló el pago
                 accion = 'CANCELACION'
                 observaciones = f"Pago cancelado (desmarcado)."
+                # 🚨 USAR EL USUARIO ACTUAL (quien desmarca)
+                usuario_que_realizo_accion = instance.registrado_por
             # Si no cambió el estado 'pagado', no registramos nada
     
     # Solo crear registro de auditoría si hubo una acción relevante
@@ -62,10 +67,10 @@ def registrar_auditoria_pago(sender, instance, created, **kwargs):
         AuditoriaPagos.objects.create(
             pago=instance,
             accion=accion,
-            usuario=instance.registrado_por,
-            hist_clin=instance.hist_clin,  # 🚨 RELACIÓN CON HC
+            usuario=usuario_que_realizo_accion,  # 🚨 USUARIO CORRECTO
+            hist_clin=instance.hist_clin,
             tipo_pago_nombre=tipo_pago_nombre,
-            hist_clin_numero=instance.hist_clin.id if instance.hist_clin else None,  # 🚨 BACKUP DEL ID
+            hist_clin_numero=instance.hist_clin.id if instance.hist_clin else None,
             paciente_nombre=paciente_nombre,
             paciente_dni=paciente_dni,
             estado_pagado=instance.pagado,

@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from .models import Pagos, TiposPagos, AuditoriaPagos
 
@@ -23,7 +22,7 @@ class AuditoriaPagosAdmin(admin.ModelAdmin):
         'id', 
         'accion', 
         'tipo_pago_nombre',
-        'hist_clin',  # 🚨 MOSTRAR LA HC
+        'hist_clin',
         'paciente_nombre', 
         'estado_pagado', 
         'usuario', 
@@ -34,34 +33,33 @@ class AuditoriaPagosAdmin(admin.ModelAdmin):
         'paciente_nombre', 
         'paciente_dni', 
         'tipo_pago_nombre',
-        'hist_clin_numero',  # 🚨 ACTUALIZADO
-        'hist_clin__id'  # Buscar por ID de HC
+        'hist_clin_numero',
+        'hist_clin__id'
     )
     readonly_fields = (
         'pago', 
         'accion', 
         'fecha_accion', 
         'usuario',
-        'hist_clin',  # 🚨 CAMPO DE HC
+        'hist_clin',
         'tipo_pago_nombre',
-        'hist_clin_numero',  # 🚨 ACTUALIZADO
+        'hist_clin_numero',
         'paciente_nombre', 
         'paciente_dni',
         'estado_pagado', 
         'fecha_pago', 
-        'observaciones', 
-        'ip_address'
+        'observaciones'
     )
     
     fieldsets = (
         ('Acción Realizada', {
-            'fields': ('accion', 'fecha_accion', 'usuario', 'ip_address')
+            'fields': ('accion', 'fecha_accion', 'usuario')
         }),
         ('Información del Pago', {
             'fields': ('pago', 'tipo_pago_nombre', 'estado_pagado', 'fecha_pago')
         }),
-        ('Historia Clínica y Paciente', {  # 🚨 SECCIÓN ACTUALIZADA
-            'fields': ('hist_clin', 'hist_clin_numero', 'paciente_nombre', 'paciente_dni')  # 🚨 ACTUALIZADO
+        ('Historia Clínica y Paciente', {
+            'fields': ('hist_clin', 'hist_clin_numero', 'paciente_nombre', 'paciente_dni')
         }),
         ('Detalles', {
             'fields': ('observaciones',)

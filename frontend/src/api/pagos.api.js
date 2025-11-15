@@ -1,24 +1,42 @@
 import axios from 'axios';
 
-// 1. INSTANCIA DE AXIOS
-// Creamos una instancia con la URL base de tu app 'pagos'
+// 1. INSTANCIA DE AXIOS CON CONFIGURACIÓN BASE
 const pagosApi = axios.create({
-    baseURL: 'http://localhost:8000/api/pagos', // Asumiendo que esta es la ruta raíz configurada en tu proyecto principal
+    baseURL: 'http://localhost:8000/api/pagos',
     headers: {
         'Content-Type': 'application/json'
-        // NOTA: La autenticación con Bearer Token debe ser manejada
-        // por un interceptor global de Axios si se usa en todos los módulos.
     }
 });
+
+// 🚨 INTERCEPTOR: Agregar el token a cada petición
+pagosApi.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// 🚨 INTERCEPTOR DE RESPUESTA: Manejar errores de autenticación
+pagosApi.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            console.error('Sesión expirada. Por favor, inicie sesión nuevamente.');
+        }
+        return Promise.reject(error);
+    }
+);
 
 // ===============================================
 // A. CRUD PRINCIPAL (PAGOS)
 // ===============================================
 
-/**
- * Obtiene la lista completa de pagos registrados.
- * Endpoint: GET /api/pagos/
- */
 export const getPagos = async () => {
     try {
         const response = await pagosApi.get('/');
@@ -29,10 +47,6 @@ export const getPagos = async () => {
     }
 }
 
-/**
- * Obtiene el detalle de un pago específico.
- * Endpoint: GET /api/pagos/{id}/
- */
 export const getPago = async (id) => {
     try {
         const response = await pagosApi.get(`/${id}/`);
@@ -43,11 +57,6 @@ export const getPago = async (id) => {
     }
 }
 
-/**
- * Registra un nuevo pago pendiente/pagado.
- * Los datos esperados son: { tipo_pago, hist_clin, registrado_por, descripcion, pagado (opcional) }
- * Endpoint: POST /api/pagos/
- */
 export const createPago = async (pagoData) => {
     try {
         const response = await pagosApi.post('/', pagoData);
@@ -58,10 +67,6 @@ export const createPago = async (pagoData) => {
     }
 }
 
-/**
- * Actualiza completamente un pago existente (PUT).
- * Endpoint: PUT /api/pagos/{id}/
- */
 export const updatePago = async (id, pagoData) => {
     try {
         const response = await pagosApi.put(`/${id}/`, pagoData);
@@ -72,10 +77,6 @@ export const updatePago = async (id, pagoData) => {
     }
 }
 
-/**
- * Actualiza parcialmente un pago existente, ideal para cambiar solo el estado 'pagado' (PATCH).
- * Endpoint: PATCH /api/pagos/{id}/
- */
 export const patchPago = async (id, partialData) => {
     try {
         const response = await pagosApi.patch(`/${id}/`, partialData);
@@ -86,14 +87,9 @@ export const patchPago = async (id, partialData) => {
     }
 }
 
-/**
- * Elimina un pago.
- * Endpoint: DELETE /api/pagos/{id}/
- */
 export const deletePago = async (id) => {
     try {
         const response = await pagosApi.delete(`/${id}/`);
-        // Normalmente regresa 204 No Content
         return response.data; 
     } catch (error) {
         console.error(`Error al eliminar el pago ${id}:`, error);
@@ -106,15 +102,40 @@ export const deletePago = async (id) => {
 // ===============================================
 
 /**
- * Obtiene la lista de opciones para el campo 'tipo_pago'.
- * Endpoint: GET /api/pagos/tipos/
+ * 🚨 RUTA CORREGIDA: /tipos-pagos/
  */
 export const getTiposPagos = async () => {
     try {
-        const response = await pagosApi.get('/tipos/');
+        const response = await pagosApi.get('/tipos-pagos/');
         return response.data;
     } catch (error) {
         console.error('Error al obtener la lista de Tipos de Pagos:', error);
+        throw error;
+    }
+}
+
+// ===============================================
+// C. AUDITORÍA DE PAGOS
+// ===============================================
+
+export const getAuditorias = async (filtros = {}) => {
+    try {
+        const response = await pagosApi.get('/auditoria/', {
+            params: filtros
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener auditorías:', error);
+        throw error;
+    }
+}
+
+export const getAuditoriaDetail = async (id) => {
+    try {
+        const response = await pagosApi.get(`/auditoria/${id}/`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error al obtener auditoría ${id}:`, error);
         throw error;
     }
 }
