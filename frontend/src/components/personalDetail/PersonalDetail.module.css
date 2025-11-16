@@ -1,0 +1,120 @@
+/* PersonalDetail.module.css */
+
+.container {
+    padding: 20px 40px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 15px;
+}
+
+.title {
+    margin: 0;
+    font-size: 2em;
+    color: #333;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.backButton {
+    background: none;
+    border: 1px solid #ccc;
+    color: #555;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.backButton:hover {
+    background-color: #e9ecef;
+}
+
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+    color: #007bff;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.card p {
+    margin: 8px 0;
+    font-size: 1.05em;
+}
+
+.card ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.card li {
+    margin: 5px 0;
+    font-size: 1em;
+}
+
+/* Dashboard de Acciones */
+.dashboard {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.dashboard h2 {
+    color: #28a745;
+    margin-bottom: 20px;
+}
+
+.actionButton {
+    padding: 12px 25px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.actionButton:nth-child(2) {
+    background-color: #007bff;
+    color: white;
+}
+
+.actionButton:nth-child(3) {
+    background-color: #28a745;
+    color: white;
+}
+
+.actionButton:nth-child(4) {
+    background-color: #ffc107;
+    color: white;
+}
+
+.actionButton:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}

@@ -1,60 +1,58 @@
 .personal-card {
-  /* Box model and layout */
-  background-color: #f7f9fc; /* Light background for a clean look */
-  border: 1px solid #e1e4e8; /* Subtle border */
-  border-radius: 8px; /* Rounded corners */
+  background-color: #f7f9fc;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-  display: flex; /* Flexbox for alignment */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
   flex-direction: block;
   justify-content: center;
-  /* align-items: center; Align content to the left */
-  font-family: 'Arial', sans-serif; /* A clean, professional font */
+  font-family: 'Arial', sans-serif;
   margin-left: 10%;
   margin-right: 10%;
 }
 
 .personal-card h2 {
-  /* Title styling */
-  color: #2c3e50; /* Darker text for readability */
+  color: #2c3e50;
   font-size: 1.2em;
-  margin-top: auto; /* Remove top margin for a tighter look */
+  margin-top: auto;
   margin-bottom: auto;
-  text-transform: capitalize; /* Capitalize the name for consistency */
+  text-transform: capitalize;
   margin-right: auto;
 }
 
 .personal-card .button-group {
-  /* Button container */
   display: flex;
-  gap: 10px; /* Space between buttons */
-  margin-top: auto; /* Push buttons to the bottom of the card */
+  gap: 10px;
+  margin-top: auto;
   margin-bottom: auto;
 }
 
 .personal-card button {
-  /* General button styling */
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
   font-weight: bold;
-  cursor: pointer; /* Change cursor on hover */
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .personal-card button:hover {
-  transform: translateY(-2px); /* Slight lift effect on hover */
+  transform: translateY(-2px);
 }
 
 .personal-card .edit-button {
-  /* Specific style for the edit button */
-  background-color: #3498db; /* Blue for "Edit" */
+  background-color: #3498db;
   color: white;
 }
 
 .personal-card .delete-button {
-  /* Specific style for the delete button */
-  background-color: #e74c3c; /* Red for "Delete" */
+  background-color: #e74c3c;
+  color: white;
+}
+
+.personal-card .activate-button {
+  background-color: #4CAF50;
   color: white;
 }

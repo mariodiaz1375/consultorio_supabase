@@ -1,22 +1,29 @@
+/* PersonalList.module.css */
+
+.personal-list-container {
+  padding: 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
 .title {
-  color: #2c3e50; /* Color del texto del título */
-  text-align: center; /* Centra el título */
+  color: #2c3e50;
+  text-align: center;
   font-size: 2.5rem;
-  margin-bottom: 30px; /* Espacio debajo del título */
+  margin-bottom: 30px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding-bottom: 10px;
 }
 
-.pacientes-grid {
+.personal-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Crea una cuadrícula adaptable */
-  gap: 20px; /* Espacio entre las tarjetas */
-  justify-content: center; /* Centra las tarjetas si hay menos de las que llenan una fila */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  justify-content: center;
 }
 
 .register-button {
-  background-color: #27ae60; /* Un verde vibrante y amigable */
+  background-color: #27ae60;
   color: white;
   border: none;
   padding: 12px 25px;
@@ -25,9 +32,9 @@
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para darle profundidad */
-  margin-bottom: 20px; /* Espacio debajo del botón */
-  display: block; /* Para que ocupe todo el ancho y se centre */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+  display: block;
   margin-left: auto;
   margin-right: auto;
 }
@@ -42,12 +49,160 @@
 }
 
 .register-button:hover {
-  background-color: #2ecc71; /* Un verde más claro al pasar el mouse */
-  transform: translateY(-2px); /* Efecto de "levantamiento" */
+  background-color: #2ecc71;
+  transform: translateY(-2px);
 }
 
-/* Un contenedor para el botón para mejor alineación */
 .boton-conteiner {
   display: flex;
   margin: 20px 0px 20px 20px;
+}
+
+.search-conteiner {
+  margin: 10px 0 20px 0;
+  text-align: center;
+}
+
+.search-input {
+  padding: 10px 150px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  width: 350px;
+  max-width: 100%;
+  font-size: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* ======================================= */
+/* ESTILOS DEL MODAL CENTRADO */
+/* ======================================= */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 30px;
+  position: relative;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.modal-close-btn:hover {
+  background-color: #c0392b;
+  transform: scale(1.1);
+}
+
+/* ======================================= */
+/* SWITCH BUTTON */
+/* ======================================= */
+
+.switch-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-family: sans-serif;
+  width: fit-content; 
+  margin: 0 auto;
+}
+
+.switch-button {
+  width: 60px;
+  height: 34px;
+  border-radius: 34px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.4s;
+  position: relative;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.switch-button.off {
+  background-color: #ffffff;
+  justify-content: flex-start;
+}
+
+.switch-button.on {
+  background-color: #4CAF50;
+  justify-content: flex-end;
+}
+
+.switch-toggle {
+  width: 26px;
+  height: 26px;
+  background-color: white;
+  border-radius: 50%;
+  margin: 4px;
+  transition: transform 0.4s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.Inactivos {
+  background-color: #f32828;
+  justify-content: flex-start;
+}
+
+.Activos {
+  background-color: #4CAF50;
+  justify-content: flex-end;
 }
