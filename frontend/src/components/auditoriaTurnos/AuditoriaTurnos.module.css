@@ -253,3 +253,43 @@
         padding: 8px 6px;
     }
 }
+
+.paginacionContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.paginacionInfo {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #495057;
+}
+
+.btnPaginacion {
+    padding: 8px 16px;
+    border: 1px solid #007bff;
+    background-color: white;
+    color: #007bff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btnPaginacion:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.btnPaginacion:disabled {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+    color: #6c757d;
+    cursor: not-allowed;
+}

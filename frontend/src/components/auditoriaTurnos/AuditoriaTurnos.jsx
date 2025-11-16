@@ -1,50 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getAuditoriasTurnos } from '../../api/turnos.api';
 import styles from './AuditoriaTurnos.module.css';
+
+// Variable para la paginación
+const REGISTROS_POR_PAGINA = 10;
 
 export default function AuditoriaTurnos({ turnoNumero = null }) {
     const [auditorias, setAuditorias] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
-    // Filtros
+    // --- ESTADO DE PAGINACIÓN ---
+    const [paginaActual, setPaginaActual] = useState(1);
+    const [totalRegistros, setTotalRegistros] = useState(0);
+    // ----------------------------
+
     const [filtros, setFiltros] = useState({
         accion: '',
-        fecha_desde: '',
-        fecha_hasta: '',
+        fecha_accion: '',
         fecha_turno: '',
     });
 
-    useEffect(() => {
-        cargarAuditorias();
-    }, [turnoNumero]);
-
-    const cargarAuditorias = async () => {
+    const cargarAuditorias = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const params = {};
+            const params = {
+                page: paginaActual // 👈 AÑADIR PÁGINA ACTUAL A LOS PARÁMETROS
+            };
             
-            // Si hay un turno específico, filtrar por él
             if (turnoNumero) {
                 params.turno_numero = turnoNumero;
             }
             
             // Agregar otros filtros si están activos
             if (filtros.accion) params.accion = filtros.accion;
-            if (filtros.fecha_desde) params.fecha_desde = filtros.fecha_desde;
-            if (filtros.fecha_hasta) params.fecha_hasta = filtros.fecha_hasta;
+            if (filtros.fecha_accion) params.fecha_accion = filtros.fecha_accion;
             if (filtros.fecha_turno) params.fecha_turno = filtros.fecha_turno;
             
-            const data = await getAuditoriasTurnos(params);
-            setAuditorias(data);
+            // 👇 LA RESPUESTA DE LA API AHORA SERÁ UN OBJETO PAGINADO
+            const data = await getAuditoriasTurnos(params); 
+            
+            setAuditorias(data.results); // 👈 Los datos están en 'results'
+            setTotalRegistros(data.count); // 👈 El total está en 'count'
+
         } catch (err) {
             console.error('Error al cargar auditorías:', err);
             setError('No se pudieron cargar los registros de auditoría.');
         } finally {
             setLoading(false);
         }
-    };
+    }, [filtros, turnoNumero, paginaActual]); // 👈 AÑADIR 'paginaActual' a las dependencias
+
+    // Este useEffect se mantiene igual, se ejecutará si 'cargarAuditorias' cambia
+    useEffect(() => {
+        cargarAuditorias();
+    }, [cargarAuditorias]);
 
     const handleFiltroChange = (e) => {
         const { name, value } = e.target;
@@ -52,22 +63,32 @@ export default function AuditoriaTurnos({ turnoNumero = null }) {
             ...prev,
             [name]: value
         }));
-    };
-
-    const aplicarFiltros = () => {
-        cargarAuditorias();
+        setPaginaActual(1); // 👈 RESETEAR A PÁGINA 1 AL CAMBIAR FILTRO
     };
 
     const limpiarFiltros = () => {
         setFiltros({
             accion: '',
-            fecha_desde: '',
-            fecha_hasta: '',
+            fecha_accion: '',
             fecha_turno: '',
         });
-        setTimeout(() => cargarAuditorias(), 100);
+        setPaginaActual(1); // 👈 RESETEAR A PÁGINA 1 AL LIMPIAR
     };
 
+    // --- LÓGICA DE PAGINACIÓN ---
+    const totalPaginas = Math.ceil(totalRegistros / REGISTROS_POR_PAGINA);
+
+    const irPaginaSiguiente = () => {
+        setPaginaActual(prev => Math.min(prev + 1, totalPaginas));
+    };
+
+    const irPaginaAnterior = () => {
+        setPaginaActual(prev => Math.max(prev - 1, 1));
+    };
+    // ----------------------------
+
+    // (Funciones auxiliares como formatearFecha, getBadgeClass, etc. no cambian)
+    // ...
     const formatearFecha = (fechaISO) => {
         if (!fechaISO) return 'N/A';
         const fecha = new Date(fechaISO);
@@ -120,6 +141,7 @@ export default function AuditoriaTurnos({ turnoNumero = null }) {
         }
     };
 
+
     if (loading) {
         return <div className={styles.loading}>Cargando auditorías...</div>;
     }
@@ -132,9 +154,9 @@ export default function AuditoriaTurnos({ turnoNumero = null }) {
         <div className={styles.auditoriaContainer}>
             <h2>Auditoría de Turnos</h2>
             
-            {/* Filtros */}
             {!turnoNumero && (
                 <div className={styles.filtrosContainer}>
+                    {/* ... (Filtros no cambian) ... */}
                     <div className={styles.filtroGroup}>
                         <label htmlFor="accion">Acción:</label>
                         <select 
@@ -163,39 +185,26 @@ export default function AuditoriaTurnos({ turnoNumero = null }) {
                     </div>
 
                     <div className={styles.filtroGroup}>
-                        <label htmlFor="fecha_desde">Desde:</label>
+                        <label htmlFor="fecha_accion">Fecha de Acción:</label>
                         <input 
                             type="date"
-                            id="fecha_desde"
-                            name="fecha_desde"
-                            value={filtros.fecha_desde}
+                            id="fecha_accion"
+                            name="fecha_accion"
+                            value={filtros.fecha_accion}
                             onChange={handleFiltroChange}
                         />
                     </div>
-
-                    <div className={styles.filtroGroup}>
-                        <label htmlFor="fecha_hasta">Hasta:</label>
-                        <input 
-                            type="date"
-                            id="fecha_hasta"
-                            name="fecha_hasta"
-                            value={filtros.fecha_hasta}
-                            onChange={handleFiltroChange}
-                        />
-                    </div>
-
-                    <button onClick={aplicarFiltros} className={styles.btnFiltrar}>
-                        Filtrar
-                    </button>
+                    
                     <button onClick={limpiarFiltros} className={styles.btnLimpiar}>
                         Limpiar
                     </button>
                 </div>
             )}
 
-            {/* Tabla de auditorías */}
+            {/* (La tabla no cambia) ... */}
             <div className={styles.tableContainer}>
                 <table className={styles.auditoriaTable}>
+                    {/* ... (thead) ... */}
                     <thead>
                         <tr>
                             <th>Fecha/Hora Acción</th>
@@ -262,23 +271,33 @@ export default function AuditoriaTurnos({ turnoNumero = null }) {
                 </table>
             </div>
 
-            {/* Detalles de observaciones */}
-            {auditorias.length > 0 && (
-                <div className={styles.observacionesContainer}>
-                    <h3>Detalles de Cambios</h3>
-                    {auditorias.map(auditoria => (
-                        auditoria.observaciones && (
-                            <div key={auditoria.id} className={styles.observacionItem}>
-                                <strong>#{auditoria.turno_numero} - {formatearFecha(auditoria.fecha_accion)}:</strong>
-                                <p>{auditoria.observaciones}</p>
-                            </div>
-                        )
-                    ))}
+            {/* 👇 --- CONTROLES DE PAGINACIÓN --- 👇 */}
+            {totalRegistros > 0 && (
+                <div className={styles.paginacionContainer}>
+                    <button 
+                        onClick={irPaginaAnterior} 
+                        disabled={paginaActual === 1}
+                        className={styles.btnPaginacion}
+                    >
+                        ‹ Anterior
+                    </button>
+                    <span className={styles.paginacionInfo}>
+                        Página {paginaActual} de {totalPaginas}
+                    </span>
+                    <button 
+                        onClick={irPaginaSiguiente} 
+                        disabled={paginaActual >= totalPaginas}
+                        className={styles.btnPaginacion}
+                    >
+                        Siguiente ›
+                    </button>
                 </div>
             )}
+            {/* --------------------------------- */}
 
             <div className={styles.totalRegistros}>
-                Total de registros: <strong>{auditorias.length}</strong>
+                {/* 👇 ACTUALIZAR EL TOTAL PARA USAR 'totalRegistros' */}
+                Total de registros: <strong>{totalRegistros}</strong>
             </div>
         </div>
     );
