@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
-from .models import Turnos, EstadosTurnos, HorarioFijo, DiaSemana 
+from .models import Turnos, EstadosTurnos, HorarioFijo, DiaSemana, AuditoriaTurnos
 from .serializers import (
     TurnosSerializer, 
     EstadosTurnosSerializer, 
