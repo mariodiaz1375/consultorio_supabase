@@ -341,6 +341,13 @@ const Dashboard = () => {
                 >
                     Auditar Pagos
                 </button>
+                <button 
+                    onClick={() => navigate('/auditoria_turnos')}
+                    className={styles['card-button']}
+                    style={{backgroundColor: '#28a745'}}
+                >
+                    Auditar Turnos
+                </button>
             </div>
         )}
         {/* Información del usuario actual */}

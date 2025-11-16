@@ -79,13 +79,21 @@ export default function TurnosList() {
         }
 
         try {
-            // Convertimos el Set a Array para el mapeo
+            // 🚨 PRIMERO: Actualizar todos con el usuario actual
+            if (currentUser?.id) {
+                const updatePromises = Array.from(selectedTurnos).map(id => 
+                    updateTurno(id, { modificado_por: currentUser.id })
+                );
+                await Promise.all(updatePromises);
+            }
+            
+            // SEGUNDO: Eliminar
             const deletePromises = Array.from(selectedTurnos).map(id => deleteTurno(id));
             await Promise.all(deletePromises);
 
             alert(`${selectedTurnos.size} turno(s) eliminados correctamente.`);
-            setSelectedTurnos(new Set()); // Limpiar selección
-            await loadData(); // Recargar la lista
+            setSelectedTurnos(new Set());
+            await loadData();
         } catch (err) {
             console.error("Error al eliminar turnos en lote:", err);
             alert("Hubo un error al eliminar los turnos. Intente nuevamente.");
@@ -272,12 +280,18 @@ export default function TurnosList() {
 
     const handleFormSubmit = async (formData) => {
         try {
+            // 🚨 AGREGAR EL USUARIO ACTUAL AL PAYLOAD
+            const payload = {
+                ...formData,
+                modificado_por: currentUser?.id  // Agregar el ID del usuario
+            };
+
             if (isEditing) {
                 // Modo Edición
-                await updateTurno(editingTurno.id, formData);
+                await updateTurno(editingTurno.id, payload);
             } else {
                 // Modo Creación
-                await createTurno(formData);
+                await createTurno(payload);
             }
             // Recargar la lista después de la operación
             await loadData();
@@ -285,16 +299,20 @@ export default function TurnosList() {
             setEditingTurno(null);
         } catch (err) {
             console.error("Error al guardar el turno:", err.response?.data || err);
-            // Aquí puedes mostrar un mensaje de error más específico al usuario
             alert("Hubo un error al guardar el turno. Verifique los datos.");
         }
     };
 
     const handleDelete = async (id) => {
         try {
+            // 🚨 ANTES DE ELIMINAR, actualizar el campo modificado_por
+            if (currentUser?.id) {
+                await updateTurno(id, { modificado_por: currentUser.id });
+            }
+            
+            // Ahora sí eliminar
             await deleteTurno(id);
             
-            // Recargar la lista y resetear cualquier edición pendiente
             await loadData(); 
             setEditingTurno(null); 
         } catch (err) {

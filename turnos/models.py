@@ -62,6 +62,15 @@ class Turnos(models.Model):
     estado_turno = models.ForeignKey(EstadosTurnos, on_delete=models.PROTECT)
     motivo = models.TextField(blank=True, null=True, verbose_name='Motivo del Turno')
 
+    modificado_por = models.ForeignKey(
+        Personal,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='turnos_modificados',
+        verbose_name='Modificado por'
+    )
+    
     class Meta:
         verbose_name = 'Turno'
         verbose_name_plural = 'Turnos'

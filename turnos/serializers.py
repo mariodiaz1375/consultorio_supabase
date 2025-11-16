@@ -67,6 +67,7 @@ class TurnosSerializer(serializers.ModelSerializer):
             'horario_display',
             'estado_nombre',
             # 'motivo', # Si agregaste el campo motivo al modelo Turnos
+            'modificado_por',
         )
         
         # Los campos de nombre solo se incluyen en las respuestas (GET), no son modificables.

@@ -15,6 +15,7 @@ import PersonalPagina from './pages/personalPagina/PersonalPagina';
 import RoleProtectedRoute from './components/Auth/RoleProtectedRoute';
 import TurnosPagina from './pages/turnosPagina/TurnosPagina';
 import AuditoriaPagosPagina from './pages/auditoriaPagos/AuditoriaPagosPagina';
+import AuditoriaTurnosPagina from './pages/auditoriaTurnos/AuditoriaTurnosPagina';
 
 
 function App() {
@@ -48,7 +49,16 @@ function App() {
         } />
         <Route path="/auditoria_pagos" element={
           <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={['Admin']}>
             <AuditoriaPagosPagina />
+          </RoleProtectedRoute>
+          </ProtectedRoute>
+        } />
+        <Route path="/auditoria_turnos" element={
+          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={['Admin']}>
+            <AuditoriaTurnosPagina />
+          </RoleProtectedRoute>
           </ProtectedRoute>
         } />
         <Route path="/" element={<Login />} />

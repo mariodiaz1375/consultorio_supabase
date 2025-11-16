@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save, pre_save, post_delete
+from django.db.models.signals import post_save, pre_save, post_delete, pre_delete
 from django.dispatch import receiver
 from .models import Turnos, AuditoriaTurnos
 
@@ -41,8 +41,8 @@ def registrar_auditoria_turno(sender, instance, created, **kwargs):
     estado_anterior_nombre = None
     estado_nuevo_nombre = str(instance.estado_turno) if instance.estado_turno else 'N/A'
     
-    # Usuario que realizó la acción (por ahora None, se puede mejorar)
-    usuario_que_realizo_accion = None
+    # 🚨 Usuario que realizó la acción
+    usuario_que_realizo_accion = instance.modificado_por
     
     if created:
         # Es un nuevo turno (siempre debería ser "Agendado")
@@ -106,39 +106,68 @@ def registrar_auditoria_turno(sender, instance, created, **kwargs):
         )
 
 
-@receiver(post_delete, sender=Turnos)
-def registrar_cancelacion_turno(sender, instance, **kwargs):
+# 🚨 NUEVO: Guardar información ANTES de eliminar
+@receiver(pre_delete, sender=Turnos)
+def guardar_info_antes_de_eliminar(sender, instance, **kwargs):
     """
-    Signal que se ejecuta después de eliminar un Turno.
-    Registra la cancelación en auditoría.
+    Antes de eliminar, guardamos la información del turno en el objeto
+    para usarla después en el registro de auditoría.
+    """
+    # Guardar toda la información que necesitamos
+    instance._info_eliminacion = {
+        'id': instance.id,
+        'paciente': instance.paciente,
+        'odontologo': instance.odontologo,
+        'fecha_turno': instance.fecha_turno,
+        'horario_turno': instance.horario_turno,
+        'estado_turno': instance.estado_turno,
+        'modificado_por': instance.modificado_por,  # 🚨 GUARDAMOS EL USUARIO
+    }
+
+
+# 🚨 ACTUALIZADO: Usar la información guardada en pre_delete
+@receiver(post_delete, sender=Turnos)
+def registrar_eliminacion_turno(sender, instance, **kwargs):
+    """
+    Signal que se ejecuta después de ELIMINAR un Turno.
+    Esto significa que se LIBERÓ el horario, no que se canceló el turno.
     """
     
+    # Recuperar la información que guardamos en pre_delete
+    info = getattr(instance, '_info_eliminacion', {})
+    
     # Obtener información del paciente
-    paciente = instance.paciente if instance.paciente else None
+    paciente = info.get('paciente')
     paciente_nombre = str(paciente) if paciente else 'N/A'
     paciente_dni = paciente.dni if paciente else 'N/A'
     
     # Obtener información del odontólogo
-    odontologo_nombre = str(instance.odontologo) if instance.odontologo else 'N/A'
+    odontologo = info.get('odontologo')
+    odontologo_nombre = str(odontologo) if odontologo else 'N/A'
     
     # Obtener el horario
-    horario = instance.horario_turno.hora if instance.horario_turno else None
+    horario_turno = info.get('horario_turno')
+    horario = horario_turno.hora if horario_turno else None
     
-    # Estado del turno
-    estado_nombre = str(instance.estado_turno) if instance.estado_turno else 'N/A'
+    # Estado del turno al momento de eliminarlo
+    estado_turno = info.get('estado_turno')
+    estado_nombre = str(estado_turno) if estado_turno else 'N/A'
     
-    # Crear registro de cancelación
+    # 🚨 USUARIO QUE ELIMINÓ EL TURNO
+    usuario_que_elimino = info.get('modificado_por')
+    
+    # Crear registro de ELIMINACIÓN (liberación de horario)
     AuditoriaTurnos.objects.create(
         turno=None,  # Ya no existe el turno
-        accion='CANCELACION',
-        usuario=None,  # No tenemos info del usuario que eliminó
-        turno_numero=instance.id,
+        accion='ELIMINACION',
+        usuario=usuario_que_elimino,  # 🚨 AHORA SÍ TENEMOS EL USUARIO
+        turno_numero=info.get('id'),
         paciente_nombre=paciente_nombre,
         paciente_dni=paciente_dni,
         odontologo_nombre=odontologo_nombre,
-        fecha_turno=instance.fecha_turno,
+        fecha_turno=info.get('fecha_turno'),
         horario_turno=horario,
         estado_anterior=estado_nombre,
-        estado_nuevo='CANCELADO',
-        observaciones=f"Turno eliminado/cancelado para {paciente_nombre}.",
+        estado_nuevo='ELIMINADO',
+        observaciones=f"Turno ELIMINADO para liberar horario. Paciente: {paciente_nombre}. Estado previo: {estado_nombre}.",
     )
