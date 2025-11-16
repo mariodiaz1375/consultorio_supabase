@@ -8,7 +8,8 @@ from .serializers import (
     TurnosSerializer, 
     EstadosTurnosSerializer, 
     HorarioFijoSerializer, 
-    DiaSemanaSerializer
+    DiaSemanaSerializer,
+    AuditoriaTurnosSerializer
 )
 
 
@@ -114,3 +115,70 @@ class DiaSemanaList(generics.ListAPIView):
     # Los días de la semana no deberían ser creados/editados una vez definidos
     queryset = DiaSemana.objects.all().order_by('numero_dia')
     serializer_class = DiaSemanaSerializer
+
+# =======================================================
+# 3. Vistas para Auditoría de Turnos
+# =======================================================
+
+class AuditoriaTurnosList(APIView):
+    """
+    Vista para listar los registros de auditoría de turnos.
+    Permite filtrar por paciente, odontólogo, acción y fechas.
+    """
+    
+    def get(self, request):
+        try:
+            # Obtener todos los registros de auditoría
+            auditorias = AuditoriaTurnos.objects.all().order_by('-fecha_accion')
+            
+            # 🚨 FILTRO OPCIONAL: Por Número de Turno
+            turno_numero = request.query_params.get('turno_numero', None)
+            if turno_numero:
+                auditorias = auditorias.filter(turno_numero=turno_numero)
+            
+            # 🚨 FILTRO OPCIONAL: Por Paciente (DNI)
+            paciente_dni = request.query_params.get('paciente_dni', None)
+            if paciente_dni:
+                auditorias = auditorias.filter(paciente_dni=paciente_dni)
+            
+            # 🚨 FILTRO OPCIONAL: Por Acción
+            accion = request.query_params.get('accion', None)
+            if accion:
+                auditorias = auditorias.filter(accion=accion)
+            
+            # 🚨 FILTRO OPCIONAL: Por rango de fechas de la acción
+            fecha_desde = request.query_params.get('fecha_desde', None)
+            fecha_hasta = request.query_params.get('fecha_hasta', None)
+            if fecha_desde:
+                auditorias = auditorias.filter(fecha_accion__gte=fecha_desde)
+            if fecha_hasta:
+                auditorias = auditorias.filter(fecha_accion__lte=fecha_hasta)
+            
+            # 🚨 FILTRO OPCIONAL: Por fecha del turno
+            fecha_turno = request.query_params.get('fecha_turno', None)
+            if fecha_turno:
+                auditorias = auditorias.filter(fecha_turno=fecha_turno)
+            
+            serializer = AuditoriaTurnosSerializer(auditorias, many=True)
+            return Response(serializer.data)
+            
+        except Exception as e:
+            # Log del error para debug
+            print(f"Error en AuditoriaTurnosList: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return Response(
+                {"error": str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class AuditoriaTurnosDetail(APIView):
+    """
+    Vista para obtener el detalle de un registro de auditoría específico.
+    """
+    
+    def get(self, request, pk):
+        auditoria = get_object_or_404(AuditoriaTurnos, pk=pk)
+        serializer = AuditoriaTurnosSerializer(auditoria)
+        return Response(serializer.data)

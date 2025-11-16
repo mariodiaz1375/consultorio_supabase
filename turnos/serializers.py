@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Turnos, EstadosTurnos, HorarioFijo, DiaSemana
+from .models import Turnos, EstadosTurnos, HorarioFijo, DiaSemana, AuditoriaTurnos
 from pacientes.models import Pacientes
 from personal.models import Personal
 # Asegúrate de que los modelos externos (Personal, Pacientes) también están disponibles
@@ -71,3 +71,38 @@ class TurnosSerializer(serializers.ModelSerializer):
         
         # Los campos de nombre solo se incluyen en las respuestas (GET), no son modificables.
         read_only_fields = ('odontologo_nombre', 'paciente_nombre', 'horario_display', 'estado_nombre')
+
+# --- Serializer de Auditoría de Turnos ---
+class AuditoriaTurnosSerializer(serializers.ModelSerializer):
+    usuario_nombre = serializers.SerializerMethodField(read_only=True)
+    horario_display = serializers.SerializerMethodField(read_only=True)
+    
+    class Meta:
+        model = AuditoriaTurnos
+        fields = (
+            'id',
+            'accion',
+            'fecha_accion',
+            'usuario',
+            'usuario_nombre',
+            'turno_numero',
+            'paciente_nombre',
+            'paciente_dni',
+            'odontologo_nombre',
+            'fecha_turno',
+            'horario_turno',
+            'horario_display',
+            'estado_anterior',
+            'estado_nuevo',
+            'observaciones',
+        )
+    
+    def get_usuario_nombre(self, obj):
+        if obj.usuario:
+            return f"{obj.usuario.nombre} {obj.usuario.apellido}"
+        return "Sistema"
+    
+    def get_horario_display(self, obj):
+        if obj.horario_turno:
+            return obj.horario_turno.strftime('%H:%M')
+        return 'N/A'

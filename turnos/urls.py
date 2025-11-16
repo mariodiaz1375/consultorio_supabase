@@ -6,6 +6,8 @@ from .views import (
     HorarioFijoList,
     HorarioFijoDetail,
     DiaSemanaList,
+    AuditoriaTurnosList,
+    AuditoriaTurnosDetail,
 )
 
 urlpatterns = [
@@ -21,4 +23,8 @@ urlpatterns = [
     path('horarios/', HorarioFijoList.as_view(), name='horarios-fijos-list'),
     path('horarios/<int:pk>/', HorarioFijoDetail.as_view(), name='horariofijo-detail'),
     path('dias/', DiaSemanaList.as_view(), name='dias-semana-list'),
+
+    # 3. Rutas para Auditoría (🚨 NUEVO)
+    path('auditoria/', AuditoriaTurnosList.as_view(), name='auditoria-turnos-list'),
+    path('auditoria/<int:pk>/', AuditoriaTurnosDetail.as_view(), name='auditoria-turno-detail'),
 ]

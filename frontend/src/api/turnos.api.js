@@ -1,12 +1,10 @@
 import axios from 'axios';
 
 // 1. INSTANCIA DE AXIOS
-// Creamos una instancia con la URL base de tu app 'turnos'
 const turnosApi = axios.create({
-    baseURL: 'http://localhost:8000/api/turnos', // Asumiendo tu URL de Django
+    baseURL: 'http://localhost:8000/api/turnos',
     headers: {
         'Content-Type': 'application/json'
-        // NOTA: Si usas autenticación, el interceptor de Axios debe manejar el 'Authorization' Bearer Token
     }
 });
 
@@ -34,29 +32,20 @@ export const getTurno = async (id) => {
     }
 }
 
-/**
- * Crea un nuevo turno. Los datos esperados son:
- * { paciente_id, horario_turno_id, fecha_turno, motivo }
- */
 export const createTurno = async (turnoData) => {
     try {
-        // Enviar POST a /api/turnos/
         const response = await turnosApi.post('/', turnoData);
-        return response.data; // Devuelve el turno creado
+        return response.data;
     } catch (error) {
         console.error('Error al registrar el turno:', error.response?.data || error);
         throw error;
     }
 }
 
-/**
- * Actualiza un turno existente.
- */
 export const updateTurno = async (id, turnoData) => {
     try {
-        // Usamos PATCH a /api/turnos/ID/ para actualizar solo los campos enviados
         const response = await turnosApi.patch(`/${id}/`, turnoData);
-        return response.data; // Devuelve el turno actualizado
+        return response.data;
     } catch (error) {
         console.error(`Error al actualizar el turno ${id}:`, error.response?.data || error);
         throw error;
@@ -65,7 +54,6 @@ export const updateTurno = async (id, turnoData) => {
 
 export const deleteTurno = async (id) => {
     try {
-        // Enviar DELETE a /api/turnos/ID/
         await turnosApi.delete(`/${id}/`);
         return true;
     } catch (error) {
@@ -77,13 +65,10 @@ export const deleteTurno = async (id) => {
 
 // ===============================================
 // B. LISTADOS DE OPCIONES (LOOKUP DATA)
-// Estos listados son necesarios para los <select> del TurnosForm
-// NOTA: Asumo que creaste las vistas necesarias en Django
 // ===============================================
 
 export const getHorariosFijos = async () => {
     try {
-        // Asumiendo un endpoint: /api/turnos/horarios-fijos/
         const response = await turnosApi.get('/horarios/'); 
         return response.data;
     } catch (error) {
@@ -94,7 +79,6 @@ export const getHorariosFijos = async () => {
 
 export const createHorarioFijo = async (horarioData) => {
     try {
-        // Endpoint: /api/turnos/horarios/ (POST)
         const response = await turnosApi.post('/horarios/', horarioData);
         return response.data;
     } catch (error) {
@@ -103,10 +87,8 @@ export const createHorarioFijo = async (horarioData) => {
     }
 }
 
-// 🚨 NUEVO: ACTUALIZAR HORARIO FIJO (PUT/PATCH)
 export const updateHorarioFijo = async (id, horarioData) => {
     try {
-        // Endpoint: /api/turnos/horarios/1/ (PUT o PATCH)
         const response = await turnosApi.put(`/horarios/${id}/`, horarioData);
         return response.data;
     } catch (error) {
@@ -115,12 +97,10 @@ export const updateHorarioFijo = async (id, horarioData) => {
     }
 }
 
-// 🚨 NUEVO: ELIMINAR HORARIO FIJO (DELETE)
 export const deleteHorarioFijo = async (id) => {
     try {
-        // Endpoint: /api/turnos/horarios/1/ (DELETE)
         const response = await turnosApi.delete(`/horarios/${id}/`);
-        return response.data; // Normalmente regresa 204 No Content
+        return response.data;
     } catch (error) {
         console.error(`Error al eliminar Horario Fijo ID ${id}:`, error);
         throw error;
@@ -129,7 +109,6 @@ export const deleteHorarioFijo = async (id) => {
 
 export const getEstadosTurno = async () => {
     try {
-        // Asumiendo un endpoint: /api/turnos/estados-turno/
         const response = await turnosApi.get('/estados/'); 
         return response.data;
     } catch (error) {
@@ -140,17 +119,45 @@ export const getEstadosTurno = async () => {
 
 export const getDiasSemana = async () => {
     try {
-        // Asumiendo un endpoint: /api/turnos/estados-turno/
         const response = await turnosApi.get('/dias/'); 
         return response.data;
     } catch (error) {
-        console.error('Error al obtener la lista de Estados de Turno:', error);
+        console.error('Error al obtener la lista de Días de Semana:', error);
         throw error;
     }
 }
 
-// ----------------------------------------------------------------------------------
-// Opcional: Si el componente TurnosForm.jsx y su padre necesitan la lista de pacientes, 
-// puedes re-exportar o crear una función aquí. 
-// La lista de pacientes debe cargarse desde el API de pacientes (pacientes.api.js)
-// ----------------------------------------------------------------------------------
+// ===============================================
+// C. AUDITORÍA DE TURNOS
+// ===============================================
+
+/**
+ * Obtiene la lista de auditorías de turnos.
+ * Puede filtrar por: turno_numero, paciente_dni, accion, fecha_desde, fecha_hasta, fecha_turno
+ * Endpoint: GET /api/turnos/auditoria/
+ */
+export const getAuditoriasTurnos = async (filtros = {}) => {
+    try {
+        const response = await turnosApi.get('/auditoria/', {
+            params: filtros
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener auditorías de turnos:', error);
+        throw error;
+    }
+}
+
+/**
+ * Obtiene el detalle de una auditoría específica.
+ * Endpoint: GET /api/turnos/auditoria/{id}/
+ */
+export const getAuditoriaTurnoDetail = async (id) => {
+    try {
+        const response = await turnosApi.get(`/auditoria/${id}/`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error al obtener auditoría de turno ${id}:`, error);
+        throw error;
+    }
+}

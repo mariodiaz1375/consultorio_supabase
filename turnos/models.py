@@ -66,3 +66,70 @@ class Turnos(models.Model):
         verbose_name = 'Turno'
         verbose_name_plural = 'Turnos'
         unique_together = ('odontologo', 'fecha_turno', 'horario_turno')
+
+
+# ============================================
+# MODELO DE AUDITORÍA
+# ============================================
+
+class AuditoriaTurnos(models.Model):
+    """
+    Tabla de auditoría que registra todos los cambios en los turnos.
+    Se llena automáticamente mediante signals (triggers de Django).
+    """
+    
+    ACCIONES = [
+        ('CREACION', 'Turno Agendado'),
+        ('MODIFICACION', 'Turno Modificado'),
+        ('CAMBIO_ESTADO', 'Cambio de Estado'),
+        ('ELIMINACION', 'Turno Eliminado (Horario Liberado)'),
+    ]
+    
+    # Información del turno
+    turno = models.ForeignKey(
+        Turnos, 
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='auditoria_registros'
+    )
+    
+    # Información de la acción
+    accion = models.CharField(max_length=20, choices=ACCIONES)
+    fecha_accion = models.DateTimeField(auto_now_add=True)
+    
+    # Usuario que realizó la acción
+    usuario = models.ForeignKey(
+        Personal,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='acciones_auditoria_turnos'
+    )
+    
+    # Datos del contexto (desnormalizados para histórico)
+    turno_numero = models.IntegerField(null=True, blank=True)  # Backup del ID
+    paciente_nombre = models.CharField(max_length=255, null=True, blank=True)
+    paciente_dni = models.CharField(max_length=20, null=True, blank=True)
+    odontologo_nombre = models.CharField(max_length=255, null=True, blank=True)
+    fecha_turno = models.DateField(null=True, blank=True)
+    horario_turno = models.TimeField(null=True, blank=True)
+    
+    # Estado del turno
+    estado_anterior = models.CharField(max_length=50, null=True, blank=True)
+    estado_nuevo = models.CharField(max_length=50, null=True, blank=True)
+    
+    # Información adicional
+    observaciones = models.TextField(blank=True, null=True)
+    
+    def __str__(self):
+        return f"{self.accion} - Turno #{self.turno_numero} - {self.fecha_accion.strftime('%d/%m/%Y %H:%M')}"
+    
+    class Meta:
+        verbose_name = 'Auditoría de Turno'
+        verbose_name_plural = 'Auditorías de Turnos'
+        ordering = ['-fecha_accion']
+        indexes = [
+            models.Index(fields=['fecha_accion']),
+            models.Index(fields=['turno']),
+            models.Index(fields=['turno_numero']),
+        ]
