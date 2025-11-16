@@ -31,11 +31,19 @@ export default function PersonalForm({
         if (!data) return initialFormData;
         
         return {
-            ...data,
+            nombre: data.nombre || '',
+            apellido: data.apellido || '',
+            dni: data.dni || '',
+            fecha_nacimiento: data.fecha_nacimiento ? data.fecha_nacimiento.substring(0, 10) : '',
+            domicilio: data.domicilio || '',
+            telefono: data.telefono || '',
+            email: data.email || '',
+            matricula: data.matricula || '',
             puesto_id: data.puesto_info ? data.puesto_info.id : '',
             especialidades_ids: data.especialidades_info ? data.especialidades_info.map(e => e.id) : [],
-            fecha_nacimiento: data.fecha_nacimiento ? data.fecha_nacimiento.substring(0, 10) : '',
-            password: '', // No mostrar contraseña al editar
+            // NO incluir username y password al editar
+            username: '', 
+            password: '',
         };
     };
 
@@ -195,18 +203,20 @@ export default function PersonalForm({
         }
         setEmailError(currentEmailError);
 
-        if (!formData.username.trim()) {
-            currentUsernameError = 'El nombre de usuario es obligatorio.';
-            hasError = true;
-        }
-        setUsernameError(currentUsernameError);
+        // Solo validar username y password si NO estamos editando
+        if (!isEditing) {
+            if (!formData.username || !formData.username.trim()) {
+                currentUsernameError = 'El nombre de usuario es obligatorio.';
+                hasError = true;
+            }
+            setUsernameError(currentUsernameError);
 
-        // Validar password solo si no estamos editando o si se ingresó una nueva
-        if (!isEditing && !formData.password.trim()) {
-            currentPasswordError = 'La contraseña es obligatoria.';
-            hasError = true;
+            if (!formData.password || !formData.password.trim()) {
+                currentPasswordError = 'La contraseña es obligatoria.';
+                hasError = true;
+            }
+            setPasswordError(currentPasswordError);
         }
-        setPasswordError(currentPasswordError);
 
         if (hasError) {
             setDniError(currentDniError); 
@@ -239,9 +249,12 @@ export default function PersonalForm({
             return;
         }
 
-        // Si estamos editando y no se cambió la contraseña, no la enviamos
+        // Preparar datos para enviar
         const dataToSubmit = { ...formData };
-        if (isEditing && !formData.password) {
+        
+        // Si estamos editando, eliminar username y password (no se modificarán)
+        if (isEditing) {
+            delete dataToSubmit.username;
             delete dataToSubmit.password;
         }
         
@@ -391,8 +404,9 @@ export default function PersonalForm({
                 ))}
             </div>
             
-            <hr />
-
+            <hr /> 
+            
+            {/* Solo mostrar campos de usuario y contraseña al CREAR (no al editar) */}
             {!isEditing && (
                 <>
                     <h4>Datos de Acceso</h4>
