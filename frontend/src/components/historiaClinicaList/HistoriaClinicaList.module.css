@@ -4,19 +4,121 @@
  */
 
 .hcListContainer {
-    /* Contenedor principal para la lista */
     padding: 20px;
-    background-color: #f8f9fa; /* Color de fondo claro */
+    background-color: #f8f9fa;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     margin-top: 20px;
 }
 
-.hcListContainer h3 {
-    color: #007bff; /* Color principal */
+/* NUEVO: Contenedor del encabezado con botón de filtros */
+.headerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
     border-bottom: 2px solid #e9ecef;
     padding-bottom: 10px;
+}
+
+.hcListContainer h3 {
+    color: #007bff;
+    margin: 0;
+}
+
+/* NUEVO: Botón para mostrar/ocultar filtros */
+.toggleFiltrosButton {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.toggleFiltrosButton:hover {
+    background-color: #5a6268;
+}
+
+/* NUEVO: Panel de filtros */
+.filtrosPanel {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filtrosGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.filtroItem {
+    display: flex;
+    flex-direction: column;
+}
+
+.filtroItem label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.filtroItem input,
+.filtroItem select {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9em;
+    transition: border-color 0.3s;
+}
+
+.filtroItem input:focus,
+.filtroItem select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.filtrosAcciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.limpiarFiltrosButton {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.limpiarFiltrosButton:hover {
+    background-color: #c82333;
+}
+
+/* NUEVO: Mensaje de no resultados */
+.noResultados {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border: 1px dashed #dee2e6;
 }
 
 /* --- Estilos de la Tabla --- */
@@ -24,7 +126,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
-    background-color: #fff; /* Fondo blanco para la tabla */
+    background-color: #fff;
     font-size: 0.95em;
 }
 
@@ -32,49 +134,45 @@
 .hcTable td {
     padding: 12px 15px;
     text-align: left;
-    border-bottom: 1px solid #dee2e6; /* Línea separadora */
+    border-bottom: 1px solid #dee2e6;
 }
 
 .hcTable th {
-    background-color: #e9ecef; /* Fondo ligeramente gris para cabeceras */
+    background-color: #e9ecef;
     color: #495057;
     font-weight: 600;
 }
 
 .hcTable tbody tr:hover {
-    background-color: #f1f1f1; /* Efecto hover suave */
+    background-color: #f1f1f1;
     cursor: default;
 }
 
 /* --- Indicadores de Estado (Finalizada / Abierta) --- */
 
 .finalizada {
-    /* Estilo para historias clínicas cerradas */
     display: inline-block;
     padding: 4px 8px;
     border-radius: 4px;
-    background-color: #28a745; /* Verde */
+    background-color: #28a745;
     color: white;
     font-weight: bold;
     font-size: 0.8em;
 }
 
 .abierta {
-    /* Estilo para historias clínicas en curso */
     display: inline-block;
     padding: 4px 8px;
     border-radius: 4px;
-    background-color: #ffc107; /* Amarillo/Naranja de advertencia */
+    background-color: #ffc107;
     color: #343a40;
     font-weight: bold;
     font-size: 0.8em;
 }
 
-
 /* --- Botones --- */
 
 .viewButton {
-    /* Botón para ver el detalle de una HC */
     background-color: #007bff;
     color: white;
     border: none;
@@ -83,13 +181,14 @@
     cursor: pointer;
     transition: background-color 0.2s;
     font-size: 0.85em;
+    margin-right: 5px;
 }
 
 .viewButton:hover {
     background-color: #0056b3;
 }
+
 .editButton {
-    /* Botón para ver el detalle de una HC */
     background-color: #c97304;
     color: white;
     border: none;
@@ -98,13 +197,14 @@
     cursor: pointer;
     transition: background-color 0.2s;
     font-size: 0.85em;
+    margin-right: 5px;
 }
 
 .editButton:hover {
     background-color: #9e5b03;
 }
+
 .reabrirButton {
-    /* Botón para ver el detalle de una HC */
     background-color: #38c002;
     color: white;
     border: none;
@@ -113,6 +213,7 @@
     cursor: pointer;
     transition: background-color 0.2s;
     font-size: 0.85em;
+    margin-right: 5px;
 }
 
 .reabrirButton:hover {
@@ -120,7 +221,6 @@
 }
 
 .finalizarButton {
-    /* Botón para ver el detalle de una HC */
     background-color: #ee2501;
     color: white;
     border: none;
@@ -129,6 +229,7 @@
     cursor: pointer;
     transition: background-color 0.2s;
     font-size: 0.85em;
+    margin-right: 5px;
 }
 
 .finalizarButton:hover {
@@ -136,7 +237,6 @@
 }
 
 .pagosButton {
-    /* Botón para ver el detalle de una HC */
     background-color: #e7d914;
     color: white;
     border: none;
@@ -152,8 +252,7 @@
 }
 
 .newHcButton {
-    /* Botón principal para crear una nueva HC */
-    background-color: #17a2b8; /* Azul cian */
+    background-color: #17a2b8;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -162,7 +261,7 @@
     font-weight: bold;
     transition: background-color 0.2s;
     margin-top: 10px;
-    float: right; /* Mover el botón a la derecha */
+    float: right;
 }
 
 .newHcButton:hover {
@@ -171,10 +270,60 @@
 
 /* --- Mensaje de Error --- */
 .error {
-    color: #dc3545; /* Rojo de error */
+    color: #dc3545;
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
     padding: 10px;
     border-radius: 5px;
     text-align: center;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+    .headerContainer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .toggleFiltrosButton {
+        width: 100%;
+    }
+
+    .filtrosGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .filtrosAcciones {
+        justify-content: stretch;
+    }
+
+    .limpiarFiltrosButton {
+        width: 100%;
+    }
+
+    .hcTable {
+        font-size: 0.85em;
+    }
+
+    .hcTable th,
+    .hcTable td {
+        padding: 8px 10px;
+    }
+
+    .viewButton,
+    .editButton,
+    .reabrirButton,
+    .finalizarButton,
+    .pagosButton {
+        padding: 4px 8px;
+        font-size: 0.75em;
+        margin-right: 3px;
+        margin-bottom: 3px;
+    }
+
+    .newHcButton {
+        width: 100%;
+        float: none;
+    }
 }

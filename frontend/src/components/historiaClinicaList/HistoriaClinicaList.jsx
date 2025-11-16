@@ -2,12 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { getHistoriasClinicas, updateHistoriaClinica } from '../../api/historias.api'; 
-import styles from './HistoriaClinicaList.module.css'; // Debes crear este archivo CSS
+import styles from './HistoriaClinicaList.module.css';
 import HistoriaClinicaForm from '../historiaClinicaForm/HistoriaClinicaForm'
 import HistoriaDetail from '../historiaClinicaDetail/HistoriaClinicaDetail';
 import PagosModal from '../pagosModal/PagosModal';
 
-// Componente para manejar la lista de Historias Clínicas de UN paciente
 export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odontologoId, userRole }) {
     const [historias, setHistorias] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -15,16 +14,23 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
     const [showForm, setShowForm] = useState(false);
     const [selectedHcId, setSelectedHcId] = useState(null);
     const [editingHc, setEditingHc] = useState(null);
-    // const [refreshKey, setRefreshKey] = useState(0);
     const [pagosModalHc, setPagosModalHc] = useState(null);
+    
+    // NUEVOS ESTADOS PARA FILTROS
+    const [filtros, setFiltros] = useState({
+        tratamiento: '',
+        odontologo: '',
+        fechaDesde: '',
+        fechaHasta: '',
+        estado: 'todas' // 'todas', 'abiertas', 'finalizadas'
+    });
+    const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
-    // 🚨 NUEVA FUNCIÓN: Determina si la HC contiene tratamiento de ortodoncia
     const esOrtodoncia = (historiaClinica) => {
         if (!historiaClinica.detalles || historiaClinica.detalles.length === 0) {
             return false;
         }
         
-        // Busca si algún detalle tiene un tratamiento con nombre que incluya "ortodoncia"
         return historiaClinica.detalles.some(detalle => {
             const tratamientoNombre = detalle.tratamiento_nombre?.toLowerCase() || '';
             return tratamientoNombre.includes('ortodoncia');
@@ -32,60 +38,117 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
     };
 
     const handleHcSave = (nuevaHc) => {
-        // Si se crea una nueva, la añadimos a la lista
         if (!editingHc) {
             setHistorias(prev => [nuevaHc, ...prev]);
         } else {
-            // Si se edita, la reemplazamos
             setHistorias(prev => prev.map(hc => hc.id === nuevaHc.id ? nuevaHc : hc));
         }
         setShowForm(false);
-        setEditingHc(null); // Limpiar el estado de edición
+        setEditingHc(null);
     };
 
     const handleEdit = (hc) => {
-        setEditingHc(hc); // Guarda el objeto HC para pasar al formulario
-        setShowForm(true); // Abre el formulario
+        setEditingHc(hc);
+        setShowForm(true);
     };
 
     const handleCancelEdit = () => {
-        setEditingHc(null); // Limpia el objeto
-        setShowForm(false); // Cierra el formulario
+        setEditingHc(null);
+        setShowForm(false);
     };
     
     const handleFinalizarHc = async (historia) => {
         try {
-            // 1. Determinar el nuevo estado
             const nuevoFinalizado = !historia.finalizado;
-            
-            // Determinar la fecha de finalización (solo si se está finalizando)
             const nuevaFechaFin = nuevoFinalizado ? new Date().toISOString().split('T')[0] : null; 
 
             const updatedData = {
-                // Se envían solo los campos a modificar
                 finalizado: nuevoFinalizado,
-                fecha_fin: nuevaFechaFin, 
-                // Opcional: descripción
-                // descripcion: historia.descripcion // Asegúrate de incluir campos requeridos si la API lo necesita
+                fecha_fin: nuevaFechaFin,
             };
             
-            // 2. Llamar a la API de actualización
-            // La API debe devolver el objeto de Historia Clínica ya actualizado (updatedHc)
             const updatedHc = await updateHistoriaClinica(historia.id, updatedData);
 
-            // 3. ✅ ACTUALIZACIÓN CLAVE: Reemplazar el objeto antiguo en el estado
             setHistorias(prev => 
                 prev.map(hc => hc.id === updatedHc.id ? updatedHc : hc)
             );
 
-            // Opcional: Notificación de éxito
             console.log(`Historia Clínica ${historia.id} actualizada.`);
         } catch (err) {
             console.error("Error al finalizar/reabrir HC:", err);
-            // Manejo de error
-            // setError("Error al actualizar la Historia Clínica.");
         }
     };
+
+    // FUNCIÓN PARA MANEJAR CAMBIOS EN LOS FILTROS
+    const handleFiltroChange = (e) => {
+        const { name, value } = e.target;
+        setFiltros(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    // FUNCIÓN PARA LIMPIAR FILTROS
+    const limpiarFiltros = () => {
+        setFiltros({
+            tratamiento: '',
+            odontologo: '',
+            fechaDesde: '',
+            fechaHasta: '',
+            estado: 'todas'
+        });
+    };
+
+    // FUNCIÓN PARA APLICAR FILTROS
+    const aplicarFiltros = (historiasList) => {
+        let historiasFiltradas = [...historiasList];
+
+        // Filtro por tratamiento
+        if (filtros.tratamiento.trim()) {
+            historiasFiltradas = historiasFiltradas.filter(hc => {
+                const tratamientos = hc.detalles?.map(d => d.tratamiento_nombre?.toLowerCase()).join(' ') || '';
+                return tratamientos.includes(filtros.tratamiento.toLowerCase());
+            });
+        }
+
+        // Filtro por odontólogo
+        if (filtros.odontologo.trim()) {
+            historiasFiltradas = historiasFiltradas.filter(hc => {
+                const odontologoNombre = hc.odontologo_nombre?.toLowerCase() || '';
+                return odontologoNombre.includes(filtros.odontologo.toLowerCase());
+            });
+        }
+
+        // Filtro por fecha desde
+        if (filtros.fechaDesde) {
+            historiasFiltradas = historiasFiltradas.filter(hc => {
+                const fechaInicio = new Date(hc.fecha_inicio);
+                const fechaDesde = new Date(filtros.fechaDesde);
+                return fechaInicio >= fechaDesde;
+            });
+        }
+
+        // Filtro por fecha hasta
+        if (filtros.fechaHasta) {
+            historiasFiltradas = historiasFiltradas.filter(hc => {
+                const fechaInicio = new Date(hc.fecha_inicio);
+                const fechaHasta = new Date(filtros.fechaHasta);
+                return fechaInicio <= fechaHasta;
+            });
+        }
+
+        // Filtro por estado
+        if (filtros.estado === 'abiertas') {
+            historiasFiltradas = historiasFiltradas.filter(hc => !hc.finalizado);
+        } else if (filtros.estado === 'finalizadas') {
+            historiasFiltradas = historiasFiltradas.filter(hc => hc.finalizado);
+        }
+
+        return historiasFiltradas;
+    };
+
+    // Aplicar filtros a las historias
+    const historiasFiltradas = aplicarFiltros(historias);
 
     // useEffect se dispara cuando el pacienteId cambia
     useEffect(() => {
@@ -93,12 +156,8 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
             setLoading(true);
             setError(null);
             try {
-                // 1. Obtener TODAS las historias
                 const allHistorias = await getHistoriasClinicas();
                 
-                // 2. Filtrar solo las que pertenecen al paciente actual
-                // (Podrías crear un endpoint en Django que filtre por paciente_id, 
-                // pero por simplicidad de desarrollo inicial, filtramos aquí).
                 const historiasFiltradas = allHistorias.filter(
                     (hc) => hc.paciente === pacienteId
                 );
@@ -106,7 +165,6 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                 setHistorias(historiasFiltradas);
             } catch (err) {
                 console.error("Error al cargar las historias clínicas:", err);
-                // Muestra un mensaje amigable al usuario
                 setError("No se pudieron cargar las historias clínicas. Intente nuevamente.");
             } finally {
                 setLoading(false);
@@ -118,25 +176,22 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
         } else {
             setLoading(false);
         }
-    }, [pacienteId]); // Dependencia clave
+    }, [pacienteId]);
 
     const handleViewDetail = (hcId) => {
-        setSelectedHcId(hcId); // Muestra el componente de detalle
+        setSelectedHcId(hcId);
     };
     
     const handleBackToList = () => {
-        setSelectedHcId(null); // Vuelve a mostrar la lista
-        // Opcional: Re-fetch para actualizar la lista después de volver
-        // fetchHistorias(); 
+        setSelectedHcId(null);
     };
     
-    // 1. Mostrar el Detalle si hay un ID seleccionado
     if (selectedHcId) {
         return <HistoriaDetail 
-        historiaId={selectedHcId} 
-        onBack={handleBackToList}
-        odontologoId={odontologoId}
-        userRole={userRole}
+            historiaId={selectedHcId} 
+            onBack={handleBackToList}
+            odontologoId={odontologoId}
+            userRole={userRole}
         />;
     }
 
@@ -150,10 +205,94 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
 
     return (
         <div className={styles.hcListContainer}>
-            <h3>Historias Clínicas de {nombrePaciente} ({historias.length} en total)</h3>
+            <div className={styles.headerContainer}>
+                <h3>Historias Clínicas de {nombrePaciente} ({historiasFiltradas.length} de {historias.length})</h3>
+                <button 
+                    className={styles.toggleFiltrosButton}
+                    onClick={() => setMostrarFiltros(!mostrarFiltros)}
+                >
+                    {mostrarFiltros ? '▼ Ocultar Filtros' : '▶ Mostrar Filtros'}
+                </button>
+            </div>
 
-            {historias.length === 0 ? (
-                <p>No hay historias clínicas registradas para este paciente.</p>
+            {/* PANEL DE FILTROS */}
+            {mostrarFiltros && (
+                <div className={styles.filtrosPanel}>
+                    <div className={styles.filtrosGrid}>
+                        <div className={styles.filtroItem}>
+                            <label>Tratamiento:</label>
+                            <input
+                                type="text"
+                                name="tratamiento"
+                                value={filtros.tratamiento}
+                                onChange={handleFiltroChange}
+                                placeholder="Ej: Ortodoncia, Extracción..."
+                            />
+                        </div>
+
+                        <div className={styles.filtroItem}>
+                            <label>Odontólogo:</label>
+                            <input
+                                type="text"
+                                name="odontologo"
+                                value={filtros.odontologo}
+                                onChange={handleFiltroChange}
+                                placeholder="Nombre del odontólogo"
+                            />
+                        </div>
+
+                        <div className={styles.filtroItem}>
+                            <label>Desde:</label>
+                            <input
+                                type="date"
+                                name="fechaDesde"
+                                value={filtros.fechaDesde}
+                                onChange={handleFiltroChange}
+                            />
+                        </div>
+
+                        <div className={styles.filtroItem}>
+                            <label>Hasta:</label>
+                            <input
+                                type="date"
+                                name="fechaHasta"
+                                value={filtros.fechaHasta}
+                                onChange={handleFiltroChange}
+                            />
+                        </div>
+
+                        <div className={styles.filtroItem}>
+                            <label>Estado:</label>
+                            <select
+                                name="estado"
+                                value={filtros.estado}
+                                onChange={handleFiltroChange}
+                            >
+                                <option value="todas">Todas</option>
+                                <option value="abiertas">Abiertas</option>
+                                <option value="finalizadas">Finalizadas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className={styles.filtrosAcciones}>
+                        <button 
+                            className={styles.limpiarFiltrosButton}
+                            onClick={limpiarFiltros}
+                        >
+                            Limpiar Filtros
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {historiasFiltradas.length === 0 ? (
+                <p className={styles.noResultados}>
+                    {historias.length === 0 
+                        ? 'No hay historias clínicas registradas para este paciente.'
+                        : 'No se encontraron historias clínicas con los filtros aplicados.'
+                    }
+                </p>
             ) : (
                 <table className={styles.hcTable}>
                     <thead>
@@ -167,7 +306,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                         </tr>
                     </thead>
                     <tbody>
-                        {historias.map((hc) => (
+                        {historiasFiltradas.map((hc) => (
                             <tr key={hc.id}>
                                 <td>{hc.odontologo_nombre}</td>
                                 <td>
@@ -177,7 +316,6 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                                     }
                                 </td>
                                 <td>{new Date(hc.fecha_inicio).toLocaleDateString()}</td>
-                                {/* Mostrar el último tratamiento registrado */}
                                 <td>
                                     {hc.fecha_fin
                                         ? new Date(hc.fecha_fin).toLocaleDateString()
@@ -189,7 +327,6 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                                     </span>
                                 </td>
                                 <td>
-                                    {/* Aquí se agregará la lógica para ver el detalle */}
                                     <button 
                                         className={styles.viewButton}
                                         onClick={() => handleViewDetail(hc.id)}
@@ -213,8 +350,8 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                                         </button>
                                     )}
                                     <button
-                                        className={styles.pagosButton} // Necesitaremos este estilo
-                                        onClick={() => setPagosModalHc(hc)} // Pasa el objeto HC completo
+                                        className={styles.pagosButton}
+                                        onClick={() => setPagosModalHc(hc)}
                                     >
                                         Pagos
                                     </button>
@@ -232,20 +369,19 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                     + Nueva Historia Clínica
                 </button>
             )}
-            {/* Renderizado Condicional del Modal */}
             {showForm && (
                 <HistoriaClinicaForm
                     pacienteId={pacienteId}
                     odontologoId={odontologoId}
-                    isEditing={!!editingHc} // Pasa true si hay un objeto en editingHc
-                    initialData={editingHc} // Pasa el objeto para precargar
-                    onClose={handleCancelEdit} // Usamos el manejador de cancelación
+                    isEditing={!!editingHc}
+                    initialData={editingHc}
+                    onClose={handleCancelEdit}
                     onSave={handleHcSave}
                 />
             )}
             {pagosModalHc && (
                 <PagosModal
-                    historiaClinica={pagosModalHc} // Pasa el objeto HC
+                    historiaClinica={pagosModalHc}
                     currentPersonalId={odontologoId}
                     esOrtodoncia={esOrtodoncia(pagosModalHc)}
                     onClose={() => setPagosModalHc(null)}
