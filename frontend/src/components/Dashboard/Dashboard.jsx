@@ -270,37 +270,49 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Tarjeta Historias Clínicas */}
-          <div className={styles['dashboard-card']}>
-            <div className={styles['card-header']}>
-              <h3>📋 Historias Clínicas</h3>
-            </div>
-            <div className={styles['card-content']}>
-              <p>Registros médicos y tratamientos</p>
-              <button 
-                className={styles['card-button']}
-                onClick={() => navigate('/historias')}
-              >
-                Ver Historias
-              </button>
-            </div>
-          </div>
-
            {/* Tarjeta Personal */}
-          <div className={styles['dashboard-card']}>
-            <div className={styles['card-header']}>
-              <h3>👨‍⚕️ Personal</h3>
+          {userRole === 'Admin' && (
+            <div className={styles['dashboard-card']}>
+              <div className={styles['card-header']}>
+                <h3>👨‍⚕️ Personal</h3>
+              </div>
+              <div className={styles['card-content']}>
+                <p>Gestión del personal médico</p>
+                <button 
+                  className={styles['card-button']}
+                  onClick={() => navigate('/personal')}
+                >
+                  Ver Personal
+                </button>
+              </div>
             </div>
-            <div className={styles['card-content']}>
-              <p>Gestión del personal médico</p>
-              <button 
-                className={styles['card-button']}
-                onClick={() => navigate('/personal')}
-              >
-                Ver Personal
-              </button>
+          )}
+
+          {/* Tarjeta Auditoria */}
+          {userRole === 'Admin' && (
+            <div className={styles['dashboard-card']}>
+              <div className={styles['card-header']}>
+                <h3>📋 Auditorias</h3>
+              </div>
+              <div className={styles['card-content']}>
+                  <button 
+                      onClick={() => navigate('/auditoria_pagos')}
+                      className={styles['card-button']}
+                      style={{backgroundColor: '#28a745'}}
+                  >
+                      Auditar Pagos
+                  </button>
+                  <p></p>
+                  <button 
+                      onClick={() => navigate('/auditoria_turnos')}
+                      className={styles['card-button']}
+                      style={{backgroundColor: '#28a745'}}
+                  >
+                      Auditar Turnos
+                  </button>
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
 
@@ -334,7 +346,7 @@ const Dashboard = () => {
                 >
                     Administrar Tratamientos
                 </button>
-                <button 
+                {/* <button 
                     onClick={() => navigate('/auditoria_pagos')}
                     className={styles['card-button']}
                     style={{backgroundColor: '#28a745'}}
@@ -347,7 +359,7 @@ const Dashboard = () => {
                     style={{backgroundColor: '#28a745'}}
                 >
                     Auditar Turnos
-                </button>
+                </button> */}
             </div>
         )}
         {/* Información del usuario actual */}
