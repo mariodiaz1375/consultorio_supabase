@@ -1,6 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from .models import (
     HistoriasClinicas, 
     PiezasDentales, 
@@ -14,8 +15,13 @@ from .serializers import (
     PiezaDentalSerializer, 
     CaraDentalSerializer,
     SeguimientoHCSerializer
-
 )
+
+# 🆕 Clase de paginación personalizada
+class HistoriaClinicaPagination(PageNumberPagination):
+    page_size = 10  # Número de items por página
+    page_size_query_param = 'page_size'  # Permite al cliente cambiar el tamaño
+    max_page_size = 100  # Límite máximo
 
 class HistoriaClinicaViewSet(viewsets.ModelViewSet):
     """
@@ -23,6 +29,7 @@ class HistoriaClinicaViewSet(viewsets.ModelViewSet):
     """
     
     serializer_class = HistClinSerializer
+    # pagination_class = HistoriaClinicaPagination  # 🔧 Comentado: Paginación en frontend
     
     queryset = HistoriasClinicas.objects.all().select_related(
         'paciente', 
@@ -31,6 +38,21 @@ class HistoriaClinicaViewSet(viewsets.ModelViewSet):
         'detalles', 
         'seguimientos'
     ).order_by('-fecha_inicio')
+
+    def get_queryset(self):
+        """
+        Opcionalmente permite deshabilitar la paginación con ?no_page=true
+        """
+        queryset = super().get_queryset()
+        return queryset
+
+    def paginate_queryset(self, queryset):
+        """
+        🔧 Permite deshabilitar paginación con parámetro no_page=true
+        """
+        if self.request.query_params.get('no_page') == 'true':
+            return None
+        return super().paginate_queryset(queryset)
 
     @action(detail=True, methods=['post'], url_path='seguimientos')
     def create_seguimiento(self, request, pk=None):

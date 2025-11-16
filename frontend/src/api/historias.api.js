@@ -45,6 +45,16 @@ export const getHistoriaClinicaById = async (id) => {
     }
 };
 
+export const getHistoriasClinicasPaginadas = async (page = 1, pageSize = 10) => {
+    try {
+        const response = await historiasApi.get(`/?page=${page}&page_size=${pageSize}`);
+        return response.data; // Devuelve { count, next, previous, results }
+    } catch (error) {
+        console.error('Error al obtener las historias clínicas', error);
+        throw error;
+    }
+};
+
 /**
  * Crea una nueva historia clínica, incluyendo la capacidad de crear
  * los DetallesHC anidados en el array 'detalles'.

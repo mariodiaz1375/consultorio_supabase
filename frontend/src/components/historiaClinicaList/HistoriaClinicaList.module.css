@@ -278,6 +278,70 @@
     text-align: center;
 }
 
+/* 🆕 --- ESTILOS DE PAGINACIÓN --- */
+.paginacionContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.paginacionButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.paginacionButton:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.paginacionButton:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.paginacionInfo {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.paginacionNumero {
+    background-color: white;
+    color: #007bff;
+    border: 1px solid #007bff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: all 0.2s;
+    min-width: 35px;
+}
+
+.paginacionNumero:hover {
+    background-color: #e7f3ff;
+}
+
+.paginaActiva {
+    background-color: #007bff !important;
+    color: white !important;
+    font-weight: 700;
+}
+
 /* Responsive para pantallas pequeñas */
 @media (max-width: 768px) {
     .headerContainer {

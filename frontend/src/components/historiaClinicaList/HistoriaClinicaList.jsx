@@ -16,15 +16,19 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
     const [editingHc, setEditingHc] = useState(null);
     const [pagosModalHc, setPagosModalHc] = useState(null);
     
-    // NUEVOS ESTADOS PARA FILTROS
+    // ESTADOS PARA FILTROS (ahora solo locales para filtrado después de cargar)
     const [filtros, setFiltros] = useState({
         tratamiento: '',
         odontologo: '',
         fechaDesde: '',
         fechaHasta: '',
-        estado: 'todas' // 'todas', 'abiertas', 'finalizadas'
+        estado: 'todas'
     });
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
+    
+    // 🆕 ESTADOS PARA PAGINACIÓN LOCAL (sobre datos filtrados)
+    const [paginaActual, setPaginaActual] = useState(1);
+    const itemsPorPagina = 10;
 
     const esOrtodoncia = (historiaClinica) => {
         if (!historiaClinica.detalles || historiaClinica.detalles.length === 0) {
@@ -86,6 +90,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
             ...prev,
             [name]: value
         }));
+        setPaginaActual(1); // 🆕 Resetear a página 1 al cambiar filtros
     };
 
     // FUNCIÓN PARA LIMPIAR FILTROS
@@ -97,6 +102,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
             fechaHasta: '',
             estado: 'todas'
         });
+        setPaginaActual(1); // 🆕 Resetear a página 1
     };
 
     // FUNCIÓN PARA APLICAR FILTROS
@@ -150,13 +156,39 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
     // Aplicar filtros a las historias
     const historiasFiltradas = aplicarFiltros(historias);
 
+    // 🆕 CALCULAR PAGINACIÓN
+    const totalPaginas = Math.ceil(historiasFiltradas.length / itemsPorPagina);
+    const indiceInicio = (paginaActual - 1) * itemsPorPagina;
+    const indiceFin = indiceInicio + itemsPorPagina;
+    const historiasEnPagina = historiasFiltradas.slice(indiceInicio, indiceFin);
+
+    // 🆕 FUNCIONES DE NAVEGACIÓN
+    const irAPaginaSiguiente = () => {
+        if (paginaActual < totalPaginas) {
+            setPaginaActual(prev => prev + 1);
+        }
+    };
+
+    const irAPaginaAnterior = () => {
+        if (paginaActual > 1) {
+            setPaginaActual(prev => prev - 1);
+        }
+    };
+
+    const irAPagina = (numeroPagina) => {
+        setPaginaActual(numeroPagina);
+    };
+
     // useEffect se dispara cuando el pacienteId cambia
     useEffect(() => {
         const fetchHistorias = async () => {
             setLoading(true);
             setError(null);
             try {
-                const allHistorias = await getHistoriasClinicas();
+                const response = await getHistoriasClinicas();
+                
+                // 🔧 FIX: Verificar si la respuesta tiene paginación de DRF
+                const allHistorias = response.results || response;
                 
                 const historiasFiltradas = allHistorias.filter(
                     (hc) => hc.paciente === pacienteId
@@ -306,7 +338,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                         </tr>
                     </thead>
                     <tbody>
-                        {historiasFiltradas.map((hc) => (
+                        {historiasEnPagina.map((hc) => (
                             <tr key={hc.id}>
                                 <td>{hc.odontologo_nombre}</td>
                                 <td>
@@ -361,6 +393,41 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                     </tbody>
                 </table>
             )}
+
+            {/* 🆕 CONTROLES DE PAGINACIÓN */}
+            {historiasFiltradas.length > itemsPorPagina && (
+                <div className={styles.paginacionContainer}>
+                    <button 
+                        className={styles.paginacionButton}
+                        onClick={irAPaginaAnterior}
+                        disabled={paginaActual === 1}
+                    >
+                        ← Anterior
+                    </button>
+
+                    <div className={styles.paginacionInfo}>
+                        {/* Botones de páginas */}
+                        {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(numeroPagina => (
+                            <button
+                                key={numeroPagina}
+                                className={`${styles.paginacionNumero} ${paginaActual === numeroPagina ? styles.paginaActiva : ''}`}
+                                onClick={() => irAPagina(numeroPagina)}
+                            >
+                                {numeroPagina}
+                            </button>
+                        ))}
+                    </div>
+
+                    <button 
+                        className={styles.paginacionButton}
+                        onClick={irAPaginaSiguiente}
+                        disabled={paginaActual === totalPaginas}
+                    >
+                        Siguiente →
+                    </button>
+                </div>
+            )}
+            
             {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
                 <button 
                     className={styles.newHcButton} 
