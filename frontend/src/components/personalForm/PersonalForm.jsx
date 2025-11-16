@@ -391,30 +391,34 @@ export default function PersonalForm({
                 ))}
             </div>
             
-            <hr /> 
-            
-            <h4>Datos de Acceso</h4>
-            
-            <label>Nombre de Usuario</label>
-            <input 
-                name="username" 
-                value={formData.username} 
-                onChange={handleChange} 
-                placeholder="Usuario" 
-                required 
-            />
-            {usernameError && <p className={styles['error-message']}>{usernameError}</p>}
-            
-            <label>Contraseña {isEditing && '(dejar en blanco para no cambiar)'}</label>
-            <input 
-                type="password" 
-                name="password" 
-                value={formData.password} 
-                onChange={handleChange} 
-                placeholder={isEditing ? "Nueva contraseña (opcional)" : "Contraseña"} 
-                required={!isEditing}
-            />
-            {passwordError && <p className={styles['error-message']}>{passwordError}</p>}
+            <hr />
+
+            {!isEditing && (
+                <>
+                    <h4>Datos de Acceso</h4>
+                    
+                    <label>Nombre de Usuario</label>
+                    <input 
+                        name="username" 
+                        value={formData.username} 
+                        onChange={handleChange} 
+                        placeholder="Usuario" 
+                        required 
+                    />
+                    {usernameError && <p className={styles['error-message']}>{usernameError}</p>}
+                    
+                    <label>Contraseña</label>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        value={formData.password} 
+                        onChange={handleChange} 
+                        placeholder="Contraseña" 
+                        required
+                    />
+                    {passwordError && <p className={styles['error-message']}>{passwordError}</p>}
+                </>
+            )}
             
             <button type="submit">{isEditing ? 'Guardar cambios' : 'Registrar miembro'}</button>
         </form>

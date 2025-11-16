@@ -50,13 +50,13 @@ export const createMiembro = async (miembro) => {
 // CORRECCIÓN 2: Usar backticks (`/${id}/`) para template literals
 // Llama a: /{id}/
 export const updateMiembro = async (id, miembro) => {
-    try {
-        const response = await personalApi.put(`/${id}/`, miembro); 
-        return response.data;
-    } catch (error) {
-        console.error('Error al actualizar el miembro del personal', error);
-        throw error;
-    }
+    try {
+        const response = await personalApi.patch(`/${id}/`, miembro); 
+        return response.data;
+    } catch (error) {
+        console.error('Error al actualizar el miembro del personal', error);
+        throw error;
+    }
 }
 
 // CORRECCIÓN 3: Usar `.delete()` y backticks (`/${id}/`)
