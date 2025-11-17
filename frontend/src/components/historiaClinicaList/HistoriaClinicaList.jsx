@@ -367,13 +367,15 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                                     >
                                         Ver
                                     </button>
-                                    {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
+                                    {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (!hc.finalizado) && (
+                                        
                                         <button 
                                             className={styles.editButton}
                                             onClick={() => handleEdit(hc)} 
                                         >
                                             Editar
                                         </button>
+                                        
                                     )}
                                     {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
                                         <button 

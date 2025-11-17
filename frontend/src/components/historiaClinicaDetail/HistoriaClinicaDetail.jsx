@@ -114,7 +114,7 @@ useEffect(() => {
 
             <div className={styles.sectionHeader}>
                 <h3>Seguimientos y Evolución ({historia.seguimientos.length})</h3>
-                {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
+                {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (!historia.finalizado) && (
                     <button 
                         className={styles.newSeguimientoButton}
                         onClick={() => {
