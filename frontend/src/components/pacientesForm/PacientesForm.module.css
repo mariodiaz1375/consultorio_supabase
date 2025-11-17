@@ -1,6 +1,5 @@
 .pacientes-form { 
-    /* Aumento el ancho máximo para que se vea mejor en pantallas grandes */
-    max-width: 800px; /* ANCHO MODIFICADO */
+    max-width: 800px;
     margin: 0 auto; 
     padding: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -26,85 +25,61 @@
 }
 
 /* ======================================= */
-/* CONTENEDOR DE CAMPOS EN DOS COLUMNAS (NUEVO) */
+/* CONTENEDOR DE CAMPOS EN DOS COLUMNAS (MEJORADO) */
 /* ======================================= */
 .form-field-group {
-    display: flex;
-    flex-wrap: wrap; /* Permite que los campos pasen a la siguiente línea */
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 15px; /* Espacio vertical y horizontal */
+    margin-bottom: 10px;
 }
 
-/* Estilos de los campos dentro del grupo 2x2 */
-.form-field-group > label,
-.form-field-group > input,
-.form-field-group > select,
-.form-field-group > .error-message {
-    width: 48%; /* El 48% más el margen o el espacio entre ellos suman cerca del 100% */
-    margin-right: 4%; /* Espacio entre columnas */
-    box-sizing: border-box;
-}
-
-/* Eliminar el margen derecho para el segundo elemento de cada par (la columna derecha) */
-.form-field-group > label:nth-of-type(2n),
-.form-field-group > input:nth-of-type(2n) {
-    margin-right: 0;
-}
-
+/* Cada label ocupa toda su columna */
 .form-field-group > label {
-    margin-bottom: 5px;
     color: #34495e;
     font-weight: 600;
     font-size: 0.9rem;
+    margin-bottom: 0;
 }
 
-.form-field-group > input[type="text"],
-.form-field-group > input[type="email"],
-.form-field-group > input[type="password"],
-.form-field-group > input[type="date"],
-.form-field-group > input[type="tel"],
+/* Cada input ocupa toda su columna */
+.form-field-group > input,
 .form-field-group > select {
     padding: 10px 15px;
-    margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
     transition: border-color 0.3s;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* Corrección de error para que los mensajes de error se alineen con su input */
+/* Los mensajes de error ocupan toda su columna y están DEBAJO del input */
 .form-field-group > .error-message {
-    width: 48%; /* Debe coincidir con el ancho del campo */
-    margin-right: 4%;
-    margin-top: -10px; /* Subir el mensaje para que quede entre el input y el siguiente label */
-    margin-bottom: 10px;
+    color: #e74c3c;
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding-left: 5px;
+    margin-top: -5px; /* Ajuste fino para acercar al input */
+    min-height: 20px; /* Reserva espacio para evitar saltos */
 }
-/* Corrijo la alineación del mensaje de error de la columna derecha */
-.form-field-group > .error-message:nth-of-type(2n) {
-    margin-right: 0;
+
+/* Cuando el error está vacío, aún ocupa su espacio pero es invisible */
+.form-field-group > .error-message:empty {
+    visibility: hidden;
 }
 
 /* ======================================= */
 /* LAYOUT PARA CAMPOS DE ANCHO COMPLETO */
-/* Los campos que van a ancho completo no deben estar en .form-field-group */
 /* ======================================= */
 
-.pacientes-form > label,
-.pacientes-form > input,
-.pacientes-form > select,
-.pacientes-form > .error-message {
+.pacientes-form > label {
     display: block;
     width: 100%;
-    box-sizing: border-box;
-    margin-right: 0 !important; /* Asegura ancho completo */
-    margin-left: 0 !important; /* Asegura ancho completo */
-}
-
-/* Estilos de los campos de ancho completo */
-.pacientes-form > label {
     margin-bottom: 5px;
     color: #34495e;
     font-weight: 600;
     font-size: 0.9rem;
-    margin-top: 5px;
+    margin-top: 15px;
 }
 
 .pacientes-form > input[type="text"],
@@ -113,25 +88,32 @@
 .pacientes-form > input[type="date"],
 .pacientes-form > input[type="tel"],
 .pacientes-form > select {
+    display: block;
+    width: 100%;
     padding: 10px 15px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
     transition: border-color 0.3s;
+    box-sizing: border-box;
 }
 
-/* Resetear los selectores originales que ya no se usan */
-.pacientes-form > label:nth-of-type(2n),
-.pacientes-form > input:nth-of-type(2n) {
-    margin-right: 0;
-    margin-left: 0; /* Lo reseteo para que no interfiera */
+/* Mensajes de error para campos de ancho completo */
+.pacientes-form > .error-message {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding-left: 5px;
+    margin-bottom: 10px;
+    display: block;
+    min-height: 20px;
 }
-/* Fin de reseteo */
-
 
 /* Efecto al enfocar los campos */
 .pacientes-form input:focus,
-.pacientes-form select:focus {
+.pacientes-form select:focus,
+.form-field-group input:focus,
+.form-field-group select:focus {
     border-color: #27ae60; 
     outline: none;
     box-shadow: 0 0 5px rgba(39, 174, 96, 0.4); 
@@ -173,22 +155,8 @@
     clear: both;
 }
 
-.error-message {
-    color: #e74c3c;
-    font-size: 0.85rem;
-    margin-top: -10px;
-    margin-bottom: 10px;
-    padding-left: 5px;
-    font-weight: bold;
-    /* Ancho gestionado por el selector padre, aquí solo reseteo */
-    width: auto; 
-    display: block; /* Aseguro que sea un bloque para ocupar el espacio */
-}
-
-
 /* ======================================= */
 /* CHECKBOXES EN MÚLTIPLES COLUMNAS */
-/* ... (El resto del CSS se mantiene igual) ... */
 /* ======================================= */
 
 .checkbox-group-header {
@@ -271,18 +239,14 @@
 
 /* Responsive: 1 columna en pantallas pequeñas */
 @media (max-width: 600px) {
+    /* Grid pasa a una sola columna */
+    .form-field-group {
+        grid-template-columns: 1fr;
+    }
+    
     .checkbox-group > .checkbox-item {
         width: 100%;
         margin-right: 0;
-    }
-    
-    /* En móviles, los campos de 2 columnas pasan a 100% de ancho */
-    .form-field-group > label,
-    .form-field-group > input,
-    .form-field-group > select,
-    .form-field-group > .error-message {
-        width: 100% !important;
-        margin-right: 0 !important;
     }
 }
 
@@ -334,7 +298,6 @@
 
 /* ======================================= */
 /* ESTILOS DE OBRAS SOCIALES */
-/* ... (Se mantiene igual) ... */
 /* ======================================= */
 
 .os-group {
@@ -347,7 +310,6 @@
     clear: both;
 }
 
-/* Layout de dos columnas para campos de OS */
 .os-group label {
     display: block;
     width: 100%;
@@ -399,7 +361,6 @@
 
 /* ======================================= */
 /* ESTILOS DE MODAL FORMULARIO */
-/* ... (Se mantiene igual) ... */
 /* ======================================= */
 
 .modalForm {
@@ -449,8 +410,7 @@
 }
 
 /* ======================================= */
-/* ESTILOS PARA LISTMANAGER (DENTRO DEL MODAL) */
-/* ... (Se mantiene igual) ... */
+/* ESTILOS PARA LISTMANAGER */
 /* ======================================= */
 
 .list-manager-container {

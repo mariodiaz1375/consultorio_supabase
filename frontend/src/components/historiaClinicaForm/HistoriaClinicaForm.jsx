@@ -8,6 +8,7 @@ import {
     getCarasDentales,
     updateHistoriaClinica
  } from '../../api/historias.api';
+ import { useAlert } from '../../hooks/useAlert';
  import styles from './HistoriaClinicaForm.module.css';
 
 const initialFormData = {
@@ -24,6 +25,8 @@ export default function HistoriaClinicaForm({
     isEditing = false, 
     initialData = null 
 }) {
+    const { showWarning, showError, showSuccess } = useAlert();
+    
     // ✅ UN SOLO ESTADO para todo el formulario
     const [formData, setFormData] = useState(() => {
         if (isEditing && initialData) {
@@ -146,13 +149,13 @@ export default function HistoriaClinicaForm({
     // ✅ Agregar detalle
     const addDetalle = () => {
         if (!nuevoDetalle.tratamiento || !nuevoDetalle.pieza_dental || !nuevoDetalle.cara_dental) {
-            alert("Debe seleccionar Tratamiento, Pieza y Cara.");
+            showWarning("Debe seleccionar Tratamiento, Pieza y Cara.");
             return;
         }
 
         // 🚫 BLOQUEO: Si ya hay un tratamiento que NO es Ortodoncia, no permitir agregar más
         if (isOtroTratamientoLocked) {
-            alert("Solo se puede agregar un detalle para tratamientos que no sean Ortodoncia.");
+            showWarning("Solo se puede agregar un detalle para tratamientos que no sean Ortodoncia.");
             return;
         }
 
@@ -235,7 +238,7 @@ export default function HistoriaClinicaForm({
         e.preventDefault();
         
         if (formData.detalles.length === 0) {
-            alert("Debe agregar al menos un detalle de tratamiento.");
+            showWarning("Debe agregar al menos un detalle de tratamiento.");
             return;
         }
 
@@ -261,10 +264,10 @@ export default function HistoriaClinicaForm({
             let result;
             if (isEditing) {
                 result = await updateHistoriaClinica(initialData.id, payload);
-                alert(`Historia Clínica N° ${result.id} actualizada con éxito.`);
+                showSuccess(`Historia Clínica N° ${result.id} actualizada con éxito.`);
             } else {
                 result = await createHistoriaClinica(payload);
-                alert(`Historia Clínica N° ${result.id} creada con éxito.`);
+                showSuccess(`Historia Clínica N° ${result.id} creada con éxito.`);
             }
 
             onSave(result);

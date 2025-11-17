@@ -1,0 +1,224 @@
+/* ListManagerContent.module.css */
+
+/* Contenedor principal */
+.list-manager-container {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* Scroll personalizado */
+.list-manager-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.list-manager-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.list-manager-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.list-manager-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* ======================================= */
+/* FORMULARIO DE AGREGAR/EDITAR */
+/* ======================================= */
+.manager-form-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+}
+
+.manager-form-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #34495e;
+    font-size: 0.95rem;
+}
+
+.manager-form-container input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+.manager-form-container input[type="text"]:focus {
+    outline: none;
+    border-color: #27ae60;
+    box-shadow: 0 0 5px rgba(39, 174, 96, 0.4);
+}
+
+.manager-form-container input[type="text"]::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* Mensaje de error */
+.error-message {
+    color: #e74c3c;
+    background-color: #fceae9;
+    border: 1px solid #e74c3c;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* ======================================= */
+/* BOTONES DE ACCIÓN */
+/* ======================================= */
+.manager-action-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.manager-action-btn:hover {
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
+.manager-action-btn:active {
+    transform: translateY(0);
+}
+
+.modal-cancel-btn {
+    width: 100%;
+    background-color: #95a5a6;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-cancel-btn:hover {
+    background-color: #7f8c8d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(149, 165, 166, 0.3);
+}
+
+/* ======================================= */
+/* LISTA DE ELEMENTOS EXISTENTES */
+/* ======================================= */
+.list-manager-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s ease;
+}
+
+.list-manager-item:hover {
+    background-color: #f8f9fa;
+}
+
+.list-manager-item:last-child {
+    border-bottom: none;
+}
+
+.item-name {
+    flex-grow: 1;
+    font-size: 0.95rem;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.item-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.item-actions button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.edit-btn {
+    background-color: #3498db;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+/* ======================================= */
+/* RESPONSIVE */
+/* ======================================= */
+@media (max-width: 600px) {
+    .manager-form-container {
+        padding: 15px;
+    }
+
+    .item-actions {
+        flex-direction: column;
+        gap: 5px;
+        width: 100px;
+    }
+
+    .item-actions button {
+        width: 100%;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .list-manager-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .item-name {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}

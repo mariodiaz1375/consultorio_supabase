@@ -1,6 +1,7 @@
 // src/components/turnosCard/TurnoCard.jsx
 
 import React from 'react';
+import { useConfirm } from '../../hooks/useConfirm';
 // IMPORTANTE: Reutilizamos los estilos de la lista para no crear un nuevo archivo CSS solo para la tarjeta.
 import styles from '../turnosList/TurnosList.module.css'; 
 
@@ -32,6 +33,8 @@ const getEstadoIcono = (estadoNombre) => {
  * @param {function} props.onEdit - Función para iniciar la edición.
  */
 export default function TurnoCard({ turno, onDelete, onEdit, isSelected, onToggleSelect }) {
+    const { showConfirm } = useConfirm();
+    
     // 🚨 CORRECCIÓN: Usamos las propiedades planas (flat) que proporciona tu API
     const fecha = turno.fecha_turno;
     const hora = turno.horario_display || 'N/A';
@@ -41,8 +44,9 @@ export default function TurnoCard({ turno, onDelete, onEdit, isSelected, onToggl
     const estadoIcono = getEstadoIcono(estado);
     
     // Genera la clase CSS para el estado (ej: estado-ocupado, estado-pendiente)
-    const handleDeleteClick = () => {
-        if (window.confirm(`¿Está seguro de que desea eliminar el turno de ${paciente} con ${odontologo} el ${fecha} a las ${hora}?`)) {
+    const handleDeleteClick = async () => {
+        const confirmed = await showConfirm(`¿Está seguro de que desea eliminar el turno de ${paciente} con ${odontologo} el ${fecha} a las ${hora}?`);
+        if (confirmed) {
             onDelete(turno.id);
         }
     };

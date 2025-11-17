@@ -4,11 +4,16 @@ import styles from './PacientesList.module.css';
 import PacientesForm from '../pacientesForm/PacientesForm';
 import PacienteCard from '../pacienteCard/PacienteCard';
 import PacienteDetail from '../pacienteDetail/PacienteDetail';
+import { useAlert } from '../../hooks/useAlert';
+import { useConfirm } from '../../hooks/useConfirm';
 
 export default function PacientesList() {
+  const { showSuccess, showError } = useAlert();
+  const { showConfirm } = useConfirm();
   const [userInfo, setUserInfo] = useState(null);
   const [pacientes, setPacientes] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false); // 🆕
   
   // ESTADOS para guardar las opciones de las Tablas Relacionadas
   const [generos, setGeneros] = useState([]);
@@ -61,6 +66,7 @@ export default function PacientesList() {
   const handleEditStart = (paciente) => {
         setEditingPaciente(paciente);
         setShowForm(true);
+        setHasUnsavedChanges(false); // 🆕 Reset al abrir
   };
 
   const checkDniUniqueness = async (dni) => {
@@ -101,28 +107,47 @@ export default function PacientesList() {
           
           if (editingPaciente) {
               result = await updatePaciente(editingPaciente.id, pacienteData);
-              alert(`Paciente ${result.nombre} ${result.apellido} actualizado con éxito.`);
+              showSuccess(`Paciente ${result.nombre} ${result.apellido} actualizado con éxito.`);
           } else {
               result = await createPaciente(pacienteData); 
-              alert(`Paciente ${result.nombre} ${result.apellido} creado con éxito.`);
+              showSuccess(`Paciente ${result.nombre} ${result.apellido} creado con éxito.`);
           }
           
           await fetchPacientes();
           setShowForm(false); 
           setEditingPaciente(null);
+          setHasUnsavedChanges(false); // 🆕 Reset después de guardar
           
       } catch (error) {
           console.error(`Error al ${editingPaciente ? 'actualizar' : 'crear'} el paciente:`, error);
-          alert('Error al registrar/actualizar el paciente. Revisa la consola para más detalles.');
+          showError('Error al registrar/actualizar el paciente. Revisa la consola para más detalles.');
       }
   };
     
-  const handleToggleForm = () => {
+  // 🆕 Función mejorada con confirmación
+  const handleToggleForm = async () => {
+      if (showForm && hasUnsavedChanges) {
+          const confirmed = await showConfirm(
+              '¿Estás seguro de que deseas cerrar? Se perderán los cambios no guardados.',
+              'Confirmar cierre'
+          );
+          
+          if (!confirmed) {
+              return; // No cerrar si el usuario cancela
+          }
+      }
+      
       if (showForm) {
           setEditingPaciente(null);
+          setHasUnsavedChanges(false);
       }
       setShowForm(!showForm);
   };
+
+  // 🆕 Función que recibe notificaciones del formulario cuando hay cambios
+  const handleFormChange = useCallback(() => {
+      setHasUnsavedChanges(true);
+  }, []);
 
   const filteredPacientes = pacientes
     .filter(paciente => paciente.activo === activo)
@@ -149,7 +174,7 @@ export default function PacientesList() {
       const nuevoEstado = !isActivoActual;
       const accionTexto = nuevoEstado ? 'activar' : 'desactivar';
 
-      const confirmacion = window.confirm(`¿Estás seguro de que deseas ${accionTexto} al paciente ${pacienteNombre} ${pacienteApellido}?`);
+      const confirmacion = await showConfirm(`¿Estás seguro de que deseas ${accionTexto} al paciente ${pacienteNombre} ${pacienteApellido}?`);
 
       if (!confirmacion) {
         return;
@@ -161,13 +186,13 @@ export default function PacientesList() {
           };
           
           await updatePaciente(pacienteId, updateData);
-          alert(`Paciente ${pacienteNombre} ${pacienteApellido} ha sido ${accionTexto}do con éxito.`);
+          showSuccess(`Paciente ${pacienteNombre} ${pacienteApellido} ha sido ${accionTexto}do con éxito.`);
           
           await fetchPacientes(); 
           
       } catch (error) {
           console.error(`Error al ${accionTexto} el paciente:`, error);
-          alert(`Error al ${accionTexto} el paciente. Revisa la consola para más detalles.`);
+          showError(`Error al ${accionTexto} el paciente. Revisa la consola para más detalles.`);
       }
   };
 
@@ -197,10 +222,13 @@ export default function PacientesList() {
         />
       </div>
 
-      {/* MODAL ÚNICO PARA CREAR Y EDITAR */}
+      {/* MODAL ÚNICO PARA CREAR Y EDITAR - 🆕 SIN onClick en overlay */}
       {showForm && (
-        <div className={styles['modal-overlay']} onClick={handleToggleForm}>
-            <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
+        <div className={styles['modal-overlay']}>
+            <div 
+              className={styles['modal-content']}
+              onClick={(e) => e.stopPropagation()}
+            >
                 <button 
                     className={styles['modal-close-btn']}
                     onClick={handleToggleForm}
@@ -218,6 +246,7 @@ export default function PacientesList() {
                     checkDniUniqueness={checkDniUniqueness}
                     userRole={userRole}
                     onMasterListChange={loadMasterOptions}
+                    onFormChange={handleFormChange} // 🆕 Pasar callback
                 />
             </div>
         </div>  

@@ -1,0 +1,295 @@
+/* Sidebar.module.css */
+
+/* Botón Hamburguesa (solo móvil) */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Overlay para móvil */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+}
+
+/* Sidebar Principal */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 280px;
+  background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  transition: transform 0.3s ease;
+}
+
+/* Header del Sidebar */
+.sidebarHeader {
+  padding: 25px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoIcon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.logo h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  line-height: 1.2;
+}
+
+/* Tarjeta de Usuario */
+.userCard {
+  padding: 20px;
+  background: rgba(102, 126, 234, 0.15);
+  border-radius: 12px;
+  margin: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.userAvatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.userInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.userName {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userRole {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(102, 126, 234, 0.2);
+  border-radius: 10px;
+}
+
+/* Navegación */
+.nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 20px;
+}
+
+.nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.5);
+  border-radius: 3px;
+}
+
+.navSection {
+  margin-bottom: 25px;
+}
+
+.navTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 10px 0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.navItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 5px;
+  text-align: left;
+  font-size: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.navItem::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.navItem:hover {
+  background: rgba(102, 126, 234, 0.15);
+  color: white;
+  transform: translateX(5px);
+}
+
+.navItem:hover::before {
+  transform: scaleY(1);
+}
+
+.navItem.active {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+  color: white;
+  font-weight: 500;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.navItem.active::before {
+  transform: scaleY(1);
+}
+
+.navIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.navLabel {
+  flex: 1;
+}
+
+/* Footer del Sidebar */
+.sidebarFooter {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logoutButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 10px;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.logoutButton:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+/* Responsive - Tablet y menor */
+@media (max-width: 1024px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .overlay {
+    display: block;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 260px;
+  }
+
+  .logo h2 {
+    font-size: 16px;
+  }
+
+  .userCard {
+    padding: 15px;
+    margin: 15px;
+  }
+
+  .userAvatar {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .userName {
+    font-size: 13px;
+  }
+}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import styles from './PacientesForm.module.css';
 import ModalAdd from '../modalAdd/ModalAdd';
 import ListManagerContent from '../listaMaestra/ListManagerContent';
+import { useAlert } from '../../hooks/useAlert';
 import { 
     createObraSocial, updateObraSocial, deleteObraSocial,
     createAntecedente, updateAntecedente, deleteAntecedente,
@@ -40,7 +41,9 @@ export default function PacientesForm({
     checkDniUniqueness,
     userRole = 'User',
     onMasterListChange,
+    onFormChange,
 }) {
+    const { showSuccess, showError } = useAlert();
 
     const getInitialState = (data) => {
         if (!data) return initialFormData;
@@ -84,7 +87,6 @@ export default function PacientesForm({
 
     const manipulateList = async (listType, action, id, newName) => {
         let nameField = '';
-        let listStateSetter = null;
         let createApi, updateApi, deleteApi;
         let dataKey = {};
         
@@ -116,14 +118,14 @@ export default function PacientesForm({
             if (action === 'add') {
                 const newItem = await createApi(dataKey); // Llamada a la API
                 // 🚨 ¡IMPORTANTE! Ya no modificamos el estado local de la lista.
-                alert(`Elemento "${newItem[nameField]}" creado con éxito.`);
+                showSuccess(`Elemento "${newItem[nameField]}" creado con éxito.`);
             }
             
             // --- EDIT (UPDATE) ---
             else if (action === 'edit') {
                 const updatedItem = await updateApi(id, dataKey); // Llamada a la API
                 // 🚨 ¡IMPORTANTE! Ya no modificamos el estado local de la lista.
-                alert(`Elemento editado a "${updatedItem[nameField]}".`);
+                showSuccess(`Elemento editado a "${updatedItem[nameField]}".`);
             }
 
             // --- DELETE ---
@@ -134,7 +136,7 @@ export default function PacientesForm({
                 
                 // ... (Lógica de desmarcación de paciente) ...
                 
-                alert("Elemento eliminado con éxito.");
+                showSuccess("Elemento eliminado con éxito.");
             }
             
             // 🚨 NOTIFICAR AL PADRE DESPUÉS DE UN CRUD EXITOSO
@@ -149,10 +151,10 @@ export default function PacientesForm({
 
             if (error.response && error.response.status === 400 && errorMessage.includes("No se puede eliminar")) {
                 // Mensaje específico para la protección de la base de datos
-                alert(`PROTECCIÓN DE DATOS: ${errorMessage}`);
+                showError(`PROTECCIÓN DE DATOS: ${errorMessage}`);
             } else {
                 // Mensaje genérico para otros errores (ej: 404, 500)
-                alert(`Error: ${errorMessage}. Revise la consola.`);
+                showError(`Error: ${errorMessage}. Revise la consola.`);
             }
         }
     };
@@ -427,6 +429,26 @@ export default function PacientesForm({
     // Esto sucede cuando PacientesList llama a loadMasterOptions.
     }, [obrasSociales, antecedentes, analisisFuncional, initialData]);
 
+    // Detectar cambios en el formulario
+useEffect(() => {
+    const hasData = 
+        formData.nombre.trim() !== '' ||
+        formData.apellido.trim() !== '' ||
+        formData.dni.trim() !== '' ||
+        formData.telefono.trim() !== '' ||
+        formData.domicilio.trim() !== '' ||
+        formData.email.trim() !== '' ||
+        formData.fecha_nacimiento !== '' ||
+        formData.genero_id !== '' ||
+        formData.antecedentes_ids.length > 0 ||
+        formData.analisis_funcional_ids.length > 0 ||
+        formData.os_pacientes_data.length > 0;
+
+    if (hasData && onFormChange) {
+        onFormChange();
+    }
+}, [formData, onFormChange]);
+
 
     return (
         <form onSubmit={handleSubmit} className={styles['pacientes-form']}> 
@@ -437,48 +459,57 @@ export default function PacientesForm({
             {/* ======================================================== */}
             {/* NUEVO GRUPO DE CAMPOS 2x2 (nombre, apellido, dni, telefono) */}
             {/* ======================================================== */}
-            <div className={styles['form-field-group']}>
-                <label>Nombre</label>
-                <label>Apellido</label>
-                <input 
-                    name="nombre" 
-                    value={formData.nombre} 
-                    onChange={(e) => handleNameChange(e, 'nombre')}
-                    placeholder="Nombre" 
-                    required 
-                />
-                <input 
-                    name="apellido" 
-                    value={formData.apellido} 
-                    onChange={(e) => handleNameChange(e, 'apellido')}
-                    placeholder="Apellido"
-                    required 
-                />
-                
-                {/* Los mensajes de error también deben estar en el grupo */}
-                {nombreError && <p className={styles['error-message']}>{nombreError}</p>}
-                {apellidoError && <p className={styles['error-message']}>{apellidoError}</p>}
-                
-                <label>DNI</label>
-                <label>Teléfono</label>
-                <input 
-                    name="dni" 
-                    value={formData.dni} 
-                    onChange={handleDniChange} 
-                    placeholder="DNI" 
-                    required 
-                />
-                <input name="telefono" 
-                    value={formData.telefono} 
-                    onChange={handleChange} 
-                    placeholder="Teléfono" 
-                    required
-                />
+    <div className={styles['form-field-group']}>
+        <label>Nombre</label>
+        <label>Apellido</label>
+        <input 
+        name="nombre" 
+        value={formData.nombre} 
+        onChange={(e) => handleNameChange(e, 'nombre')}
+        placeholder="Nombre" 
+        required 
+        />
+        <input 
+        name="apellido" 
+        value={formData.apellido} 
+        onChange={(e) => handleNameChange(e, 'apellido')}
+        placeholder="Apellido"
+        required 
+        />
+    
+        {/* 🆕 SIEMPRE renderizar el contenedor, aunque esté vacío */}
+        <p className={styles['error-message']}>
+        {nombreError || ''}
+        </p>
+        <p className={styles['error-message']}>
+        {apellidoError || ''}
+        </p>
+    
+        <label>DNI</label>
+        <label>Teléfono</label>
+        <input 
+        name="dni" 
+        value={formData.dni} 
+        onChange={handleDniChange} 
+        placeholder="DNI" 
+        required 
+        />
+        <input 
+        name="telefono" 
+        value={formData.telefono} 
+        onChange={handleChange} 
+        placeholder="Teléfono" 
+        required
+        />
 
-                {/* Los mensajes de error de la segunda fila */}
-                {dniError && <p className={styles['error-message']}>{dniError}</p>}
-                {telefonoError && <p className={styles['error-message']}>{telefonoError}</p>}
-            </div>
+        {/* 🆕 SIEMPRE renderizar el contenedor, aunque esté vacío */}
+        <p className={styles['error-message']}>
+        {dniError || ''}
+        </p>
+        <p className={styles['error-message']}>
+        {telefonoError || ''}
+        </p>
+    </div>
             
             {/* ======================================================== */}
             {/* CAMPOS INDIVIDUALES DE ANCHO COMPLETO O 2 COLUMNAS POR FILA (fecha, genero, domicilio, email) */}
@@ -512,7 +543,7 @@ export default function PacientesForm({
             
 
             <label>Domicilio</label>
-            <input name="domicilio" value={formData.domicilio} onChange={handleChange} placeholder="Domicilio" />
+            <input type="text" name="domicilio" value={formData.domicilio} onChange={handleChange} placeholder="Domicilio" />
             
             <label>Email</label>
             <input type="email" 

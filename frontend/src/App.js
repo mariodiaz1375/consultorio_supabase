@@ -7,63 +7,86 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Auth/Login';           // ✅
-import Dashboard from './components/Dashboard/Dashboard'; // ✅
-import ProtectedRoute from './components/Auth/ProtectedRoute'; // ✅
+import Login from './components/Auth/Login';
+import Dashboard from './components/Dashboard/Dashboard';
+import ProtectedRoute from './components/Auth/ProtectedRoute';
+import RoleProtectedRoute from './components/Auth/RoleProtectedRoute';
 import PacientesPagina from './pages/pacientesPagina/PacientesPagina';
 import PersonalPagina from './pages/personalPagina/PersonalPagina';
-import RoleProtectedRoute from './components/Auth/RoleProtectedRoute';
 import TurnosPagina from './pages/turnosPagina/TurnosPagina';
 import AuditoriaPagosPagina from './pages/auditoriaPagos/AuditoriaPagosPagina';
 import AuditoriaTurnosPagina from './pages/auditoriaTurnos/AuditoriaTurnosPagina';
-
+import { AlertProvider } from './context/AlertContext';
+import { AlertSystem } from './components/AlertSystem/AlertSystem';
+import Layout from './components/layout/Layout';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
+    <AlertProvider>
+      <Router>
+        <AlertSystem />
+        <Routes>
+          {/* Ruta pública - Login sin Layout */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
           
-            <Dashboard />
+          {/* Rutas protegidas - CON Layout (Sidebar) */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Layout>
+                <Dashboard />
+              </Layout>
+            </ProtectedRoute>
+          } />
           
-          </ProtectedRoute>
-        } />
-        <Route path="/pacientes" element={
-          <ProtectedRoute>
-            <PacientesPagina />
-          </ProtectedRoute>
-        } />
-        <Route path="/personal" element={
-          <ProtectedRoute>
-          <RoleProtectedRoute allowedRoles={['Admin']}>
-            <PersonalPagina />
-          </RoleProtectedRoute>
-          </ProtectedRoute>
-        } />
-        <Route path="/turnos" element={
-          <ProtectedRoute>
-            <TurnosPagina />
-          </ProtectedRoute>
-        } />
-        <Route path="/auditoria_pagos" element={
-          <ProtectedRoute>
-          <RoleProtectedRoute allowedRoles={['Admin']}>
-            <AuditoriaPagosPagina />
-          </RoleProtectedRoute>
-          </ProtectedRoute>
-        } />
-        <Route path="/auditoria_turnos" element={
-          <ProtectedRoute>
-          <RoleProtectedRoute allowedRoles={['Admin']}>
-            <AuditoriaTurnosPagina />
-          </RoleProtectedRoute>
-          </ProtectedRoute>
-        } />
-        <Route path="/" element={<Login />} />
-      </Routes>
-    </Router>
+          <Route path="/pacientes" element={
+            <ProtectedRoute>
+              <Layout>
+                <PacientesPagina />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/personal" element={
+            <ProtectedRoute>
+              <RoleProtectedRoute allowedRoles={['Admin']}>
+                <Layout>
+                  <PersonalPagina />
+                </Layout>
+              </RoleProtectedRoute>
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/turnos" element={
+            <ProtectedRoute>
+              <Layout>
+                <TurnosPagina />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/auditoria_pagos" element={
+            <ProtectedRoute>
+              <RoleProtectedRoute allowedRoles={['Admin']}>
+                <Layout>
+                  <AuditoriaPagosPagina />
+                </Layout>
+              </RoleProtectedRoute>
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/auditoria_turnos" element={
+            <ProtectedRoute>
+              <RoleProtectedRoute allowedRoles={['Admin']}>
+                <Layout>
+                  <AuditoriaTurnosPagina />
+                </Layout>
+              </RoleProtectedRoute>
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </Router>
+    </AlertProvider>
   );
 }
 

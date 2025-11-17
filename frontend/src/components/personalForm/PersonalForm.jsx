@@ -26,6 +26,7 @@ export default function PersonalForm({
     initialData = null,
     isEditing = false,
     checkDniUniqueness,
+    onFormChange, // 🆕 Nueva prop
 }) {
     const getInitialState = (data) => {
         if (!data) return initialFormData;
@@ -41,7 +42,6 @@ export default function PersonalForm({
             matricula: data.matricula || '',
             puesto_id: data.puesto_info ? data.puesto_info.id : '',
             especialidades_ids: data.especialidades_info ? data.especialidades_info.map(e => e.id) : [],
-            // NO incluir username y password al editar
             username: '', 
             password: '',
         };
@@ -58,6 +58,26 @@ export default function PersonalForm({
     const [puestoIdError, setPuestoIdError] = useState('');
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+
+    // 🆕 Detectar cambios en el formulario
+    useEffect(() => {
+        const hasData = 
+            formData.nombre.trim() !== '' ||
+            formData.apellido.trim() !== '' ||
+            formData.dni.trim() !== '' ||
+            formData.telefono.trim() !== '' ||
+            formData.domicilio.trim() !== '' ||
+            formData.email.trim() !== '' ||
+            formData.fecha_nacimiento !== '' ||
+            formData.puesto_id !== '' ||
+            formData.especialidades_ids.length > 0 ||
+            formData.username.trim() !== '' ||
+            formData.password.trim() !== '';
+
+        if (hasData && onFormChange) {
+            onFormChange();
+        }
+    }, [formData, onFormChange]);
 
     const handleCheckboxChange = (e) => {
         const { name, value, checked } = e.target;
@@ -203,7 +223,6 @@ export default function PersonalForm({
         }
         setEmailError(currentEmailError);
 
-        // Solo validar username y password si NO estamos editando
         if (!isEditing) {
             if (!formData.username || !formData.username.trim()) {
                 currentUsernameError = 'El nombre de usuario es obligatorio.';
@@ -249,10 +268,8 @@ export default function PersonalForm({
             return;
         }
 
-        // Preparar datos para enviar
         const dataToSubmit = { ...formData };
         
-        // Si estamos editando, eliminar username y password (no se modificarán)
         if (isEditing) {
             delete dataToSubmit.username;
             delete dataToSubmit.password;
@@ -306,18 +323,20 @@ export default function PersonalForm({
                     value={formData.nombre} 
                     onChange={(e) => handleNameChange(e, 'nombre')}
                     placeholder="Nombre" 
-                    required 
                 />
                 <input 
                     name="apellido" 
                     value={formData.apellido} 
                     onChange={(e) => handleNameChange(e, 'apellido')}
                     placeholder="Apellido"
-                    required 
                 />
                 
-                {nombreError && <p className={styles['error-message']}>{nombreError}</p>}
-                {apellidoError && <p className={styles['error-message']}>{apellidoError}</p>}
+                <p className={styles['error-message']}>
+                    {nombreError || ''}
+                </p>
+                <p className={styles['error-message']}>
+                    {apellidoError || ''}
+                </p>
                 
                 <label>DNI</label>
                 <label>Teléfono</label>
@@ -325,19 +344,21 @@ export default function PersonalForm({
                     name="dni" 
                     value={formData.dni} 
                     onChange={handleDniChange} 
-                    placeholder="DNI" 
-                    required 
+                    placeholder="DNI"
                 />
                 <input 
                     name="telefono" 
                     value={formData.telefono} 
                     onChange={handleChange} 
-                    placeholder="Teléfono" 
-                    required
+                    placeholder="Teléfono"
                 />
 
-                {dniError && <p className={styles['error-message']}>{dniError}</p>}
-                {telefonoError && <p className={styles['error-message']}>{telefonoError}</p>}
+                <p className={styles['error-message']}>
+                    {dniError || ''}
+                </p>
+                <p className={styles['error-message']}>
+                    {telefonoError || ''}
+                </p>
             </div>
             
             <label>Fecha de Nacimiento</label>
@@ -345,13 +366,18 @@ export default function PersonalForm({
                 type="date" 
                 name="fecha_nacimiento" 
                 value={formData.fecha_nacimiento} 
-                onChange={handleChange} 
-                required 
+                onChange={handleChange}
             />
             {fechaNacimientoError && <p className={styles['error-message']}>{fechaNacimientoError}</p>}
             
             <label>Domicilio</label>
-            <input name="domicilio" value={formData.domicilio} onChange={handleChange} placeholder="Domicilio" required />
+            <input 
+                type="text"
+                name="domicilio" 
+                value={formData.domicilio} 
+                onChange={handleChange} 
+                placeholder="Domicilio"
+            />
             
             <label>Email</label>
             <input 
@@ -359,13 +385,18 @@ export default function PersonalForm({
                 name="email" 
                 value={formData.email} 
                 onChange={handleChange} 
-                placeholder="Correo Electrónico" 
-                required
+                placeholder="Correo Electrónico"
             />
             {emailError && <p className={styles['error-message']}>{emailError}</p>}
             
             <label>Matrícula</label>
-            <input name="matricula" value={formData.matricula} onChange={handleChange} placeholder="Matrícula (opcional)" />
+            <input 
+                type="text"
+                name="matricula" 
+                value={formData.matricula} 
+                onChange={handleChange} 
+                placeholder="Matrícula (opcional)" 
+            />
             
             <hr /> 
             
@@ -375,8 +406,7 @@ export default function PersonalForm({
             <select 
                 name="puesto_id"
                 value={formData.puesto_id} 
-                onChange={handleChange} 
-                required
+                onChange={handleChange}
             >
                 <option value="">Seleccione un Puesto</option>
                 {puestos.map(puesto => (
@@ -406,18 +436,17 @@ export default function PersonalForm({
             
             <hr /> 
             
-            {/* Solo mostrar campos de usuario y contraseña al CREAR (no al editar) */}
             {!isEditing && (
                 <>
                     <h4>Datos de Acceso</h4>
                     
                     <label>Nombre de Usuario</label>
                     <input 
+                        type="text"
                         name="username" 
                         value={formData.username} 
                         onChange={handleChange} 
-                        placeholder="Usuario" 
-                        required 
+                        placeholder="Usuario"
                     />
                     {usernameError && <p className={styles['error-message']}>{usernameError}</p>}
                     
@@ -427,8 +456,7 @@ export default function PersonalForm({
                         name="password" 
                         value={formData.password} 
                         onChange={handleChange} 
-                        placeholder="Contraseña" 
-                        required
+                        placeholder="Contraseña"
                     />
                     {passwordError && <p className={styles['error-message']}>{passwordError}</p>}
                 </>

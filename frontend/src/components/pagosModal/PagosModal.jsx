@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ModalAdd from '../modalAdd/ModalAdd';
+import { useAlert } from '../../hooks/useAlert';
+import { useConfirm } from '../../hooks/useConfirm';
 import { getPagos, getTiposPagos, createPago, patchPago } from '../../api/pagos.api'; 
 import styles from './PagosModal.module.css'; 
 
 export default function PagosModal({ historiaClinica, currentPersonalId, esOrtodoncia, onClose }) {
+    const { showSuccess, showError } = useAlert();
+    const { showConfirm } = useConfirm();
     
     const [pagosDisplay, setPagosDisplay] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -103,7 +107,7 @@ export default function PagosModal({ historiaClinica, currentPersonalId, esOrtod
             ? `¿Está seguro de registrar el pago de "${itemPagoDisplay.tipoPagoNombre}"?`
             : `¿Está seguro de desmarcar el pago de "${itemPagoDisplay.tipoPagoNombre}"?\n\nEsto eliminará el registro de pago.`;
         
-        const confirmado = window.confirm(mensaje);
+        const confirmado = await showConfirm(mensaje);
         
         if (!confirmado) {
             return; // Si el usuario cancela, no hacer nada

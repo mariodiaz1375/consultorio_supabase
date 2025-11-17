@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { createSeguimiento, updateSeguimiento } from '../../api/historias.api';
+import { useAlert } from '../../hooks/useAlert';
 import styles from './HistoriaClinicaDetail.module.css';
 
 export default function SeguimientoForm({ 
@@ -12,6 +13,8 @@ export default function SeguimientoForm({
     isEditing = false,
     initialData = null 
 }) {
+    const { showWarning, showSuccess } = useAlert();
+    
     const [descripcion, setDescripcion] = useState(initialData?.descripcion || '');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -19,7 +22,7 @@ export default function SeguimientoForm({
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!descripcion.trim()) {
-            alert("La descripción no puede estar vacía.");
+            showWarning("La descripción no puede estar vacía.");
             return;
         }
 
@@ -39,11 +42,11 @@ export default function SeguimientoForm({
             if (isEditing) {
                 // ✅ MODO EDICIÓN: Actualiza descripción Y odontólogo
                 resultado = await updateSeguimiento(historiaId, initialData.id, seguimientoData);
-                alert("Seguimiento actualizado correctamente.");
+                showSuccess("Seguimiento actualizado correctamente.");
             } else {
                 // MODO CREACIÓN
                 resultado = await createSeguimiento(historiaId, seguimientoData);
-                alert("Seguimiento creado correctamente.");
+                showSuccess("Seguimiento creado correctamente.");
             }
             
             onSave(resultado, isEditing);

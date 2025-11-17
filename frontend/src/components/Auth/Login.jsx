@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css'; // Importar estilos CSS
+import { useAlert } from '../../hooks/useAlert';
+import './Login.css';
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
@@ -8,22 +9,31 @@ const Login = () => {
     password: ''
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { showSuccess, showError, showWarning } = useAlert();
 
   const handleChange = (e) => {
     setCredentials({
       ...credentials,
       [e.target.name]: e.target.value
     });
-    // Limpiar error cuando el usuario empiece a escribir
-    if (error) setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validación manual de campos vacíos
+    if (!credentials.username.trim()) {
+      showWarning('Por favor ingrese su usuario');
+      return;
+    }
+    
+    if (!credentials.password.trim()) {
+      showWarning('Por favor ingrese su contraseña');
+      return;
+    }
+    
     setLoading(true);
-    setError('');
 
     try {
       const response = await fetch('http://localhost:8000/api/personal/auth/login/', {
@@ -41,22 +51,27 @@ const Login = () => {
         localStorage.setItem('access_token', data.access);
         localStorage.setItem('refresh_token', data.refresh);
         
-        // Opcional: Obtener información del usuario
+        // Obtener información del usuario
         await getUserInfo(data.access);
         
-        // Redirigir al dashboard
-        navigate('/dashboard');
+        // Mostrar alerta de éxito
+        showSuccess('¡Inicio de sesión exitoso!', 2000);
+        
+        // Redirigir al dashboard después de un breve delay
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 500);
       } else {
-        // Manejar diferentes tipos de error
+        // Manejar diferentes tipos de error con alertas personalizadas
         if (response.status === 401) {
-          setError('Usuario o contraseña incorrectos');
+          showError('Usuario o contraseña incorrectos');
         } else {
-          setError(data.detail || 'Error en el inicio de sesión');
+          showError(data.detail || 'Error en el inicio de sesión');
         }
       }
     } catch (error) {
       console.error('Error de conexión:', error);
-      setError('Error de conexión con el servidor');
+      showError('Error de conexión con el servidor');
     } finally {
       setLoading(false);
     }
@@ -87,7 +102,7 @@ const Login = () => {
           <p>Sistema de Gestión</p>
         </div>
         
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className="login-form" noValidate>
           <div className="form-group">
             <label htmlFor="username">Usuario</label>
             <input
@@ -97,7 +112,6 @@ const Login = () => {
               placeholder="Ingrese su usuario"
               value={credentials.username}
               onChange={handleChange}
-              required
               disabled={loading}
             />
           </div>
@@ -111,16 +125,9 @@ const Login = () => {
               placeholder="Ingrese su contraseña"
               value={credentials.password}
               onChange={handleChange}
-              required
               disabled={loading}
             />
           </div>
-          
-          {error && (
-            <div className="error-message">
-              <span>⚠️ {error}</span>
-            </div>
-          )}
           
           <button 
             type="submit" 

@@ -31,16 +31,57 @@
     color: #34495e;
 }
 
+/* ======================================================= */
+/* CAMPO DE BÚSQUEDA - 🆕 AGREGADO */
+/* ======================================================= */
+.search-input {
+    width: 100%;
+    padding: 10px 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #27ae60;
+    box-shadow: 0 0 5px rgba(39, 174, 96, 0.5);
+}
+
+.search-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* Mensaje de alerta informativa - 🆕 AGREGADO */
+.alert-info {
+    color: #856404;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* ======================================================= */
 /* Campos de entrada (input, select, textarea) */
+/* ======================================================= */
 .turnos-form input[type="date"],
 .turnos-form select,
 .turnos-form textarea {
     width: 100%;
     padding: 10px 12px;
-    margin-bottom: 15px; /* Espacio después de cada campo */
+    margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    box-sizing: border-box; /* Asegura que el padding no aumente el ancho */
+    box-sizing: border-box;
     font-size: 1rem;
     transition: border-color 0.3s, box-shadow 0.3s;
 }
@@ -52,6 +93,21 @@
     border-color: #27ae60;
     outline: none;
     box-shadow: 0 0 5px rgba(39, 174, 96, 0.4);
+}
+
+/* ======================================================= */
+/* Mensaje de Error - 🆕 MEJORADO */
+/* ======================================================= */
+.error-message {
+    color: #e74c3c;
+    background-color: #fceae9;
+    border: 1px solid #e74c3c;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    text-align: center;
+    font-weight: bold;
 }
 
 /* ======================================================= */
@@ -74,49 +130,22 @@
 }
 
 .turnos-form button[type="submit"]:hover {
-    background-color: #2ecc71; /* Un verde más claro al pasar el ratón */
+    background-color: #2ecc71;
     transform: translateY(-1px);
 }
 
 .turnos-form button[type="submit"]:active {
-    background-color: #1e8449; /* Verde oscuro al hacer clic */
+    background-color: #1e8449;
     transform: translateY(0);
 }
 
 /* ======================================================= */
-/* Estilos de Error */
+/* Botón Cancelar Edición */
 /* ======================================================= */
-.error {
-    color: #e74c3c; /* Rojo */
-    background-color: #fceae9;
-    border: 1px solid #e74c3c;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    font-size: 0.9rem;
-    text-align: center;
-}
-
-.cancel-edit-btn {
-    width: 100%;
-    margin-top: 15px;
-    padding: 10px;
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.cancel-edit-btn:hover {
-    background-color: #c0392b;
-}
-
 .cancel-edit-btn {
     display: block;
     width: 100%;
-    background-color: #b93526;
+    background-color: #e74c3c;
     color: white;
     border: none;
     padding: 12px 25px;
@@ -126,12 +155,17 @@
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    margin-top: 25px;
+    margin-top: 15px;
 }
 
 .cancel-edit-btn:hover {
-    background-color: #e74c3c; /* Un verde más claro al pasar el ratón */
+    background-color: #c0392b;
     transform: translateY(-1px);
+}
+
+.cancel-edit-btn:active {
+    background-color: #a93226;
+    transform: translateY(0);
 }
 
 

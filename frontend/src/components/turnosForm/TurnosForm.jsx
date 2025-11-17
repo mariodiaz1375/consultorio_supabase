@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 // 🚨 CORRECCIÓN 1: Debería apuntar a su propio archivo CSS
 import styles from './TurnosForm.module.css'; 
+import { useAlert } from '../../hooks/useAlert';
 // Importamos las funciones API necesarias para crear/editar
 // 🚨 CORRECCIÓN 2: Eliminada la importación incorrecta de TurnoCard
 
@@ -43,6 +44,7 @@ export default function TurnosForm({
     onCancel,
     onAddHorarioClick,
 }) {
+    const { showWarning, showError } = useAlert();
 
     const [searchTerm, setSearchTerm] = useState('');
     const [formData, setFormData] = useState(initialFormData);
@@ -154,12 +156,12 @@ export default function TurnosForm({
         e.preventDefault();
         // 🚨 VALIDACIÓN: Bloquear el envío si hay error de fecha.
         if (dateError) {
-             alert(dateError);
+             showWarning(dateError);
              return;
         }
 
         if (!formData.paciente || !formData.odontologo || !formData.fecha_turno || !formData.horario_turno || !formData.estado_turno) {
-            alert('Por favor, complete todos los campos obligatorios (Paciente, Odontólogo, Fecha y Horario).');
+            showError('Por favor, complete todos los campos obligatorios (Paciente, Odontólogo, Fecha y Horario).');
             return;
         }
 

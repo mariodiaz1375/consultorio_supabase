@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PersonalCard from '../personalCard/PersonalCard';
 import PersonalForm from '../personalForm/PersonalForm';
 import PersonalDetail from '../personalDetail/PersonalDetail';
+import { useAlert } from '../../hooks/useAlert';
+import { useConfirm } from '../../hooks/useConfirm';
 import { 
     getPersonal, 
     createMiembro, 
@@ -12,9 +14,12 @@ import {
 import styles from './PersonalList.module.css';
 
 export default function PersonalList() {
+    const { showSuccess, showError } = useAlert();
+    const { showConfirm } = useConfirm();
     const [userInfo, setUserInfo] = useState(null);
     const [personal, setPersonal] = useState([]);
-    const [showForm, setShowForm] = useState(false); 
+    const [showForm, setShowForm] = useState(false);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false); // 🆕
     const [puestos, setPuestos] = useState([]);
     const [especialidades, setEspecialidades] = useState([]);
     const [editingMiembro, setEditingMiembro] = useState(null);
@@ -52,6 +57,7 @@ export default function PersonalList() {
     const handleEditStart = (miembro) => {
         setEditingMiembro(miembro);
         setShowForm(true);
+        setHasUnsavedChanges(false); // 🆕
     };
 
     const checkDniUniqueness = async (dni) => {
@@ -92,28 +98,47 @@ export default function PersonalList() {
             
             if (editingMiembro) {
                 result = await updateMiembro(editingMiembro.id, miembroData);
-                alert(`Miembro ${result.nombre} ${result.apellido} actualizado con éxito.`);
+                showSuccess(`✅ Miembro actualizado: ${result.nombre} ${result.apellido}`);
             } else {
                 result = await createMiembro(miembroData); 
-                alert(`Miembro ${result.nombre} ${result.apellido} creado con éxito.`);
+                showSuccess(`✅ Miembro creado: ${result.nombre} ${result.apellido}`);
             }
             
             await fetchPersonal();
             setShowForm(false); 
             setEditingMiembro(null);
+            setHasUnsavedChanges(false); // 🆕
             
         } catch (error) {
             console.error(`Error al ${editingMiembro ? 'actualizar' : 'crear'} el miembro:`, error);
-            alert('Error al registrar/actualizar el miembro. Revisa la consola para más detalles.');
+            showError('Error al registrar/actualizar el miembro. Revisa la consola para más detalles.');
         }
     };
     
-    const handleToggleForm = () => {
+    // 🆕 Función mejorada con confirmación
+    const handleToggleForm = async () => {
+        if (showForm && hasUnsavedChanges) {
+            const confirmed = await showConfirm(
+                '¿Estás seguro de que deseas cerrar? Se perderán los cambios no guardados.',
+                'Confirmar cierre'
+            );
+            
+            if (!confirmed) {
+                return;
+            }
+        }
+        
         if (showForm) {
             setEditingMiembro(null);
+            setHasUnsavedChanges(false);
         }
         setShowForm(!showForm);
     };
+
+    // 🆕 Callback para detectar cambios
+    const handleFormChange = useCallback(() => {
+        setHasUnsavedChanges(true);
+    }, []);
 
     const filteredPersonal = personal
         .filter(miembro => miembro.activo === activo)
@@ -138,7 +163,7 @@ export default function PersonalList() {
         const nuevoEstado = !isActivoActual;
         const accionTexto = nuevoEstado ? 'activar' : 'desactivar';
 
-        const confirmacion = window.confirm(`¿Estás seguro de que deseas ${accionTexto} al miembro ${miembroNombre} ${miembroApellido}?`);
+        const confirmacion = await showConfirm(`¿Estás seguro de que deseas ${accionTexto} al miembro ${miembroNombre} ${miembroApellido}?`);
 
         if (!confirmacion) {
             return;
@@ -150,13 +175,13 @@ export default function PersonalList() {
             };
             
             await updateMiembro(miembroId, updateData);
-            alert(`Miembro ${miembroNombre} ${miembroApellido} ha sido ${accionTexto}do con éxito.`);
+            showSuccess(`Miembro ${miembroNombre} ${miembroApellido} ha sido ${accionTexto}do con éxito.`);
             
             await fetchPersonal(); 
             
         } catch (error) {
             console.error(`Error al ${accionTexto} el miembro:`, error);
-            alert(`Error al ${accionTexto} el miembro. Revisa la consola para más detalles.`);
+            showError(`Error al ${accionTexto} el miembro. Revisa la consola para más detalles.`);
         }
     };
 
@@ -187,9 +212,13 @@ export default function PersonalList() {
                 />
             </div>
 
+            {/* 🆕 Modal SIN onClick en overlay */}
             {showForm && (
-                <div className={styles['modal-overlay']} onClick={handleToggleForm}>
-                    <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
+                <div className={styles['modal-overlay']}>
+                    <div 
+                        className={styles['modal-content']} 
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <button 
                             className={styles['modal-close-btn']}
                             onClick={handleToggleForm}
@@ -203,6 +232,7 @@ export default function PersonalList() {
                             initialData={editingMiembro}
                             isEditing={isEditing}
                             checkDniUniqueness={checkDniUniqueness}
+                            onFormChange={handleFormChange} // 🆕
                         />
                     </div>
                 </div>
