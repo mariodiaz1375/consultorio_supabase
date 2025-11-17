@@ -98,28 +98,44 @@ export default function HistoriaClinicaForm({
             // No hay detalles: desbloquear todo
             setIsOrtodonciaLocked(false);
             setIsOtroTratamientoLocked(false);
+            setNuevoDetalle(prev => ({ ...prev, tratamiento: '' })); // Limpiar por si acaso
             return;
         }
 
         if (ortodonciaId && formData.detalles.length > 0) {
-            const tieneOrtodoncia = formData.detalles.some(
-                d => d.tratamiento === ortodonciaId
+            // Chequeamos si *alguno* de los detalles activa el modo Ortodoncia
+            // MODO ORTODONCIA: Es Ortodoncia Y la pieza NO es 33 (es una pieza específica)
+            const activaOrtodoncia = formData.detalles.some(
+                d => d.tratamiento === ortodonciaId && d.pieza_dental !== 33
             );
             
-            if (tieneOrtodoncia) {
-                // Tiene Ortodoncia: bloquear select pero permitir más detalles
+            if (activaOrtodoncia) {
+                // Caso 1: Tiene Ortodoncia con pieza específica -> MODO ORTODONCIA (Permite múltiples detalles de Ortodoncia)
                 setIsOrtodonciaLocked(true);
-                setIsOtroTratamientoLocked(false);
+                setIsOtroTratamientoLocked(false); // No está bloqueado el formulario
                 // Pre-seleccionar Ortodoncia en el nuevo detalle
                 setNuevoDetalle(prev => ({
                     ...prev,
                     tratamiento: ortodonciaId
                 }));
             } else {
-                // Tiene otro tratamiento: bloquear COMPLETAMENTE (ya no se pueden agregar más)
-                setIsOrtodonciaLocked(false);
-                setIsOtroTratamientoLocked(true);
+                // Caso 2: No tiene detalles de Ortodoncia con pieza específica.
+                // Si ya tiene UN detalle (que no es Ortodoncia específica o es Ortodoncia con Pieza 33)
+                if (formData.detalles.length === 1) {
+                    // Bloquear: Solo se permite un detalle si no es Ortodoncia con pieza específica
+                    setIsOtroTratamientoLocked(true);
+                    setIsOrtodonciaLocked(false);
+                } else {
+                    // Esto no debería pasar con la lógica del useEffect, pero por seguridad
+                    setIsOtroTratamientoLocked(false);
+                    setIsOrtodonciaLocked(false);
+                }
             }
+        } else if (formData.detalles.length > 0) {
+            // Caso 3: Solo hay 1 detalle que NO es Ortodoncia (porque ortodonciaId aún no ha cargado)
+            // Bloquear si ya hay un detalle que no es ortodoncia
+            setIsOtroTratamientoLocked(true);
+            setIsOrtodonciaLocked(false);
         }
     }, [formData.detalles, ortodonciaId]);
 
@@ -153,7 +169,6 @@ export default function HistoriaClinicaForm({
             return;
         }
 
-        // 🚫 BLOQUEO: Si ya hay un tratamiento que NO es Ortodoncia, no permitir agregar más
         if (isOtroTratamientoLocked) {
             showWarning("Solo se puede agregar un detalle para tratamientos que no sean Ortodoncia.");
             return;
@@ -163,28 +178,18 @@ export default function HistoriaClinicaForm({
         const tratamientoNombre = catalogos.tratamientos.find(t => t.id === nuevoDetalle.tratamiento)?.nombre_trat;
         const piezaCodigo = catalogos.piezas.find(p => p.id === nuevoDetalle.pieza_dental)?.codigo_pd;
         const caraNombre = catalogos.caras.find(c => c.id === nuevoDetalle.cara_dental)?.nombre_cara;
-
-        // 🔒 ACTIVAR BLOQUEO según el tipo de tratamiento
-        if (nuevoDetalle.tratamiento === ortodonciaId) {
-            setIsOrtodonciaLocked(true);
-            setIsOtroTratamientoLocked(false);
-        } else {
-            // Es otro tratamiento: bloquear todo después de este
-            setIsOtroTratamientoLocked(true);
-            setIsOrtodonciaLocked(false);
-        }
-
         // Agregar al formData
+        const nuevoDetalleObjeto = {
+            tratamiento: nuevoDetalle.tratamiento,
+            pieza_dental: nuevoDetalle.pieza_dental,
+            cara_dental: nuevoDetalle.cara_dental,
+            tratamiento_nombre: tratamientoNombre,
+            pieza_codigo: piezaCodigo,
+            cara_nombre: caraNombre
+        };
         setFormData(prev => ({
             ...prev,
-            detalles: [...prev.detalles, {
-                tratamiento: nuevoDetalle.tratamiento,
-                pieza_dental: nuevoDetalle.pieza_dental,
-                cara_dental: nuevoDetalle.cara_dental,
-                tratamiento_nombre: tratamientoNombre,
-                pieza_codigo: piezaCodigo,
-                cara_nombre: caraNombre
-            }]
+            detalles: [...prev.detalles, nuevoDetalleObjeto]
         }));
 
         // Resetear el formulario (manteniendo tratamiento si está bloqueado Ortodoncia)
