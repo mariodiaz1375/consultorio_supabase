@@ -5,7 +5,6 @@ const initialFormData = {
     nombre: '',
     apellido: '',
     dni: '',
-    fecha_nacimiento: '',
     domicilio: '',
     telefono: '',
     email: '',
@@ -26,7 +25,7 @@ export default function PersonalForm({
     initialData = null,
     isEditing = false,
     checkDniUniqueness,
-    onFormChange, // 🆕 Nueva prop
+    onFormChange,
 }) {
     const getInitialState = (data) => {
         if (!data) return initialFormData;
@@ -35,7 +34,6 @@ export default function PersonalForm({
             nombre: data.nombre || '',
             apellido: data.apellido || '',
             dni: data.dni || '',
-            fecha_nacimiento: data.fecha_nacimiento ? data.fecha_nacimiento.substring(0, 10) : '',
             domicilio: data.domicilio || '',
             telefono: data.telefono || '',
             email: data.email || '',
@@ -49,7 +47,6 @@ export default function PersonalForm({
 
     const [formData, setFormData] = useState(getInitialState(initialData));
     const [dniError, setDniError] = useState(''); 
-    const [fechaNacimientoError, setFechaNacimientoError] = useState('');
     const [telefonoError, setTelefonoError] = useState('');
     const [emailError, setEmailError] = useState('');
     const [dniCheckLoading, setDniCheckLoading] = useState(false); 
@@ -59,7 +56,6 @@ export default function PersonalForm({
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
 
-    // 🆕 Detectar cambios en el formulario
     useEffect(() => {
         const hasData = 
             formData.nombre.trim() !== '' ||
@@ -68,7 +64,6 @@ export default function PersonalForm({
             formData.telefono.trim() !== '' ||
             formData.domicilio.trim() !== '' ||
             formData.email.trim() !== '' ||
-            formData.fecha_nacimiento !== '' ||
             formData.puesto_id !== '' ||
             formData.especialidades_ids.length > 0 ||
             formData.username.trim() !== '' ||
@@ -105,25 +100,13 @@ export default function PersonalForm({
         const { name, value, type, options } = e.target;
         
         let newValue = value;
+        let shouldClearProfessionalFields = false;
 
         if (name === 'especialidades_ids' && type === 'select-multiple') {
             newValue = Array.from(options)
                 .filter(option => option.selected)
                 .map(option => Number(option.value)); 
         } 
-
-        if (name === 'fecha_nacimiento') {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); 
-            
-            const selectedDate = new Date(value);
-            
-            if (selectedDate >= today) {
-                setFechaNacimientoError('La fecha de nacimiento no puede ser futura.');
-            } else {
-                setFechaNacimientoError('');
-            }
-        }
 
         if (name === 'email') {
             if (value && !EMAIL_REGEX.test(value)) {
@@ -135,13 +118,18 @@ export default function PersonalForm({
         
         else if (name === 'puesto_id') {
             newValue = value ? Number(value) : ''; 
+            
+            const selectedPuesto = puestos.find(p => p.id === newValue);
+            const isOdontologo = selectedPuesto && selectedPuesto.nombre_puesto === 'Odontólogo/a';
+
+            if (!isOdontologo) {
+                shouldClearProfessionalFields = true;
+            }
         }
 
         if (name === 'telefono') {
             newValue = value.replace(/[^0-9\s\+\-\(\)]/g, ''); 
-            
             const digitCount = newValue.replace(/[^0-9]/g, '').length;
-            
             if (digitCount > 0 && digitCount < MIN_PHONE_LENGTH) {
                 setTelefonoError(`El teléfono debe tener un mínimo de ${MIN_PHONE_LENGTH} dígitos.`);
             } else {
@@ -149,10 +137,19 @@ export default function PersonalForm({
             }
         }
 
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: newValue
-        }));
+        setFormData(prevData => {
+            const newData = {
+                ...prevData,
+                [name]: newValue
+            };
+
+            if (shouldClearProfessionalFields) {
+                newData.matricula = '';
+                newData.especialidades_ids = [];
+            }
+
+            return newData;
+        });
     };
 
     const handleSubmit = async (e) => {
@@ -163,7 +160,6 @@ export default function PersonalForm({
         let hasError = false;
         let currentDniError = ''; 
         let currentTelefonoError = '';
-        let currentFechaError = '';
         let currentEmailError = '';
         let currentNombreError = '';
         let currentApellidoError = '';
@@ -207,15 +203,6 @@ export default function PersonalForm({
             hasError = true;
         } 
         setPuestoIdError(currentPuestoError);
-
-        if (fechaNacimientoError) {
-            hasError = true;
-            currentFechaError = fechaNacimientoError;
-        } else if (!formData.fecha_nacimiento) {
-            currentFechaError = 'La fecha de nacimiento es obligatoria.';
-            hasError = true;
-        }
-        setFechaNacimientoError(currentFechaError);
 
         if (formData.email && !EMAIL_REGEX.test(formData.email)) {
             currentEmailError = 'ERROR: Por favor, ingrese un formato de email válido.';
@@ -311,6 +298,32 @@ export default function PersonalForm({
         }
     }, [initialData]);
 
+    const selectedPuesto = puestos.find(p => p.id === formData.puesto_id);
+    const isOdontologo = selectedPuesto && selectedPuesto.nombre_puesto === 'Odontólogo/a';
+
+    // 🆕 Formatear fecha de alta para mostrar
+    const formatFechaAlta = (fecha) => {
+        if (!fecha) return '';
+        // Agregar 'T00:00:00' para que se interprete como fecha local, no UTC
+        const fechaStr = fecha.includes('T') ? fecha : fecha + 'T00:00:00';
+        const date = new Date(fechaStr);
+        return date.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    };
+
+    // 🆕 Obtener fecha actual para mostrar en modo creación
+    const getFechaActual = () => {
+        const hoy = new Date();
+        return hoy.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    };
+
     return (
         <form onSubmit={handleSubmit} className={styles['personal-form']}> 
             {isEditing ? <h3>Editar Miembro del Personal</h3> : <h3>Registrar Nuevo Miembro</h3>}
@@ -361,14 +374,14 @@ export default function PersonalForm({
                 </p>
             </div>
             
-            <label>Fecha de Nacimiento</label>
+            {/* 🆕 Mostrar fecha de alta siempre (solo lectura) */}
+            <label>Fecha de Alta</label>
             <input 
-                type="date" 
-                name="fecha_nacimiento" 
-                value={formData.fecha_nacimiento} 
-                onChange={handleChange}
+                type="text" 
+                value={isEditing && initialData?.fecha_alta ? formatFechaAlta(initialData.fecha_alta) : getFechaActual()}
+                disabled
+                className={styles['readonly-field']}
             />
-            {fechaNacimientoError && <p className={styles['error-message']}>{fechaNacimientoError}</p>}
             
             <label>Domicilio</label>
             <input 
@@ -389,15 +402,6 @@ export default function PersonalForm({
             />
             {emailError && <p className={styles['error-message']}>{emailError}</p>}
             
-            <label>Matrícula</label>
-            <input 
-                type="text"
-                name="matricula" 
-                value={formData.matricula} 
-                onChange={handleChange} 
-                placeholder="Matrícula (opcional)" 
-            />
-            
             <hr /> 
             
             <h4>Datos Profesionales</h4>
@@ -416,23 +420,37 @@ export default function PersonalForm({
                 ))}
             </select>
             {puestoIdError && <p className={styles['error-message']}>{puestoIdError}</p>}
-            
-            <div className={styles['checkbox-group']}>
-                <label className={styles['checkbox-group-label']}>Especialidades</label>
-                {especialidades.map(esp => (
-                    <div key={esp.id} className={styles['checkbox-item']}>
-                        <input
-                            type="checkbox"
-                            name="especialidades_ids"
-                            value={esp.id}
-                            id={`especialidad-${esp.id}`}
-                            onChange={handleCheckboxChange}
-                            checked={formData.especialidades_ids.includes(esp.id)} 
-                        />
-                        <label htmlFor={`especialidad-${esp.id}`}>{esp.nombre_esp}</label>
+
+            {isOdontologo && (
+                <>
+                    <label>Matrícula</label>
+                    <input 
+                        type="text"
+                        name="matricula" 
+                        value={formData.matricula} 
+                        onChange={handleChange} 
+                        placeholder="Matrícula (opcional)"
+                        required
+                    />
+                    
+                    <div className={styles['checkbox-group']}>
+                        <label className={styles['checkbox-group-label']}>Especialidades</label>
+                        {especialidades.map(esp => (
+                            <div key={esp.id} className={styles['checkbox-item']}>
+                                <input
+                                    type="checkbox"
+                                    name="especialidades_ids"
+                                    value={esp.id}
+                                    id={`especialidad-${esp.id}`}
+                                    onChange={handleCheckboxChange}
+                                    checked={formData.especialidades_ids.includes(esp.id)} 
+                                />
+                                <label htmlFor={`especialidad-${esp.id}`}>{esp.nombre_esp}</label>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
+                </>
+            )}
             
             <hr /> 
             

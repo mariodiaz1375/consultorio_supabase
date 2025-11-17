@@ -3,7 +3,7 @@ from .models import Personal, Puestos, Especialidades
 
 # Register your models here.
 class PersonalAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nombre', 'apellido', 'dni', 'matricula',)
+    list_display = ('id', 'nombre', 'apellido', 'dni', 'fecha_alta', 'matricula',)
     search_fields = ('id',)
 
 

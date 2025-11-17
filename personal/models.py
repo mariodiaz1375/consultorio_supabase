@@ -1,6 +1,4 @@
 from django.db import models
-# from django.db.models.signals import post_save
-# from django.dispatch import receiver
 from django.contrib.auth.models import User, Group, Permission
 
 class Puestos(models.Model):
@@ -28,18 +26,18 @@ class Personal(models.Model):
     nombre = models.CharField(max_length=255)
     apellido = models.CharField(max_length=255)
     dni = models.CharField(max_length=255)
-    fecha_nacimiento = models.DateField()
+    fecha_alta = models.DateField(auto_now_add=True)  # 🆕 Fecha automática al crear
     domicilio = models.CharField(max_length=255)
     telefono = models.CharField(max_length=255)
     email = models.EmailField(max_length=255)
-    matricula = models.CharField(max_length=255, default='-')
+    matricula = models.CharField(max_length=255, null=True, blank=True)
     activo = models.BooleanField(default=True)
     puesto = models.ForeignKey(Puestos, on_delete=models.PROTECT, default=3)
     especialidades = models.ManyToManyField(
         Especialidades, 
         related_name='personal',
         blank=True
-        )
+    )
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):

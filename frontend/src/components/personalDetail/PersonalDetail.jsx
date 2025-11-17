@@ -53,6 +53,19 @@ export default function PersonalDetail({ miembro, onBack }) {
         return capitalizedWords.join(' ');
     };
 
+    // 🆕 Función para formatear fecha correctamente (evitar problema de zona horaria)
+    const formatFechaAlta = (fecha) => {
+        if (!fecha) return 'N/A';
+        // Agregar 'T00:00:00' para que se interprete como fecha local, no UTC
+        const fechaStr = fecha.includes('T') ? fecha : fecha + 'T00:00:00';
+        const date = new Date(fechaStr);
+        return date.toLocaleDateString('es-AR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    };
+
     // Renderizar especialidades
     const renderEspecialidades = () => {
         if (!miembro.especialidades_info || miembro.especialidades_info.length === 0) {
@@ -82,7 +95,7 @@ export default function PersonalDetail({ miembro, onBack }) {
                 <div className={styles.card}>
                     <h2>Información Personal</h2>
                     <p><strong>DNI:</strong> {miembro.dni}</p>
-                    <p><strong>Fecha de Nacimiento:</strong> {new Date(miembro.fecha_nacimiento).toLocaleDateString('es-AR')}</p>
+                    <p><strong>Fecha de alta:</strong> {formatFechaAlta(miembro.fecha_alta)}</p>
                     <p><strong>Teléfono:</strong> {miembro.telefono}</p>
                     <p><strong>Email:</strong> {miembro.email}</p>
                     <p><strong>Domicilio:</strong> {miembro.domicilio}</p>

@@ -22,13 +22,12 @@ class Personal1Serializer(serializers.ModelSerializer):
     especialidades_info = EspecialidadesSerializer(source='especialidades', many=True, read_only=True)
     
     # 2. CAMPOS DE ESCRITURA (POST/PUT/PATCH): Reciben los IDs.
-    # 🔧 MEJORA: Hacerlos opcionales para que PATCH funcione sin enviar todos los datos
     puesto_id = serializers.IntegerField(write_only=True, source='puesto', required=False)
     especialidades_ids = serializers.ListField(
         child=serializers.IntegerField(), 
         write_only=True, 
         source='especialidades',
-        required=False  # 🆕 Opcional para PATCH
+        required=False
     )
     
     # 3. CAMPOS DE USUARIO (SOLO ESCRITURA): Son write_only y opcionales
@@ -39,7 +38,7 @@ class Personal1Serializer(serializers.ModelSerializer):
         model = Personal
         fields = (
             # Campos del modelo
-            'id', 'nombre', 'apellido', 'dni', 'fecha_nacimiento', 
+            'id', 'nombre', 'apellido', 'dni', 'fecha_alta',  # 🔄 Cambiado de fecha_nacimiento a fecha_alta
             'domicilio', 'telefono', 'email', 'matricula', 'activo', 
             'user', # Campo ForeignKey del modelo
             
@@ -55,7 +54,7 @@ class Personal1Serializer(serializers.ModelSerializer):
             'username', 
             'password' 
         )
-        read_only_fields = ('user',)
+        read_only_fields = ('user', 'fecha_alta')  # 🆕 fecha_alta es solo lectura
 
     def create(self, validated_data):
         username = validated_data.pop('username')
@@ -72,7 +71,7 @@ class Personal1Serializer(serializers.ModelSerializer):
             last_name=validated_data.get('apellido', '')
         )
         
-        # Crear el objeto Personal
+        # Crear el objeto Personal (fecha_alta se asigna automáticamente)
         personal = Personal.objects.create(user=user, puesto_id=puesto_id, **validated_data)
 
         if especialidades_data:
@@ -81,7 +80,7 @@ class Personal1Serializer(serializers.ModelSerializer):
         return personal
     
     def update(self, instance, validated_data):
-        # 🔧 MEJORA: Manejo de username y password en actualizaciones
+        # Manejo de username y password en actualizaciones
         username = validated_data.pop('username', None)
         password = validated_data.pop('password', None)
         
@@ -91,7 +90,7 @@ class Personal1Serializer(serializers.ModelSerializer):
             if username:
                 user.username = username
             if password:
-                user.set_password(password)  # Importante: usar set_password para hashear
+                user.set_password(password)
             user.save()
         
         # Manejo de la relación ManyToMany (Especialidades)
