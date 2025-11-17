@@ -329,6 +329,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                 <table className={styles.hcTable}>
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Odontólogo</th>
                             <th>Tratamiento aplicado</th>
                             <th>Fecha Inicio</th>
@@ -340,6 +341,7 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                     <tbody>
                         {historiasEnPagina.map((hc) => (
                             <tr key={hc.id}>
+                                <td>{hc.id}</td>
                                 <td>{hc.odontologo_nombre}</td>
                                 <td>
                                     {hc.detalles && hc.detalles.length > 0
