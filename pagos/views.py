@@ -1,20 +1,21 @@
+# Archivo: views.py (Corregido)
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
+# --- IMPORTAR PAGINADOR ---
+from rest_framework.pagination import PageNumberPagination
 from .models import Pagos, TiposPagos, AuditoriaPagos
 from .serializers import PagosSerializer, TiposPagosSerializer, AuditoriaPagosSerializer
 from rest_framework.permissions import IsAuthenticated
 
 
+# (PagosList, PagosDetail, TiposPagosList no cambian)
 # --- 1. Vistas CRUD para Pagos ---
 
 class PagosList(APIView):
-    """
-    Vista para listar todos los Pagos (GET) y crear un nuevo Pago (POST).
-    """
-    # permission_classes = [IsAuthenticated]
-
+    # ... (código sin cambios) ...
     def get(self, request):
         pagos = Pagos.objects.all().order_by('-id')
         serializer = PagosSerializer(pagos, many=True)
@@ -29,11 +30,7 @@ class PagosList(APIView):
 
     
 class PagosDetail(APIView):
-    """
-    Vista para obtener (GET), actualizar (PUT/PATCH) y eliminar (DELETE) un Pago específico.
-    """
-    # permission_classes = [IsAuthenticated]
-
+    # ... (código sin cambios) ...
     def get_object(self, pk):
         return get_object_or_404(Pagos, pk=pk)
 
@@ -67,62 +64,72 @@ class PagosDetail(APIView):
 # --- 2. Vistas para Tablas Maestras (Opciones) ---
 
 class TiposPagosList(generics.ListAPIView):
-    """
-    Devuelve la lista de todos los Tipos de Pagos.
-    """
     queryset = TiposPagos.objects.all()
     serializer_class = TiposPagosSerializer
-    # permission_classes = [IsAuthenticated]
 
 
 # --- 3. Vistas para Auditoría ---
 
+# --- DEFINIR CLASE DE PAGINACIÓN ---
+class AuditoriaPagination(PageNumberPagination):
+    page_size = 10  # 10 elementos por página
+    page_size_query_param = 'page_size'
+    max_page_size = 50
+
 class AuditoriaPagosList(APIView):
-    """
-    Vista para listar los registros de auditoría de pagos.
-    Permite filtrar por Historia Clínica.
-    """
-    # permission_classes = [IsAuthenticated]
+    pagination_class = AuditoriaPagination
+
+    @property
+    def paginator(self):
+        if not hasattr(self, '_paginator'):
+            if self.pagination_class is None:
+                self._paginator = None
+            else:
+                self._paginator = self.pagination_class()
+        return self._paginator
     
     def get(self, request):
-        # Obtener todos los registros de auditoría
         auditorias = AuditoriaPagos.objects.all().select_related(
             'usuario', 'hist_clin', 'pago'
         ).order_by('-fecha_accion')
         
-        # 🚨 FILTRO OPCIONAL: Por Historia Clínica
+        # (Filtros hist_clin_id, paciente_dni, accion no cambian)
         hist_clin_id = request.query_params.get('hist_clin_id', None)
         if hist_clin_id:
             auditorias = auditorias.filter(hist_clin_numero=hist_clin_id)
         
-        # 🚨 FILTRO OPCIONAL: Por Paciente (DNI)
         paciente_dni = request.query_params.get('paciente_dni', None)
         if paciente_dni:
             auditorias = auditorias.filter(paciente_dni=paciente_dni)
         
-        # 🚨 FILTRO OPCIONAL: Por Acción (REGISTRO/CANCELACION)
         accion = request.query_params.get('accion', None)
         if accion:
             auditorias = auditorias.filter(accion=accion)
         
-        # 🚨 FILTRO OPCIONAL: Por rango de fechas
+        # --- CORRECCIÓN AQUÍ ---
         fecha_desde = request.query_params.get('fecha_desde', None)
         fecha_hasta = request.query_params.get('fecha_hasta', None)
-        if fecha_desde:
-            auditorias = auditorias.filter(fecha_accion__gte=fecha_desde)
-        if fecha_hasta:
-            auditorias = auditorias.filter(fecha_accion__lte=fecha_hasta)
         
+        if fecha_desde:
+            # gte (mayor o igual) ya funciona bien con 'date'
+            auditorias = auditorias.filter(fecha_accion__date__gte=fecha_desde)
+        
+        if fecha_hasta:
+            # 👇 CAMBIO: Usar '__date__lte' en lugar de '__lte'
+            auditorias = auditorias.filter(fecha_accion__date__lte=fecha_hasta)
+        
+        # (Lógica de paginación no cambia)
+        if self.paginator:
+            paginated_auditorias = self.paginator.paginate_queryset(auditorias, request, view=self)
+            serializer = AuditoriaPagosSerializer(paginated_auditorias, many=True)
+            return self.paginator.get_paginated_response(serializer.data)
+
         serializer = AuditoriaPagosSerializer(auditorias, many=True)
         return Response(serializer.data)
 
 
 class AuditoriaPagosDetail(APIView):
-    """
-    Vista para obtener el detalle de un registro de auditoría específico.
-    """
-    # permission_classes = [IsAuthenticated]
-    
+    # (Esta vista no cambia)
     def get(self, request, pk):
         auditoria = get_object_or_404(AuditoriaPagos, pk=pk)
         serializer = AuditoriaPagosSerializer(auditoria)

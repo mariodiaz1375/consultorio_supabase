@@ -196,7 +196,7 @@ export default function AuditoriaTurnos({ turnoNumero = null }) {
                     </div>
                     
                     <button onClick={limpiarFiltros} className={styles.btnLimpiar}>
-                        Limpiar
+                        Limpiar filtros
                     </button>
                 </div>
             )}
