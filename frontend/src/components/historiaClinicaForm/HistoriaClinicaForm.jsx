@@ -409,7 +409,13 @@ export default function HistoriaClinicaForm({
                                     value={nuevoDetalle.pieza_dental}
                                 >
                                     <option value="">--- Seleccionar Pieza ---</option>
-                                    {catalogos.piezas.map(p => (
+                                    
+                                    {/* 🌟 CORRECCIÓN ROBUSTA: Envolver la selección en () antes del .map() 🌟 */}
+                                    {(
+                                        (nuevoDetalle.tratamiento !== 3 && nuevoDetalle.tratamiento !== 4)
+                                            ? catalogos.piezas.slice(0, 32) // Caso True (limitado)
+                                            : catalogos.piezas // Caso False (completo)
+                                    ).map(p => (
                                         <option key={p.id} value={p.id}>{p.codigo_pd}</option>
                                     ))}
                                 </select>

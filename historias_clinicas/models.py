@@ -73,11 +73,15 @@ class DetallesHC(models.Model):
     # Change 2: Added related_name
     cara_dental = models.ForeignKey(CarasDentales, 
                                     on_delete=models.PROTECT,
-                                    related_name='detalles_hc') 
+                                    related_name='detalles_hc',
+                                    blank=True, 
+                                    null=True)
     # Change 2: Added related_name
     pieza_dental = models.ForeignKey(PiezasDentales,
                                     on_delete=models.PROTECT,
-                                    related_name='detalles_hc')
+                                    related_name='detalles_hc',
+                                    blank=True, 
+                                    null=True)
     # Change 2/3: Renamed for clarity and added related_name
     historia_clinica = models.ForeignKey(HistoriasClinicas, 
                                     on_delete=models.PROTECT,
