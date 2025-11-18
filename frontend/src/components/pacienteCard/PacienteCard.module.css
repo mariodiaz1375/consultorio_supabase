@@ -1,66 +1,129 @@
+/* PacienteCard.module.css - Estilo profesional alineado con Dashboard */
+
 .paciente-card {
-  /* Box model and layout */
-  background-color: #f7f9fc; /* Light background for a clean look */
-  border: 1px solid #e1e4e8; /* Subtle border */
-  border-radius: 8px; /* Rounded corners */
-  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  padding: 25px 30px;
   margin-bottom: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-  display: flex; /* Flexbox for alignment */
-  flex-direction: block;
-  justify-content: center;
-  /* align-items: center; Align content to the left */
-  font-family: 'Arial', sans-serif; /* A clean, professional font */
   margin-left: 10%;
   margin-right: 10%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e1e5e9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.paciente-card h2 {
-  /* Title styling */
-  color: #2c3e50; /* Darker text for readability */
-  font-size: 1.2em;
-  margin-top: auto; /* Remove top margin for a tighter look */
-  margin-bottom: auto;
-  text-transform: capitalize; /* Capitalize the name for consistency */
+/* Efecto sutil de fondo */
+.paciente-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
+  transition: width 0.3s ease;
+}
+
+.paciente-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(26, 31, 54, 0.15);
+}
+
+.paciente-card:hover::before {
+  width: 6px;
+}
+
+.paciente-card .title {
+  color: #1a1f36;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
   margin-right: auto;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
 }
 
 .paciente-card .button-group {
-  /* Button container */
   display: flex;
-  gap: 10px; /* Space between buttons */
-  margin-top: auto; /* Push buttons to the bottom of the card */
-  margin-bottom: auto;
+  gap: 12px;
+  align-items: center;
 }
 
 .paciente-card button {
-  /* General button styling */
-  padding: 10px 15px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer; /* Change cursor on hover */
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
 }
 
 .paciente-card button:hover {
-  transform: translateY(-2px); /* Slight lift effect on hover */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.paciente-card button:active {
+  transform: translateY(0);
 }
 
 .paciente-card .edit-button {
-  /* Specific style for the edit button */
-  background-color: #3498db; /* Blue for "Edit" */
+  background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
   color: white;
+}
+
+.paciente-card .edit-button:hover {
+  box-shadow: 0 4px 15px rgba(26, 31, 54, 0.4);
 }
 
 .paciente-card .delete-button {
-  /* Specific style for the delete button */
-  background-color: #e74c3c; /* Red for "Delete" */
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
   color: white;
 }
 
+.paciente-card .delete-button:hover {
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
 .paciente-card .activate-button {
-  /* Specific style for the delete button */
-  background-color: #4CAF50; /* Red for "Delete" */
+  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
   color: white;
+}
+
+.paciente-card .activate-button:hover {
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .paciente-card {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 5%;
+    margin-right: 5%;
+    padding: 20px;
+  }
+
+  .paciente-card .title {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+  }
+
+  .paciente-card .button-group {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .paciente-card button {
+    width: 100%;
+  }
 }

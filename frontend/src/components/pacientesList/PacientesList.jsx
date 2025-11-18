@@ -264,7 +264,7 @@ export default function PacientesList() {
           <h2>{activo ? 'Pacientes activos' : 'Pacientes inactivos'}</h2>
       </div>
 
-      <div>
+      <div className={styles['list-conteiner']}>
         {filteredPacientes.map(paciente => (
             <PacienteCard 
                 key={paciente.id} 
