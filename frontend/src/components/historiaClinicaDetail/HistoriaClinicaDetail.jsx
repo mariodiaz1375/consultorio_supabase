@@ -104,8 +104,8 @@ useEffect(() => {
                         {historia.detalles.map((detalle) => (
                             <tr key={detalle.id}>
                                 <td>{detalle.tratamiento_nombre}</td>
-                                <td>{detalle.pieza_codigo}</td>
-                                <td>{detalle.cara_nombre}</td>
+                                <td>{detalle.pieza_codigo ? detalle.pieza_codigo : 'N/A'}</td>
+                                <td>{detalle.cara_nombre ? detalle.cara_nombre : 'N/A'}</td>
                             </tr>
                         ))}
                     </tbody>

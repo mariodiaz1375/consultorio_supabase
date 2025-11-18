@@ -62,6 +62,7 @@ export default function HistoriaClinicaForm({
     const [isOtroTratamientoLocked, setIsOtroTratamientoLocked] = useState(false);
     const [ortodonciaId, setOrtodonciaId] = useState(null);
     const [limpiezaId, setLimpiezaId] = useState(null);
+    const [consultaId, setConsultaId] = useState(null);
 
     // --- Carga de Catálogos ---
     useEffect(() => {
@@ -92,6 +93,16 @@ export default function HistoriaClinicaForm({
                 if (limpiezaTratamiento) {
                     setLimpiezaId(limpiezaTratamiento.id);
                     console.log("🧹 ID de Limpieza encontrado:", limpiezaTratamiento.id);
+                }
+
+                // 🔍 BUSCAR EL ID DE CONSULTA
+                const consultaTratamiento = tratamientos.find(
+                    t => t.nombre_trat.toLowerCase() === 'consulta'
+                );
+                
+                if (consultaTratamiento) {
+                    setConsultaId(consultaTratamiento.id);
+                    console.log("📋 ID de Consulta encontrado:", consultaTratamiento.id);
                 }
 
             } catch (err) {
@@ -190,9 +201,24 @@ export default function HistoriaClinicaForm({
 
     // ✅ Agregar detalle
     const addDetalle = () => {
-        if (!nuevoDetalle.tratamiento || !nuevoDetalle.pieza_dental || !nuevoDetalle.cara_dental) {
-            showWarning("Debe seleccionar Tratamiento, Pieza y Cara.");
+        // Validación especial para Consulta: pieza_dental y cara_dental pueden ser nulas
+        const isConsulta = nuevoDetalle.tratamiento === consultaId;
+        
+        if (!nuevoDetalle.tratamiento) {
+            showWarning("Debe seleccionar un Tratamiento.");
             return;
+        }
+
+        // Para tratamientos que NO son Consulta, pieza y cara son obligatorias
+        if (!isConsulta) {
+            if (!nuevoDetalle.pieza_dental) {
+                showWarning("Debe seleccionar la Pieza dental.");
+                return;
+            }
+            if (!nuevoDetalle.cara_dental) {
+                showWarning("Debe seleccionar la Cara dental.");
+                return;
+            }
         }
 
         if (isOtroTratamientoLocked) {
@@ -202,14 +228,18 @@ export default function HistoriaClinicaForm({
 
         // Buscar los nombres para mostrar en la tabla
         const tratamientoNombre = catalogos.tratamientos.find(t => t.id === nuevoDetalle.tratamiento)?.nombre_trat;
-        const piezaCodigo = catalogos.piezas.find(p => p.id === nuevoDetalle.pieza_dental)?.codigo_pd;
-        const caraNombre = catalogos.caras.find(c => c.id === nuevoDetalle.cara_dental)?.nombre_cara;
+        const piezaCodigo = nuevoDetalle.pieza_dental 
+            ? catalogos.piezas.find(p => p.id === nuevoDetalle.pieza_dental)?.codigo_pd 
+            : 'N/A';
+        const caraNombre = nuevoDetalle.cara_dental 
+            ? catalogos.caras.find(c => c.id === nuevoDetalle.cara_dental)?.nombre_cara 
+            : 'N/A';
         
         // Agregar al formData
         const nuevoDetalleObjeto = {
             tratamiento: nuevoDetalle.tratamiento,
-            pieza_dental: nuevoDetalle.pieza_dental,
-            cara_dental: nuevoDetalle.cara_dental,
+            pieza_dental: nuevoDetalle.pieza_dental || null, // Permitir null para Consulta
+            cara_dental: nuevoDetalle.cara_dental || null, // Permitir null para Consulta
             tratamiento_nombre: tratamientoNombre,
             pieza_codigo: piezaCodigo,
             cara_nombre: caraNombre
@@ -299,8 +329,8 @@ export default function HistoriaClinicaForm({
             fecha_fin: formData.finalizado ? new Date().toISOString().split('T')[0] : null,
             detalles: formData.detalles.map(d => ({
                 tratamiento: d.tratamiento,
-                cara_dental: d.cara_dental,
-                pieza_dental: d.pieza_dental,
+                cara_dental: d.cara_dental || null, // Permitir null para Consulta
+                pieza_dental: d.pieza_dental || null, // Permitir null para Consulta
             }))
         };
 
@@ -466,10 +496,16 @@ export default function HistoriaClinicaForm({
                                     name="pieza_dental" 
                                     onChange={handleDetalleChange} 
                                     value={nuevoDetalle.pieza_dental}
+                                    disabled={nuevoDetalle.tratamiento === consultaId}
+                                    className={nuevoDetalle.tratamiento === consultaId ? styles.disabledSelect : ''}
                                 >
-                                    <option value="">--- Seleccionar Pieza ---</option>
+                                    <option value="">
+                                        {nuevoDetalle.tratamiento === consultaId 
+                                            ? "--- No aplica ---" 
+                                            : "--- Seleccionar Pieza ---"}
+                                    </option>
                                     
-                                    {(
+                                    {nuevoDetalle.tratamiento !== consultaId && (
                                         (nuevoDetalle.tratamiento !== 3 && nuevoDetalle.tratamiento !== 4)
                                             ? catalogos.piezas.slice(0, 32)
                                             : catalogos.piezas
@@ -482,11 +518,26 @@ export default function HistoriaClinicaForm({
                                     name="cara_dental" 
                                     onChange={handleDetalleChange} 
                                     value={nuevoDetalle.cara_dental}
+                                    disabled={nuevoDetalle.tratamiento === consultaId}
+                                    className={nuevoDetalle.tratamiento === consultaId ? styles.disabledSelect : ''}
                                 >
-                                    <option value="">--- Seleccionar Cara ---</option>
-                                    {catalogos.caras.map(c => (
-                                        <option key={c.id} value={c.id}>{c.nombre_cara}</option>
-                                    ))}
+                                    <option value="">
+                                        {nuevoDetalle.tratamiento === consultaId 
+                                            ? "--- No aplica ---" 
+                                            : "--- Seleccionar Cara ---"}
+                                    </option>
+                                    {nuevoDetalle.tratamiento !== consultaId && catalogos.caras
+                                        .filter(c => {
+                                            // Excluir "Todas" (id 6) para Endodoncia (id 2) y Fotocurado (id 1)
+                                            if ((nuevoDetalle.tratamiento === 1 || nuevoDetalle.tratamiento === 2) && c.id === 6) {
+                                                return false;
+                                            }
+                                            return true;
+                                        })
+                                        .map(c => (
+                                            <option key={c.id} value={c.id}>{c.nombre_cara}</option>
+                                        ))
+                                    }
                                 </select>
 
                                 <button type="button" onClick={addDetalle} className={styles.addButton}>
