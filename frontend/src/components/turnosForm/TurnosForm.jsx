@@ -1,11 +1,9 @@
 // src/components/turnosForm/TurnosForm.jsx
 
 import React, { useState, useEffect } from 'react';
-// 🚨 CORRECCIÓN 1: Debería apuntar a su propio archivo CSS
+import Select from 'react-select'; // 1. Importamos la librería
 import styles from './TurnosForm.module.css'; 
 import { useAlert } from '../../hooks/useAlert';
-// Importamos las funciones API necesarias para crear/editar
-// 🚨 CORRECCIÓN 2: Eliminada la importación incorrecta de TurnoCard
 
 // obtener la fecha de hoy en formato YYYY-MM-DD
 const getTodayDateString = () => {
@@ -20,13 +18,42 @@ const getTodayDateString = () => {
 const TODAY_DATE = getTodayDateString(); 
 
 const initialFormData = {
-    // 1. Foreign Keys - se envían como IDs
     paciente: '',
     odontologo: '',
     horario_turno: '',
-    estado_turno: '3',
+    estado_turno: '3', // Por defecto 'Pendiente' (o el ID que corresponda)
     fecha_turno: TODAY_DATE,
     motivo: '',
+};
+
+// 2. Estilos personalizados para que React-Select coincida con tu CSS Module
+const customSelectStyles = {
+    control: (base, state) => ({
+        ...base,
+        borderColor: state.isFocused ? '#0f1419' : '#1a1f36',
+        borderWidth: '2px',
+        borderRadius: '8px',
+        padding: '5px',
+        boxShadow: state.isFocused ? '0 0 0 3px rgba(26, 31, 54, 0.2)' : 'none',
+        '&:hover': {
+            borderColor: '#0f1419'
+        }
+    }),
+    option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isSelected ? '#1a1f36' : state.isFocused ? 'rgba(26, 31, 54, 0.1)' : 'white',
+        color: state.isSelected ? 'white' : '#1a1f36',
+        cursor: 'pointer',
+    }),
+    singleValue: (base) => ({
+        ...base,
+        color: '#1a1f36',
+        fontWeight: '500',
+    }),
+    input: (base) => ({
+        ...base,
+        color: '#1a1f36',
+    })
 };
 
 export default function TurnosForm({
@@ -37,7 +64,6 @@ export default function TurnosForm({
     estadosTurno = [],
     initialData = null, 
     isEditing = false,
-    submissionError = null,
     turnosExistentes = [],
     isFilterBlocked = false,
     loggedInUserId = null,
@@ -45,72 +71,44 @@ export default function TurnosForm({
     onAddHorarioClick,
 }) {
     const { showWarning, showError } = useAlert();
-
-    const [searchTerm, setSearchTerm] = useState('');
     const [formData, setFormData] = useState(initialFormData);
     const [dateError, setDateError] = useState('');
+
+    // 3. Transformamos los pacientes al formato que pide react-select: { value, label }
+    const pacienteOptions = React.useMemo(() => {
+        return pacientes.map(p => ({
+            value: p.id,
+            label: `${p.nombre} ${p.apellido} (DNI: ${p.dni})`
+        }));
+    }, [pacientes]);
 
     const horariosDisponibles = React.useMemo(() => {
         const { odontologo, fecha_turno } = formData;
         
-        // 1. Si no hay odontólogo y fecha, todos están disponibles (o ninguno)
         if (!odontologo || !fecha_turno) {
-            return horariosFijos; // Mostrar todos si faltan datos clave
+            return horariosFijos; 
         }
 
-        // 2. Encontrar los IDs de los horarios ya ocupados en la fecha y con el odontólogo
         const horariosOcupadosIDs = turnosExistentes
             .filter(turno => 
-                // Filtramos por la fecha seleccionada
                 turno.fecha_turno === fecha_turno && 
-                // Filtramos por el odontólogo seleccionado
                 turno.odontologo === odontologo &&
-                // IMPORTANTE: Permitir editar el turno actual sin que se filtre a sí mismo.
                 (!isEditing || turno.id !== initialData?.id)
             )
-            .map(turno => turno.horario_turno); // Devolvemos solo el ID del horario
+            .map(turno => turno.horario_turno); 
 
-        // 3. Filtrar la lista completa de horarios fijos
         return horariosFijos.filter(horario => 
             !horariosOcupadosIDs.includes(horario.id)
         );
 
     }, [formData, horariosFijos, turnosExistentes, isEditing, initialData]);
 
-    // ----------------------------------------------------
-    // 1. LÓGICA DE FILTRADO DE PACIENTES
-    // ----------------------------------------------------
-    const filteredPacientes = React.useMemo(() => {
-        if (!searchTerm) {
-            return pacientes;
-        }
-
-        const lowerCaseSearchTerm = searchTerm.toLowerCase();
-
-        return pacientes.filter(p => {
-            // Asumiendo que cada paciente tiene al menos nombre, apellido y dni
-            const fullName = `${p.nombre} ${p.apellido}`.toLowerCase();
-            const dni = p.dni ? String(p.dni).toLowerCase() : '';
-            
-            return fullName.includes(lowerCaseSearchTerm) || 
-                   dni.includes(lowerCaseSearchTerm);
-        });
-    }, [pacientes, searchTerm]);
-    
-    // ... (useEffect, handleChange, handleSubmit) ...
-
-    // 💡 NUEVO MANEJADOR para el campo de búsqueda
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
-    };
-
     // Cargar datos iniciales para edición
     useEffect(() => {
         let initialDataForForm = initialFormData;
         if (initialData) {
-            // Mapear los datos de lectura (ej: paciente.id) a los campos de escritura (paciente_id)
             initialDataForForm = {
-                paciente: initialData.paciente, // Usamos los IDs planos que mapeamos en TurnosList
+                paciente: initialData.paciente, 
                 odontologo: initialData.odontologo, 
                 horario_turno: initialData.horario_turno,
                 estado_turno: initialData.estado_turno,
@@ -120,7 +118,7 @@ export default function TurnosForm({
         } else if (isFilterBlocked && loggedInUserId) {
             initialDataForForm = {
                  ...initialFormData,
-                 odontologo: loggedInUserId, // Forzar el ID del odontólogo
+                 odontologo: loggedInUserId,
              };
         } 
         setFormData(initialDataForForm);
@@ -128,33 +126,39 @@ export default function TurnosForm({
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        let newValue = value;
-        setDateError(''); // Limpiar errores previos
+        setDateError(''); 
 
-        // 🚨 LÓGICA DE VALIDACIÓN DE DÍA DE SEMANA 🚨
         if (name === 'fecha_turno') {
-            const selectedDate = new Date(value + 'T00:00:00'); // T00:00:00 para evitar problemas de zona horaria
-            const dayOfWeek = selectedDate.getUTCDay(); // 0 = Domingo, 6 = Sábado
+            const selectedDate = new Date(value + 'T00:00:00'); 
+            const dayOfWeek = selectedDate.getUTCDay(); 
 
             if (dayOfWeek === 0 || dayOfWeek === 6) {
-                // Si es Sábado o Domingo, establecer el error
                 setDateError('🚫 No se pueden agendar turnos en Sábados ni Domingos.');
             } else {
                 setDateError('');
             }
         }
-        const parsedValue = (name === 'paciente' || name === 'odontologo' || name === 'horario_turno' || name === 'estado_turno') && value !== ''
+        
+        const parsedValue = (name === 'odontologo' || name === 'horario_turno' || name === 'estado_turno') && value !== ''
             ? parseInt(value, 10)
             : value;
+
         setFormData(prev => ({
             ...prev,
             [name]: parsedValue,
         }));
     };
 
+    // 4. Nuevo handler específico para el Select de React-Select
+    const handlePacienteChange = (selectedOption) => {
+        setFormData(prev => ({
+            ...prev,
+            paciente: selectedOption ? selectedOption.value : ''
+        }));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        // 🚨 VALIDACIÓN: Bloquear el envío si hay error de fecha.
         if (dateError) {
              showWarning(dateError);
              return;
@@ -168,48 +172,28 @@ export default function TurnosForm({
         onSubmit(formData);
     };
 
+    // Helper para encontrar el valor seleccionado actual para React-Select
+    const selectedPacienteOption = pacienteOptions.find(option => option.value === formData.paciente);
+
     return (
         <form className={styles['turnos-form']} onSubmit={handleSubmit}>
-            {/* Selector de PACIENTE */}
-            <label htmlFor="search_paciente">Buscar Paciente (Nombre, Apellido o DNI)</label>
-            {/* 💡 Campo de Búsqueda */}
-            <input
-                id="search_paciente"
-                type="text"
-                placeholder="Escriba aquí para filtrar..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className={styles['search-input']} // Puedes estilizar este input en tu CSS
-            />
+            <h3>{isEditing ? 'Editar Turno' : 'Nuevo Turno'}</h3>
 
+            {/* 5. Selector de PACIENTE con Buscador Integrado */}
             <label htmlFor="paciente">Paciente (*)</label>
-            <select
+            <Select
                 id="paciente"
-                name="paciente"
-                value={formData.paciente}
-                onChange={handleChange}
-                required
-            >
-                <option value="">
-                    {searchTerm ? `Resultados: ${filteredPacientes.length}` : 'Seleccione Paciente'}
-                </option>
-                
-                {/* 🚨 USAR LA LISTA FILTRADA 🚨 */}
-                {filteredPacientes.map(paciente => (
-                    <option key={paciente.id} value={paciente.id}>
-                        {`${paciente.nombre} ${paciente.apellido} (DNI: ${paciente.dni})`}
-                    </option>
-                ))}
-            </select>
+                value={selectedPacienteOption}
+                onChange={handlePacienteChange}
+                options={pacienteOptions}
+                placeholder="Buscar por Nombre o DNI..."
+                isClearable
+                styles={customSelectStyles} // Aplicamos estilos
+                noOptionsMessage={() => "No se encontraron pacientes"}
+                required // Nota: React-Select no soporta 'required' nativo perfecto, validamos en handleSubmit
+            />
             
-            {/* 💡 Mensaje si no hay resultados */}
-            {searchTerm && filteredPacientes.length === 0 && (
-                <p className={styles['alert-info']}>
-                    No se encontraron pacientes que coincidan con la búsqueda.
-                </p>
-            )}
-            
-            {/* Selector de ODONTÓLOGO (¡Debes implementarlo en tu JSX!) */}
+            {/* Selector de ODONTÓLOGO */}
             <label htmlFor="odontologo">Odontólogo (*)</label>
             <select
                 id="odontologo"
@@ -220,7 +204,6 @@ export default function TurnosForm({
                 required
             >
                 {isFilterBlocked ? (
-                    // Mostrar solo la opción del odontólogo logueado si está bloqueado
                     odontologos
                         .filter(o => o.id === formData.odontologo)
                         .map(o => (
@@ -229,7 +212,6 @@ export default function TurnosForm({
                             </option>
                         ))
                 ) : (
-                    // Mostrar todas las opciones si no está bloqueado (Admin o no Odontólogo)
                     <>
                         <option value="">Seleccione un Odontólogo</option>
                         {odontologos.map(o => (
@@ -241,7 +223,6 @@ export default function TurnosForm({
                 )}
             </select>
 
-            
             {/* Campo FECHA */}
             <label htmlFor="fecha_turno">Fecha (*)</label>
             <input
@@ -256,36 +237,34 @@ export default function TurnosForm({
 
             {dateError && <p className={styles['error-message']}>{dateError}</p>}
 
-                {/* Selector de HORARIO */}
+            {/* Selector de HORARIO */}
             <label htmlFor="horario_turno">Horario (*)</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '15px' }}>
                 <select
                     id="horario_turno"
-                    name="horario_turno" // 🚨 CORREGIDO
+                    name="horario_turno"
                     value={formData.horario_turno}
                     onChange={handleChange}
                     required
-                    style={{ flexGrow: 1 }} // Permite que el select ocupe el espacio
+                    style={{ flexGrow: 1 }} 
                 >
                     <option value="">
-                        {/* Mensaje dinámico */}
                         {formData.odontologo && formData.fecha_turno 
                             ? 'Seleccione Horario Libre' 
                             : 'Seleccione Odontólogo y Fecha primero'}
                         </option>
                 
-                        {/* 🚨 USAR LA LISTA FILTRADA 🚨 */}
                         {horariosDisponibles.map(horario => (
                         <option key={horario.id} value={horario.id}>
-                        {horario.hora} 
-                    </option>
+                            {horario.hora} 
+                        </option>
                     ))}
                 </select>
                 <button 
-                type="button" 
-                onClick={onAddHorarioClick} // Llama a la función del padre (TurnosList)
-                title="Administrar Horarios"
-                style={{ 
+                    type="button" 
+                    onClick={onAddHorarioClick} 
+                    title="Administrar Horarios"
+                    style={{ 
                         height: '38px', 
                         width: '38px',
                         padding: '0',
@@ -303,7 +282,6 @@ export default function TurnosForm({
                 </button>
             </div>
 
-            {/* 🚨 NUEVO CAMPO: ESTADO DEL TURNO (Al final, antes de los botones) */}
             <label htmlFor="estado_turno">Estado del Turno</label>
             <select
                 id="estado_turno"
@@ -314,7 +292,6 @@ export default function TurnosForm({
                 disabled={!isEditing}
             >
                 <option value="">Seleccione el Estado</option>
-                {/* Usamos la prop 'estadosTurno' con la estructura de la API: { id, nombre } */}
                 {estadosTurno.map(estado => (
                     <option key={estado.id} value={estado.id}>
                         {estado.nombre_est_tur}
@@ -322,7 +299,6 @@ export default function TurnosForm({
                 ))}
             </select>
 
-            {/* Campo MOTIVO */}
             <label htmlFor="motivo">Motivo / Notas</label>
             <textarea
                 id="motivo"
@@ -332,19 +308,16 @@ export default function TurnosForm({
                 rows="3"
                 placeholder="Escriba un breve motivo o nota del turno..."
             />
-            
-
 
             <button type="submit">
                 {isEditing ? 'Guardar Cambios' : 'Agendar Turno'}
             </button>
 
-            {/* Botón de Cancelar (solo si estamos editando) */}
             {isEditing && (
                 <button 
-                    type="button" // IMPORTANTE: Debe ser type="button" para no enviar el formulario
-                    onClick={onCancel} // Llama a la función que recibimos por prop
-                    className={styles['cancel-edit-btn']} // Necesitarás estilizar esta clase
+                    type="button" 
+                    onClick={onCancel} 
+                    className={styles['cancel-edit-btn']} 
                 >
                     Cancelar Edición
                 </button>
