@@ -110,17 +110,8 @@ export default function PersonalDetail({ miembro, onBack }) {
                     <ul>
                         {renderEspecialidades()}
                     </ul>
-                    <p><strong>Usuario:</strong> {miembro.username}</p>
                     <p><strong>Activo:</strong> {miembro.activo ? 'Sí' : 'No'}</p>
                 </div>
-            </div>
-
-            {/* Sección para futuras funcionalidades */}
-            <div className={styles.dashboard}>
-                <h2>Dashboard de Actividades</h2>
-                <button className={styles.actionButton}>Ver Agenda</button>
-                <button className={styles.actionButton}>Ver Pacientes Asignados</button>
-                <button className={styles.actionButton}>Ver Estadísticas</button>
             </div>
         </div>
     );
