@@ -1,59 +1,68 @@
+/* PersonalForm.module.css - Estilo profesional alineado con Dashboard */
+
 .personal-form { 
-    max-width: 800px;
+    max-width: 100%;
     margin: 0 auto; 
-    padding: 20px;
+    padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Encabezados */
 .personal-form h3 {
-    color: #2c3e50; 
+    color: #1a1f36; 
     text-align: center;
-    font-size: 1.8rem; 
-    margin-bottom: 25px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #27ae60;
+    font-size: 2rem; 
+    font-weight: 700;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #1a1f36;
+    letter-spacing: 0.5px;
 }
 
 .personal-form h4 {
-    color: #555;
-    margin-top: 20px;
-    margin-bottom: 15px;
+    color: #1a1f36;
+    margin-top: 30px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e1e5e9;
 }
 
-/* ======================================= */
-/* CONTENEDOR DE CAMPOS EN DOS COLUMNAS (MEJORADO CON GRID) */
-/* ======================================= */
+/* Grid de campos en dos columnas */
 .form-field-group {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px 15px;
-    margin-bottom: 10px;
+    gap: 15px 20px;
+    margin-bottom: 20px;
 }
 
 .form-field-group > label {
-    color: #34495e;
+    color: #1a1f36;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     margin-bottom: 0;
+    letter-spacing: 0.3px;
 }
 
 .form-field-group > input,
 .form-field-group > select {
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    transition: border-color 0.3s;
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    transition: all 0.3s ease;
     width: 100%;
     box-sizing: border-box;
+    font-size: 0.95rem;
+    background-color: #ffffff;
 }
 
 .form-field-group > .error-message {
     color: #e74c3c;
     font-size: 0.85rem;
-    font-weight: bold;
+    font-weight: 600;
     padding-left: 5px;
     margin-top: -5px;
     min-height: 20px;
@@ -63,17 +72,16 @@
     visibility: hidden;
 }
 
-/* ======================================= */
-/* CAMPOS DE ANCHO COMPLETO */
-/* ======================================= */
+/* Campos de ancho completo */
 .personal-form > label {
     display: block;
     width: 100%;
-    margin-bottom: 5px;
-    color: #34495e;
+    margin-bottom: 8px;
+    color: #1a1f36;
     font-weight: 600;
-    font-size: 0.9rem;
-    margin-top: 15px;
+    font-size: 0.95rem;
+    margin-top: 20px;
+    letter-spacing: 0.3px;
 }
 
 .personal-form > input[type="text"],
@@ -84,101 +92,160 @@
 .personal-form > select {
     display: block;
     width: 100%;
-    padding: 10px 15px;
-    margin-bottom: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    transition: border-color 0.3s;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    transition: all 0.3s ease;
     box-sizing: border-box;
+    font-size: 0.95rem;
+    background-color: #ffffff;
+}
+
+/* Campo de solo lectura */
+.readonly-field {
+    background-color: #f9fafb !important;
+    color: #6b7280;
+    cursor: not-allowed;
+    border-color: #d1d5db !important;
 }
 
 .personal-form > .error-message {
     color: #e74c3c;
     font-size: 0.85rem;
-    font-weight: bold;
+    font-weight: 600;
     padding-left: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     display: block;
     min-height: 20px;
 }
 
-/* Efecto de foco */
-.personal-form input:focus,
+/* Efecto focus en inputs */
+.personal-form input:focus:not(:disabled),
 .personal-form select:focus,
-.form-field-group input:focus,
+.form-field-group input:focus:not(:disabled),
 .form-field-group select:focus {
-    border-color: #27ae60; 
+    border-color: #1a1f36;
     outline: none;
-    box-shadow: 0 0 5px rgba(39, 174, 96, 0.4); 
-}
-
-/* Botón de envío */
-.personal-form button[type="submit"] {
-    display: block;
-    width: 100%;
-    background-color: #27ae60; 
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
-    margin-top: 20px;
-}
-
-.personal-form button[type="submit"]:hover {
-    background-color: #2ecc71;
+    box-shadow: 0 0 0 3px rgba(26, 31, 54, 0.1);
     transform: translateY(-1px);
 }
 
+/* Botón de submit */
+.personal-form button[type="submit"] {
+    display: block;
+    width: 100%;
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
+    color: white;
+    border: none;
+    padding: 16px 30px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(26, 31, 54, 0.3);
+    margin-top: 30px;
+    letter-spacing: 0.5px;
+}
+
+.personal-form button[type="submit"]:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(26, 31, 54, 0.5);
+}
+
 .personal-form button[type="submit"]:active {
-    background-color: #1e8449;
-    transform: translateY(0);
+    transform: translateY(-1px);
 }
 
 /* Líneas divisorias */
 .personal-form hr {
     border: 0;
-    border-top: 1px solid #ddd;
-    margin: 20px 0;
+    border-top: 2px solid #e1e5e9;
+    margin: 30px 0;
     width: 100%;
-    clear: both;
 }
 
-/* ======================================= */
-/* CHECKBOXES EN MÚLTIPLES COLUMNAS */
-/* ======================================= */
+/* Checkboxes */
 .checkbox-group {
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    background-color: #f9f9f9;
-    width: 100%;
-    clear: both;
+    padding: 20px;
+    border: 2px solid #e1e5e9;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    background-color: #f9fafb;
+    width: 95%;
 }
 
 .checkbox-group-label {
     display: block;
-    font-size: 1rem;
-    color: #34495e;
+    font-size: 1.05rem;
+    color: #1a1f36;
     font-weight: 700;
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e1e5e9;
 }
 
 .checkbox-group > .checkbox-item {
     display: inline-block;
     width: 32%;
     margin-right: 1%;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     vertical-align: top;
 }
 
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    margin-bottom: 0;
+    padding: 0;
+    appearance: none;
+    border: 2px solid #1a1f36;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.checkbox-item input[type="checkbox"]:hover {
+    border-color: #0f1419;
+    box-shadow: 0 0 0 3px rgba(26, 31, 54, 0.1);
+}
+
+.checkbox-item input[type="checkbox"]:checked {
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
+    border-color: #1a1f36;
+}
+
+.checkbox-item input[type="checkbox"]:checked::before {
+    content: '\2713';
+    display: block;
+    color: white;
+    font-size: 14px;
+    line-height: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.checkbox-item label {
+    margin: 0;
+    font-weight: 500;
+    cursor: pointer;
+    flex-grow: 1;
+    font-size: 0.95rem;
+    color: #374151;
+    word-break: break-word;
+}
+
+/* Responsive */
 @media (max-width: 900px) {
     .checkbox-group > .checkbox-item {
         width: 48%;
@@ -195,48 +262,8 @@
         width: 100%;
         margin-right: 0;
     }
-}
 
-.checkbox-item {
-    display: flex;
-    align-items: center;
-}
-
-.checkbox-item input[type="checkbox"] {
-    width: auto; 
-    margin-right: 8px;
-    margin-bottom: 0;
-    padding: 0;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    border: 2px solid #555;
-    border-radius: 3px;
-    cursor: pointer;
-    position: relative;
-    flex-shrink: 0;
-}
-
-.checkbox-item input[type="checkbox"]:checked {
-    background-color: #27ae60;
-    border-color: #27ae60;
-}
-
-.checkbox-item input[type="checkbox"]:checked::before {
-    content: '\2713';
-    display: block;
-    color: white;
-    font-size: 12px;
-    line-height: 14px;
-    text-align: center;
-    font-weight: bold;
-}
-
-.checkbox-item label {
-    margin: 0;
-    font-weight: normal;
-    cursor: pointer;
-    flex-grow: 1;
-    font-size: 0.9rem;
-    word-break: break-word;
+    .personal-form h3 {
+        font-size: 1.5rem;
+    }
 }

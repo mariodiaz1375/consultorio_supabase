@@ -9,7 +9,7 @@ export default function PersonalCard({ miembro, onEditStart, onViewDetail, onDel
   return (
     <div className={styles['personal-card']}>
       <h2 className={styles.title}>
-        {miembro.dni} {miembro.nombre} {miembro.apellido}
+        {miembro.apellido}, {miembro.nombre} ({miembro.puesto_info.nombre_puesto})
       </h2>
       <div className={styles['button-group']}>
         <button className={styles['edit-button']} onClick={() => onEditStart(miembro)}>Editar</button>
