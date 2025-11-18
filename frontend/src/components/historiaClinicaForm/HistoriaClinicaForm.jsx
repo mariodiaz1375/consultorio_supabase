@@ -214,6 +214,25 @@ export default function HistoriaClinicaForm({
             return;
         }
 
+        // =====================================================================
+        // 🛡️ VALIDACIÓN: Evitar duplicados (Tratamiento + Pieza + Cara)
+        // =====================================================================
+        const existeDuplicado = formData.detalles.some(detalle => {
+            // Normalizamos los valores:
+            // Si 'pieza_dental' es null en detalle, lo comparamos con '' del state o null
+            const tratIgual = detalle.tratamiento === nuevoDetalle.tratamiento;
+            const piezaIgual = (detalle.pieza_dental || null) === (nuevoDetalle.pieza_dental || null);
+            const caraIgual = (detalle.cara_dental || null) === (nuevoDetalle.cara_dental || null);
+
+            return tratIgual && piezaIgual && caraIgual;
+        });
+
+        if (existeDuplicado) {
+            showWarning('Error: No se puede repetir diente y cara.');
+            return;
+        }
+        // =====================================================================
+
         const tratamientoNombre = catalogos.tratamientos.find(t => t.id === nuevoDetalle.tratamiento)?.nombre_trat;
         const piezaCodigo = nuevoDetalle.pieza_dental 
             ? catalogos.piezas.find(p => p.id === nuevoDetalle.pieza_dental)?.codigo_pd 
@@ -344,9 +363,9 @@ export default function HistoriaClinicaForm({
 
             onSave(result);
         } catch (err) {
+            // Mensaje genérico para errores de red o servidor no controlados previamente
             setError(`Error al ${isEditing ? 'actualizar' : 'crear'} la Historia Clínica.`);
             console.error(`Error de API (${isEditing ? 'UPDATE' : 'CREATE'} HC):`, err);
-            console.error("Respuesta del servidor:", err.response?.data);
         } finally {
             setLoading(false);
         }
