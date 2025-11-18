@@ -9,6 +9,7 @@ import {
     updateHistoriaClinica
  } from '../../api/historias.api';
  import { useAlert } from '../../hooks/useAlert';
+ import { useConfirm } from '../../hooks/useConfirm';
  import styles from './HistoriaClinicaForm.module.css';
 
 const initialFormData = {
@@ -26,6 +27,7 @@ export default function HistoriaClinicaForm({
     initialData = null 
 }) {
     const { showWarning, showError, showSuccess } = useAlert();
+    const { showConfirm } = useConfirm();
     
     // ✅ UN SOLO ESTADO para todo el formulario
     const [formData, setFormData] = useState(() => {
@@ -82,7 +84,6 @@ export default function HistoriaClinicaForm({
                 
                 if (ortodonciaTratamiento) {
                     setOrtodonciaId(ortodonciaTratamiento.id);
-                    console.log("🦷 ID de Ortodoncia encontrado:", ortodonciaTratamiento.id);
                 }
 
                 // 🔍 BUSCAR EL ID DE LIMPIEZA
@@ -92,7 +93,6 @@ export default function HistoriaClinicaForm({
                 
                 if (limpiezaTratamiento) {
                     setLimpiezaId(limpiezaTratamiento.id);
-                    console.log("🧹 ID de Limpieza encontrado:", limpiezaTratamiento.id);
                 }
 
                 // 🔍 BUSCAR EL ID DE CONSULTA
@@ -102,7 +102,6 @@ export default function HistoriaClinicaForm({
                 
                 if (consultaTratamiento) {
                     setConsultaId(consultaTratamiento.id);
-                    console.log("📋 ID de Consulta encontrado:", consultaTratamiento.id);
                 }
 
             } catch (err) {
@@ -118,7 +117,6 @@ export default function HistoriaClinicaForm({
     // 🔍 EFECTO: Verificar el tipo de tratamiento en los detalles
     useEffect(() => {
         if (formData.detalles.length === 0) {
-            // No hay detalles: desbloquear todo
             setIsOrtodonciaLocked(false);
             setIsLimpiezaLocked(false);
             setIsOtroTratamientoLocked(false);
@@ -127,18 +125,15 @@ export default function HistoriaClinicaForm({
         }
 
         if ((ortodonciaId || limpiezaId) && formData.detalles.length > 0) {
-            // Verificar si hay Ortodoncia con pieza específica
             const activaOrtodoncia = ortodonciaId && formData.detalles.some(
                 d => (d.tratamiento === ortodonciaId) && d.pieza_dental !== 33
             );
             
-            // Verificar si hay Limpieza con pieza específica
             const activaLimpieza = limpiezaId && formData.detalles.some(
                 d => (d.tratamiento === limpiezaId) && d.pieza_dental !== 33
             );
             
             if (activaOrtodoncia) {
-                // MODO ORTODONCIA: Permite múltiples detalles de Ortodoncia
                 setIsOrtodonciaLocked(true);
                 setIsLimpiezaLocked(false);
                 setIsOtroTratamientoLocked(false);
@@ -147,7 +142,6 @@ export default function HistoriaClinicaForm({
                     tratamiento: ortodonciaId
                 }));
             } else if (activaLimpieza) {
-                // MODO LIMPIEZA: Permite múltiples detalles de Limpieza
                 setIsOrtodonciaLocked(false);
                 setIsLimpiezaLocked(true);
                 setIsOtroTratamientoLocked(false);
@@ -156,9 +150,7 @@ export default function HistoriaClinicaForm({
                     tratamiento: limpiezaId
                 }));
             } else {
-                // Caso: No es Ortodoncia ni Limpieza con pieza específica
                 if (formData.detalles.length === 1) {
-                    // Bloquear: Solo se permite un detalle
                     setIsOtroTratamientoLocked(true);
                     setIsOrtodonciaLocked(false);
                     setIsLimpiezaLocked(false);
@@ -169,7 +161,6 @@ export default function HistoriaClinicaForm({
                 }
             }
         } else if (formData.detalles.length > 0) {
-            // Caso: hay detalles pero los IDs aún no han cargado
             setIsOtroTratamientoLocked(true);
             setIsOrtodonciaLocked(false);
             setIsLimpiezaLocked(false);
@@ -188,9 +179,8 @@ export default function HistoriaClinicaForm({
     const handleDetalleChange = (e) => {
         const { name, value } = e.target;
         
-        // 🔒 BLOQUEO: No permitir cambiar tratamiento si está bloqueado
         if (name === 'tratamiento' && (isOrtodonciaLocked || isLimpiezaLocked)) {
-            return; // No hacer nada si intenta cambiar el tratamiento
+            return;
         }
 
         setNuevoDetalle(prev => ({
@@ -201,7 +191,6 @@ export default function HistoriaClinicaForm({
 
     // ✅ Agregar detalle
     const addDetalle = () => {
-        // Validación especial para Consulta: pieza_dental y cara_dental pueden ser nulas
         const isConsulta = nuevoDetalle.tratamiento === consultaId;
         
         if (!nuevoDetalle.tratamiento) {
@@ -209,7 +198,6 @@ export default function HistoriaClinicaForm({
             return;
         }
 
-        // Para tratamientos que NO son Consulta, pieza y cara son obligatorias
         if (!isConsulta) {
             if (!nuevoDetalle.pieza_dental) {
                 showWarning("Debe seleccionar la Pieza dental.");
@@ -226,7 +214,6 @@ export default function HistoriaClinicaForm({
             return;
         }
 
-        // Buscar los nombres para mostrar en la tabla
         const tratamientoNombre = catalogos.tratamientos.find(t => t.id === nuevoDetalle.tratamiento)?.nombre_trat;
         const piezaCodigo = nuevoDetalle.pieza_dental 
             ? catalogos.piezas.find(p => p.id === nuevoDetalle.pieza_dental)?.codigo_pd 
@@ -235,11 +222,10 @@ export default function HistoriaClinicaForm({
             ? catalogos.caras.find(c => c.id === nuevoDetalle.cara_dental)?.nombre_cara 
             : 'N/A';
         
-        // Agregar al formData
         const nuevoDetalleObjeto = {
             tratamiento: nuevoDetalle.tratamiento,
-            pieza_dental: nuevoDetalle.pieza_dental || null, // Permitir null para Consulta
-            cara_dental: nuevoDetalle.cara_dental || null, // Permitir null para Consulta
+            pieza_dental: nuevoDetalle.pieza_dental || null,
+            cara_dental: nuevoDetalle.cara_dental || null,
             tratamiento_nombre: tratamientoNombre,
             pieza_codigo: piezaCodigo,
             cara_nombre: caraNombre
@@ -250,7 +236,6 @@ export default function HistoriaClinicaForm({
             detalles: [...prev.detalles, nuevoDetalleObjeto]
         }));
 
-        // Resetear el formulario (manteniendo tratamiento si está bloqueado)
         setNuevoDetalle({
             tratamiento: isOrtodonciaLocked ? ortodonciaId : (isLimpiezaLocked ? limpiezaId : ''),
             pieza_dental: '',
@@ -265,9 +250,7 @@ export default function HistoriaClinicaForm({
         setFormData(prev => {
             const nuevosDetalles = prev.detalles.filter((_, i) => i !== index);
             
-            // 🔓 DESBLOQUEAR según lo que se eliminó
             if (nuevosDetalles.length === 0) {
-                // Ya no hay detalles: desbloquear todo
                 setIsOrtodonciaLocked(false);
                 setIsLimpiezaLocked(false);
                 setIsOtroTratamientoLocked(false);
@@ -277,7 +260,6 @@ export default function HistoriaClinicaForm({
                     cara_dental: '',
                 });
             } else if (detalleEliminado.tratamiento === ortodonciaId) {
-                // Eliminó Ortodoncia: verificar si quedan más
                 const quedaOrtodoncia = nuevosDetalles.some(d => d.tratamiento === ortodonciaId);
                 if (!quedaOrtodoncia) {
                     setIsOrtodonciaLocked(false);
@@ -289,7 +271,6 @@ export default function HistoriaClinicaForm({
                     });
                 }
             } else if (detalleEliminado.tratamiento === limpiezaId) {
-                // Eliminó Limpieza: verificar si quedan más
                 const quedaLimpieza = nuevosDetalles.some(d => d.tratamiento === limpiezaId);
                 if (!quedaLimpieza) {
                     setIsLimpiezaLocked(false);
@@ -307,6 +288,23 @@ export default function HistoriaClinicaForm({
                 detalles: nuevosDetalles
             };
         });
+    };
+
+    // ✅ Manejador para cerrar con confirmación si hay detalles sin guardar
+    const handleClose = async () => {
+        // Si hay detalles agregados pero no guardados (no está editando), mostrar confirmación
+        if (!isEditing && formData.detalles.length > 0) {
+            const confirmed = await showConfirm(
+                '¿Estás seguro de cerrar? Tienes detalles sin guardar que se perderán.',
+                'Datos sin guardar'
+            );
+            
+            if (confirmed) {
+                onClose();
+            }
+        } else {
+            onClose();
+        }
     };
 
     // --- Manejador de Envío ---
@@ -329,12 +327,10 @@ export default function HistoriaClinicaForm({
             fecha_fin: formData.finalizado ? new Date().toISOString().split('T')[0] : null,
             detalles: formData.detalles.map(d => ({
                 tratamiento: d.tratamiento,
-                cara_dental: d.cara_dental || null, // Permitir null para Consulta
-                pieza_dental: d.pieza_dental || null, // Permitir null para Consulta
+                cara_dental: d.cara_dental || null,
+                pieza_dental: d.pieza_dental || null,
             }))
         };
-
-        console.log("📤 Payload enviado:", payload);
 
         try {
             let result;
@@ -366,7 +362,7 @@ export default function HistoriaClinicaForm({
             <div className={styles.modalContent}>
                 <div className={styles.modalHeader}>
                     <h2>{isEditing ? `Editar HC N° ${initialData.id}` : `Nueva Historia Clínica`}</h2>
-                    <button onClick={onClose} className={styles.closeButton}>&times;</button>
+                    <button onClick={handleClose} className={styles.closeButton}>&times;</button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -455,7 +451,6 @@ export default function HistoriaClinicaForm({
                         {/* Formulario para Agregar Nuevo Detalle */}
                         {!isOtroTratamientoLocked && (
                             <div className={styles.detalleFormRow}>
-                                {/* 🔒 SELECT DE TRATAMIENTO BLOQUEADO */}
                                 <select 
                                     name="tratamiento" 
                                     onChange={handleDetalleChange} 
@@ -464,7 +459,6 @@ export default function HistoriaClinicaForm({
                                     className={(isOrtodonciaLocked || isLimpiezaLocked) ? styles.lockedSelect : ''}
                                 >
                                     {isOrtodonciaLocked ? (
-                                        // Solo mostrar Ortodoncia cuando está bloqueado
                                         catalogos.tratamientos
                                             .filter(t => t.id === ortodonciaId)
                                             .map(t => (
@@ -473,7 +467,6 @@ export default function HistoriaClinicaForm({
                                                 </option>
                                             ))
                                     ) : isLimpiezaLocked ? (
-                                        // Solo mostrar Limpieza cuando está bloqueado
                                         catalogos.tratamientos
                                             .filter(t => t.id === limpiezaId)
                                             .map(t => (
@@ -482,7 +475,6 @@ export default function HistoriaClinicaForm({
                                                 </option>
                                             ))
                                     ) : (
-                                        // Mostrar todas las opciones cuando no está bloqueado
                                         <>
                                             <option value="">--- Seleccionar Tratamiento ---</option>
                                             {catalogos.tratamientos.map(t => (
@@ -528,7 +520,6 @@ export default function HistoriaClinicaForm({
                                     </option>
                                     {nuevoDetalle.tratamiento !== consultaId && catalogos.caras
                                         .filter(c => {
-                                            // Excluir "Todas" (id 6) para Endodoncia (id 2) y Fotocurado (id 1)
                                             if ((nuevoDetalle.tratamiento === 1 || nuevoDetalle.tratamiento === 2) && c.id === 6) {
                                                 return false;
                                             }
@@ -550,7 +541,7 @@ export default function HistoriaClinicaForm({
                     {error && <p className={styles.errorMessage}>{error}</p>}
                     
                     <div className={styles.modalFooter}>
-                        <button type="button" onClick={onClose} className={styles.cancelButton}>Cancelar</button>
+                        <button type="button" onClick={handleClose} className={styles.cancelButton}>Cancelar</button>
                         <button 
                             type="submit" 
                             className={styles.submitButton} 

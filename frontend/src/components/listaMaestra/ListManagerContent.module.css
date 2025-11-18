@@ -60,8 +60,8 @@
 
 .manager-form-container input[type="text"]:focus {
     outline: none;
-    border-color: #27ae60;
-    box-shadow: 0 0 5px rgba(39, 174, 96, 0.4);
+    border-color: #1a1f36;
+    box-shadow: 0 0 5px rgba(26, 31, 54, 0.4);
 }
 
 .manager-form-container input[type="text"]::placeholder {
@@ -81,12 +81,33 @@
     font-weight: 500;
 }
 
+/* 🆕 Título de "Lista Existente" - Línea oscura */
+.list-manager-container h5,
+.list-title {
+    margin-top: 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #1a1f36;
+    color: #1a1f36;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+/* 🆕 Mensaje de lista vacía */
+.empty-list-message {
+    color: #6b7280;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+}
+
 /* ======================================= */
-/* BOTONES DE ACCIÓN */
+/* BOTONES DE ACCIÓN - 🆕 TEMA OSCURO */
 /* ======================================= */
 .manager-action-btn {
     width: 100%;
-    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
     color: white;
     padding: 12px 20px;
     border: none;
@@ -95,13 +116,12 @@
     font-size: 1rem;
     font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(26, 31, 54, 0.3);
 }
 
 .manager-action-btn:hover {
-    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+    box-shadow: 0 6px 20px rgba(26, 31, 54, 0.5);
 }
 
 .manager-action-btn:active {
@@ -110,23 +130,23 @@
 
 .modal-cancel-btn {
     width: 100%;
-    background-color: #95a5a6;
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
     color: white;
-    padding: 12px 20px;
+    padding: 14px 24px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 600;
     transition: all 0.3s ease;
     margin-top: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
 }
 
 .modal-cancel-btn:hover {
-    background-color: #7f8c8d;
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(149, 165, 166, 0.3);
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4);
 }
 
 /* ======================================= */
@@ -171,14 +191,16 @@
     transition: all 0.2s ease;
 }
 
+/* 🆕 BOTÓN EDITAR - TEMA OSCURO */
 .edit-btn {
-    background-color: #3498db;
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
     color: white;
+    box-shadow: 0 2px 6px rgba(26, 31, 54, 0.3);
 }
 
 .edit-btn:hover {
-    background-color: #2980b9;
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 31, 54, 0.4);
 }
 
 .delete-btn {

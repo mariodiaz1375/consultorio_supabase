@@ -1,63 +1,66 @@
-/*
- * Estilos para el componente HistoriaClinicaList.jsx
- * Se utiliza para listar las historias clínicas de un paciente específico.
- */
+/* HistoriaClinicaList.module.css - Tema Oscuro Elegante */
 
 .hcListContainer {
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 28px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     margin-top: 20px;
+    border: 1px solid #e1e5e9;
 }
 
-/* NUEVO: Contenedor del encabezado con botón de filtros */
+/* Contenedor del encabezado con botón de filtros */
 .headerContainer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #e9ecef;
-    padding-bottom: 10px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid rgba(26, 31, 54, 0.1);
+    padding-bottom: 15px;
 }
 
 .hcListContainer h3 {
-    color: #007bff;
+    color: #1a1f36;
     margin: 0;
+    font-weight: 700;
+    font-size: 1.3em;
+    letter-spacing: 0.3px;
 }
 
-/* NUEVO: Botón para mostrar/ocultar filtros */
+/* Botón para mostrar/ocultar filtros */
 .toggleFiltrosButton {
-    background-color: #6c757d;
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
     color: white;
     border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
+    padding: 10px 18px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.9em;
     font-weight: 600;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(26, 31, 54, 0.3);
 }
 
 .toggleFiltrosButton:hover {
-    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(26, 31, 54, 0.4);
 }
 
-/* NUEVO: Panel de filtros */
+/* Panel de filtros */
 .filtrosPanel {
-    background-color: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: linear-gradient(135deg, rgba(26, 31, 54, 0.03) 0%, rgba(15, 20, 25, 0.05) 100%);
+    border: 1px solid rgba(26, 31, 54, 0.1);
+    border-radius: 10px;
+    padding: 22px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .filtrosGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 15px;
+    gap: 18px;
+    margin-bottom: 18px;
 }
 
 .filtroItem {
@@ -67,25 +70,29 @@
 
 .filtroItem label {
     font-weight: 600;
-    color: #495057;
-    margin-bottom: 5px;
+    color: #1a1f36;
+    margin-bottom: 6px;
     font-size: 0.9em;
+    letter-spacing: 0.2px;
 }
 
 .filtroItem input,
 .filtroItem select {
-    padding: 8px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
+    padding: 10px 14px;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
     font-size: 0.9em;
-    transition: border-color 0.3s;
+    transition: all 0.3s ease;
+    background: white;
+    color: #1a1f36;
+    font-weight: 500;
 }
 
 .filtroItem input:focus,
 .filtroItem select:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: #1a1f36;
+    box-shadow: 0 0 0 3px rgba(26, 31, 54, 0.1);
 }
 
 .filtrosAcciones {
@@ -95,259 +102,311 @@
 }
 
 .limpiarFiltrosButton {
-    background-color: #dc3545;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: white;
     border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
+    padding: 10px 18px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.9em;
     font-weight: 600;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 
 .limpiarFiltrosButton:hover {
-    background-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
 
-/* NUEVO: Mensaje de no resultados */
+/* Mensaje de no resultados */
 .noResultados {
     text-align: center;
-    color: #6c757d;
+    color: #6b7280;
     font-style: italic;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    border: 1px dashed #dee2e6;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(26, 31, 54, 0.03) 0%, rgba(15, 20, 25, 0.05) 100%);
+    border-radius: 10px;
+    border: 1px dashed rgba(26, 31, 54, 0.2);
+    font-weight: 500;
 }
 
-/* --- Estilos de la Tabla --- */
+/* Estilos de la Tabla */
 .hcTable {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     background-color: #fff;
     font-size: 0.95em;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .hcTable th,
 .hcTable td {
-    padding: 12px 15px;
+    padding: 14px 16px;
     text-align: left;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid #e1e5e9;
 }
 
 .hcTable th {
-    background-color: #e9ecef;
-    color: #495057;
-    font-weight: 600;
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+}
+
+.hcTable tbody tr {
+    transition: all 0.2s ease;
 }
 
 .hcTable tbody tr:hover {
-    background-color: #f1f1f1;
-    cursor: default;
+    background-color: rgba(26, 31, 54, 0.03);
+    transform: translateX(2px);
 }
 
-/* --- Indicadores de Estado (Finalizada / Abierta) --- */
+.hcTable tbody tr td {
+    color: #1a1f36;
+    font-weight: 500;
+}
 
+/* Indicadores de Estado */
 .finalizada {
     display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background-color: #28a745;
+    padding: 5px 12px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 0.8em;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
 }
 
 .abierta {
     display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background-color: #ffc107;
-    color: #343a40;
-    font-weight: bold;
+    padding: 5px 12px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    font-weight: 700;
     font-size: 0.8em;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
 }
 
-/* --- Botones --- */
-
+/* Botones de Acción */
 .viewButton {
-    background-color: #007bff;
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 14px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
     font-size: 0.85em;
-    margin-right: 5px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    box-shadow: 0 2px 6px rgba(26, 31, 54, 0.3);
 }
 
 .viewButton:hover {
-    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 31, 54, 0.4);
 }
 
 .editButton {
-    background-color: #c97304;
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 14px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
     font-size: 0.85em;
-    margin-right: 5px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    box-shadow: 0 2px 6px rgba(26, 31, 54, 0.3);
 }
 
 .editButton:hover {
-    background-color: #9e5b03;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 31, 54, 0.4);
 }
 
 .reabrirButton {
-    background-color: #38c002;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 14px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
     font-size: 0.85em;
-    margin-right: 5px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
 }
 
 .reabrirButton:hover {
-    background-color: #197901;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
 .finalizarButton {
-    background-color: #ee2501;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 14px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
     font-size: 0.85em;
-    margin-right: 5px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
 }
 
 .finalizarButton:hover {
-    background-color: #b91e02;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
 .pagosButton {
-    background-color: #e7d914;
+    background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 14px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
     font-size: 0.85em;
+    font-weight: 600;
+    margin-bottom: 4px;
+    box-shadow: 0 2px 6px rgba(234, 179, 8, 0.3);
 }
 
 .pagosButton:hover {
-    background-color: #beb208;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(234, 179, 8, 0.4);
 }
 
 .newHcButton {
-    background-color: #17a2b8;
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 12px 24px;
+    border-radius: 8px;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
-    margin-top: 10px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    margin-top: 15px;
     float: right;
+    box-shadow: 0 2px 8px rgba(26, 31, 54, 0.3);
 }
 
 .newHcButton:hover {
-    background-color: #138496;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(26, 31, 54, 0.4);
 }
 
-/* --- Mensaje de Error --- */
+/* Mensaje de Error */
 .error {
-    color: #dc3545;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-    padding: 10px;
-    border-radius: 5px;
+    color: white;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 15px;
+    border-radius: 8px;
     text-align: center;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
-/* 🆕 --- ESTILOS DE PAGINACIÓN --- */
+/* ESTILOS DE PAGINACIÓN */
 .paginacionContainer {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 15px;
-    margin: 20px 0;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
+    margin: 25px 0;
+    padding: 18px;
+    background: linear-gradient(135deg, rgba(26, 31, 54, 0.03) 0%, rgba(15, 20, 25, 0.05) 100%);
+    border-radius: 10px;
 }
 
 .paginacionButton {
-    background-color: #007bff;
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
     color: white;
     border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
+    padding: 10px 18px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.9em;
     font-weight: 600;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(26, 31, 54, 0.3);
 }
 
 .paginacionButton:hover:not(:disabled) {
-    background-color: #0056b3;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(26, 31, 54, 0.4);
 }
 
 .paginacionButton:disabled {
-    background-color: #6c757d;
+    background: linear-gradient(180deg, #9ca3af 0%, #6b7280 100%);
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 .paginacionInfo {
     display: flex;
-    gap: 5px;
+    gap: 6px;
     align-items: center;
 }
 
 .paginacionNumero {
-    background-color: white;
-    color: #007bff;
-    border: 1px solid #007bff;
-    padding: 6px 12px;
-    border-radius: 4px;
+    background: white;
+    color: #1a1f36;
+    border: 2px solid #e1e5e9;
+    padding: 8px 14px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 0.9em;
-    font-weight: 500;
-    transition: all 0.2s;
-    min-width: 35px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    min-width: 40px;
 }
 
 .paginacionNumero:hover {
-    background-color: #e7f3ff;
+    background: rgba(26, 31, 54, 0.05);
+    border-color: #1a1f36;
 }
 
 .paginaActiva {
-    background-color: #007bff !important;
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%) !important;
     color: white !important;
+    border-color: #1a1f36 !important;
     font-weight: 700;
+    box-shadow: 0 2px 8px rgba(26, 31, 54, 0.3);
 }
 
-/* Responsive para pantallas pequeñas */
+/* Responsive */
 @media (max-width: 768px) {
+    .hcListContainer {
+        padding: 20px;
+    }
+
     .headerContainer {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
+        gap: 12px;
     }
 
     .toggleFiltrosButton {
@@ -372,7 +431,7 @@
 
     .hcTable th,
     .hcTable td {
-        padding: 8px 10px;
+        padding: 10px 12px;
     }
 
     .viewButton,
@@ -380,14 +439,29 @@
     .reabrirButton,
     .finalizarButton,
     .pagosButton {
-        padding: 4px 8px;
+        padding: 6px 10px;
         font-size: 0.75em;
-        margin-right: 3px;
-        margin-bottom: 3px;
+        margin-right: 4px;
+        margin-bottom: 4px;
     }
 
     .newHcButton {
         width: 100%;
         float: none;
+    }
+
+    .paginacionContainer {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .paginacionButton {
+        flex: 1;
+        min-width: 100px;
+    }
+
+    .paginacionInfo {
+        width: 100%;
+        justify-content: center;
     }
 }

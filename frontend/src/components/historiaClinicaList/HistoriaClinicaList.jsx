@@ -364,16 +364,18 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
                                     <button 
                                         className={styles.viewButton}
                                         onClick={() => handleViewDetail(hc.id)}
+                                        title="Ver detalles"
                                     >
-                                        Ver
+                                        👁️ Ver
                                     </button>
                                     {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (!hc.finalizado) && (
                                         
                                         <button 
                                             className={styles.editButton}
-                                            onClick={() => handleEdit(hc)} 
+                                            onClick={() => handleEdit(hc)}
+                                            title="Editar historia clínica"
                                         >
-                                            Editar
+                                            ✏️ Editar
                                         </button>
                                         
                                     )}

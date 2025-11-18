@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useConfirm } from '../../hooks/useConfirm'; // Ajusta la ruta según tu estructura
+import { useConfirm } from '../../hooks/useConfirm';
 import styles from './ListManagerContent.module.css';
 
 const ListManagerContent = ({ 
@@ -16,7 +16,6 @@ const ListManagerContent = ({
     const [inputName, setInputName] = useState('');
     const [error, setError] = useState('');
     
-    // Solo usar el confirm, NO las alertas
     const { showConfirm } = useConfirm();
 
     useEffect(() => {
@@ -76,7 +75,6 @@ const ListManagerContent = ({
         setError('');
     };
 
-    // Solo maneja la confirmación, la alerta de éxito viene del padre
     const handleDeleteConfirmation = async (id, name) => {
         const isConfirmed = await showConfirm(
             `¿Estás seguro de que deseas eliminar "${name}"? Esta acción es irreversible y podría generar errores si el elemento está en uso.`,
@@ -84,7 +82,7 @@ const ListManagerContent = ({
         );
 
         if (isConfirmed) {
-            onDelete(id); // El padre mostrará la alerta de éxito
+            onDelete(id);
         }
     };
 
@@ -146,15 +144,8 @@ const ListManagerContent = ({
                 )}
             </div>
 
-            <h5 style={{
-                marginTop: '20px', 
-                paddingBottom: '8px', 
-                borderBottom: '2px solid #27ae60',
-                color: '#2c3e50',
-                fontSize: '1rem'
-            }}>
-                Lista Existente
-            </h5>
+            {/* 🆕 Ahora usa la clase CSS en lugar de estilos inline */}
+            <h5 className={styles['list-title']}>Lista Existente</h5>
             
             {list.map(item => (
                 <div key={item[idField]} className={styles['list-manager-item']}>
@@ -179,13 +170,7 @@ const ListManagerContent = ({
             ))}
             
             {list.length === 0 && (
-                <p style={{
-                    color: '#999', 
-                    fontSize: '0.9rem',
-                    textAlign: 'center',
-                    padding: '20px',
-                    fontStyle: 'italic'
-                }}>
+                <p className={styles['empty-list-message']}>
                     No hay elementos en la lista.
                 </p>
             )}

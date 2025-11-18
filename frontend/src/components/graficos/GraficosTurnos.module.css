@@ -1,80 +1,142 @@
-/* GraficosTurnos.module.css */
+/* GraficosTurnos.module.css - Tema Oscuro */
 
-/* 👇 Nombre de clase cambiado a camelCase */
 .graficosContainer { 
-    padding: 20px;
+    padding: 25px;
     margin: 20px auto;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     max-width: 900px;
     position: relative;
     width: 100%;
+    border: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 .error {
-    /* (Esta clase está bien) */
-    border: 2px solid #ff4d4f;
-    color: #ff4d4f;
-    background-color: #ffeaea;
+    border: 2px solid #ef4444;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
     text-align: center;
     font-weight: bold;
+    padding: 20px;
+    border-radius: 8px;
 }
 
-/* 👇 Nombre de clase cambiado a camelCase */
 .graficosTitle {
     text-align: center;
-    color: #333;
+    color: white;
     margin-bottom: 25px;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+    padding-bottom: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
-/* 👇 Nombre de clase cambiado a camelCase */
 .graficosControls {
     display: flex;
     justify-content: center;
     gap: 30px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
 }
 
-/* 👇 Nombre de clase cambiado a camelCase */
+.filterGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .filterGroup label {
-    font-weight: bold;
-    margin-right: 10px;
-    color: #555;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
 }
 
-/* 👇 Nombre de clase cambiado a camelCase */
 .filterSelect {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    border-radius: 8px;
+    font-size: 14px;
     cursor: pointer;
-    min-width: 150px; /* Asegurar un ancho mínimo */
+    min-width: 150px;
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-/* 👇 Nombre de clase cambiado a camelCase Y CORREGIDO */
+.filterSelect:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(102, 126, 234, 0.5);
+}
+
+.filterSelect:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.filterSelect option {
+    background: #1a1f36;
+    color: white;
+}
+
 .graficoWrapper {
-    background-color: #fff;
+    background: rgba(255, 255, 255, 0.05);
     padding: 20px;
-    border-radius: 6px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-    align-self: center;
-
-    /* --- ESTA ES LA CORRECCIÓN --- */
-    position: relative; /* Necesario para que Chart.js se mida */
-    width: 95%;       /* Ocupa el 100% del contenedor */
-    height: 300px;     /* ¡La altura que faltaba! (Ajusta si quieres) */
+    border-radius: 10px;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    position: relative;
+    width: 95%;
+    height: 300px;
+    margin: 0 auto;
 }
 
-/* 👇 Nombre de clase cambiado a camelCase */
 .dataSummary {
     margin-top: 20px;
     text-align: center;
     font-size: 1.1em;
-    color: #333;
-    padding: 10px;
-    border-top: 1px dashed #ccc;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 12px;
+    border-top: 1px solid rgba(102, 126, 234, 0.3);
+    font-weight: 500;
+}
+
+.dataSummary strong {
+    color: white;
+    font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .graficosContainer {
+        padding: 20px;
+        margin: 15px auto;
+    }
+
+    .graficosTitle {
+        font-size: 18px;
+    }
+
+    .graficosControls {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .filterGroup {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .filterSelect {
+        width: 100%;
+    }
+
+    .graficoWrapper {
+        width: 100%;
+        padding: 15px;
+    }
 }

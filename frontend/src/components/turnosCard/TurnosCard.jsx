@@ -2,26 +2,24 @@
 
 import React from 'react';
 import { useConfirm } from '../../hooks/useConfirm';
-// IMPORTANTE: Reutilizamos los estilos de la lista para no crear un nuevo archivo CSS solo para la tarjeta.
 import styles from '../turnosList/TurnosList.module.css'; 
 
 
 const getEstadoIcono = (estadoNombre) => {
-    // Convertimos a minúsculas y limpiamos espacios para hacer la comparación robusta
     const estadoLimpio = estadoNombre.toLowerCase().trim();
     
     switch (estadoLimpio) {
         case 'agendado':
         case 'pendiente':
         case 'por atender':
-            return '📝'; // Para estados que requieren acción futura
+            return '📋';
         case 'cancelado':
-            return '❌'; // Para estados de anulación
+            return '❌';
         case 'finalizado':
         case 'atendido':
-            return '✅'; // Para estados completados
+            return '✅';
         default:
-            return 'ℹ️'; // Icono por defecto
+            return 'ℹ️';
     }
 }
 
@@ -35,7 +33,6 @@ const getEstadoIcono = (estadoNombre) => {
 export default function TurnoCard({ turno, onDelete, onEdit, isSelected, onToggleSelect }) {
     const { showConfirm } = useConfirm();
     
-    // 🚨 CORRECCIÓN: Usamos las propiedades planas (flat) que proporciona tu API
     const fecha = turno.fecha_turno;
     const hora = turno.horario_display || 'N/A';
     const estado = turno.estado_nombre || 'Desconocido';
@@ -43,7 +40,6 @@ export default function TurnoCard({ turno, onDelete, onEdit, isSelected, onToggl
     const odontologo = turno.odontologo_nombre || 'N/A';
     const estadoIcono = getEstadoIcono(estado);
     
-    // Genera la clase CSS para el estado (ej: estado-ocupado, estado-pendiente)
     const handleDeleteClick = async () => {
         const confirmed = await showConfirm(`¿Está seguro de que desea eliminar el turno de ${paciente} con ${odontologo} el ${fecha} a las ${hora}?`);
         if (confirmed) {
@@ -52,7 +48,7 @@ export default function TurnoCard({ turno, onDelete, onEdit, isSelected, onToggl
     };
 
     const handleEditClick = () => {
-        onEdit(turno); // Llama a la función onEdit pasada desde TurnosList
+        onEdit(turno);
     };
 
     const handleCheckChange = (e) => {
@@ -72,15 +68,15 @@ export default function TurnoCard({ turno, onDelete, onEdit, isSelected, onToggl
             </div>
 
             <div className={styles['turno-info']}>
-                <p className={styles['turno-fecha']}>📅 {fecha} - 🕒 {hora} - ID {turno.id}</p>
+                {/* 🆕 ELIMINADO EL ID - Solo mostramos fecha y hora */}
+                <p className={styles['turno-fecha']}>📅 {fecha} - 🕒 {hora}</p>
                 <p>👤 Paciente: {paciente}</p>
                 <p>🧑‍⚕️ Odontólogo: {odontologo}</p>
                 <p>{estadoIcono} {estado}</p>
-                {/* Aplicamos la clase dinámica usando la notación de corchetes */}
             </div>
             <div className={styles['turno-actions']}>
                 <button 
-                    className={styles['edit-btn']} // Asume que tienes un estilo para 'edit-btn'
+                    className={styles['edit-btn']}
                     onClick={handleEditClick}
                 >
                     Editar

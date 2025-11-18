@@ -246,7 +246,6 @@ export default function TurnosList() {
     const isFilterBlocked = userRole === 'Odontólogo/a'
     const loggedInUserId = currentUser?.id;
 
-    // 🆕 FUNCIÓN MEJORADA CON ALERTAS DETALLADAS
     const handleFormSubmit = async (formData) => {
         try {
             const payload = {
@@ -254,7 +253,6 @@ export default function TurnosList() {
                 modificado_por: currentUser?.id
             };
 
-            // Obtener nombres para la alerta
             const paciente = pacientesOptions.find(p => p.id === payload.paciente);
             const odontologo = odontologosOptions.find(o => o.id === payload.odontologo);
             const horario = horariosFijosOptions.find(h => h.id === payload.horario_turno);
@@ -264,14 +262,10 @@ export default function TurnosList() {
             const horaFormateada = horario ? horario.hora : 'N/A';
 
             if (isEditing) {
-                // Modo Edición
                 await updateTurno(editingTurno.id, payload);
-                // 🆕 ALERTA DETALLADA DE ÉXITO PARA EDICIÓN
                 showSuccess(`✅ Turno actualizado: ${nombrePaciente} con ${nombreOdontologo} - ${payload.fecha_turno} a las ${horaFormateada}`);
             } else {
-                // Modo Creación
                 await createTurno(payload);
-                // 🆕 ALERTA DETALLADA DE ÉXITO PARA CREACIÓN
                 showSuccess(`✅ Turno creado: ${nombrePaciente} con ${nombreOdontologo} - ${payload.fecha_turno} a las ${horaFormateada}`);
             }
             
@@ -360,8 +354,14 @@ export default function TurnosList() {
         }
     };
 
+    // 🆕 SPINNER DE CARGA
     if (loading) {
-        return <div className={styles['loading']}>Cargando turnos y opciones...</div>;
+        return (
+            <div className={styles['turnos-loading']}>
+                <div className={styles['spinner-large']}></div>
+                <p>Cargando turnos...</p>
+            </div>
+        );
     }
 
     if (error) {

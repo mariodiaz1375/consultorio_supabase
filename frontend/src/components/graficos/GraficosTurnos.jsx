@@ -11,7 +11,6 @@ import {
     Legend 
 } from 'chart.js';
 
-// 🚨 CAMBIO CLAVE: Importación como Módulo CSS
 import styles from './GraficosTurnos.module.css'; 
 
 // Registrar los componentes necesarios de Chart.js
@@ -24,12 +23,6 @@ ChartJS.register(
     Legend
 );
 
-// ... (Resto de la función getStartDate) ...
-/**
- * Retorna la fecha de inicio para el rango de filtro seleccionado.
- * @param {string} filter 'last_week', 'last_month', 'last_year', 'all'
- * @returns {Date | null} La fecha de inicio del período.
- */
 const getStartDate = (filter) => {
     const now = new Date();
     const date = new Date(now.getFullYear(), now.getMonth(), now.getDate()); 
@@ -50,30 +43,21 @@ const getStartDate = (filter) => {
     }
 };
 
-
-// ===================================================
-// 2. COMPONENTE PRINCIPAL
-// ===================================================
-
 export default function GraficosTurnos() {
     const [turnos, setTurnos] = useState([]);
     const [estadosTurno, setEstadosTurno] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
-    // Filtros
     const [filterPeriod, setFilterPeriod] = useState('last_month');
     const [filterStatus, setFilterStatus] = useState(''); 
     
-    // Opciones de filtro
     const periodOptions = [
         { value: 'last_week', label: 'Última Semana' },
         { value: 'last_month', label: 'Último Mes' },
         { value: 'last_year', label: 'Último Año' },
         { value: 'all', label: 'Todos los Tiempos' },
     ];
-
-    // ... (Lógica de Carga de Datos y Procesamiento - sin cambios) ...
 
     const loadData = useCallback(async () => {
         try {
@@ -96,23 +80,19 @@ export default function GraficosTurnos() {
         loadData();
     }, [loadData]);
 
-
     const { processedData, estadoNames } = useMemo(() => {
         const startDate = getStartDate(filterPeriod);
         
-        // 1. FILTRAR POR PERÍODO DE TIEMPO
         const filteredByDate = turnos.filter(turno => {
             if (!startDate) return true;
             return new Date(turno.fecha_turno) >= startDate;
         });
 
-        // 2. FILTRAR POR ESTADO (si se seleccionó uno)
         const filteredTurnos = filteredByDate.filter(turno => {
             if (!filterStatus) return true;
             return String(turno.estado_turno) === filterStatus;
         });
 
-        // 3. PROCESAR DATOS PARA EL GRÁFICO: Contar por estado
         const countsByState = {};
         const stateNameMap = {};
 
@@ -125,18 +105,56 @@ export default function GraficosTurnos() {
             countsByState[estadoId] = (countsByState[estadoId] || 0) + 1;
         });
 
-        // Preparar datos para Chart.js
         let labels = [];
         let dataCounts = [];
+        let backgroundColors = [];
+        let borderColors = [];
+        
+        // Función para asignar color según el nombre del estado
+        const getColorForState = (stateName) => {
+            const nameLower = stateName.toLowerCase();
+            
+            if (nameLower.includes('atendido') || nameLower.includes('completado') || nameLower.includes('finalizado')) {
+                return {
+                    bg: 'rgba(34, 197, 94, 0.8)',  // Verde
+                    border: 'rgba(34, 197, 94, 1)'
+                };
+            } else if (nameLower.includes('cancelado') || nameLower.includes('rechazado') || nameLower.includes('anulado')) {
+                return {
+                    bg: 'rgba(239, 68, 68, 0.8)',  // Rojo
+                    border: 'rgba(239, 68, 68, 1)'
+                };
+            } else if (nameLower.includes('agendado') || nameLower.includes('pendiente') || nameLower.includes('programado')) {
+                return {
+                    bg: 'rgba(59, 130, 246, 0.8)',  // Azul
+                    border: 'rgba(59, 130, 246, 1)'
+                };
+            } else {
+                // Color por defecto (púrpura) para otros estados
+                return {
+                    bg: 'rgba(139, 92, 246, 0.8)',
+                    border: 'rgba(139, 92, 246, 1)'
+                };
+            }
+        };
         
         if (filterStatus) {
              const stateId = filterStatus;
-             labels = [stateNameMap[stateId] || `Estado ID ${stateId}`];
+             const stateName = stateNameMap[stateId] || `Estado ID ${stateId}`;
+             labels = [stateName];
              dataCounts = [countsByState[stateId] || 0];
+             
+             const colors = getColorForState(stateName);
+             backgroundColors = [colors.bg];
+             borderColors = [colors.border];
         } else {
             estadosTurno.forEach(estado => {
                 labels.push(estado.nombre_est_tur);
                 dataCounts.push(countsByState[estado.id] || 0);
+                
+                const colors = getColorForState(estado.nombre_est_tur);
+                backgroundColors.push(colors.bg);
+                borderColors.push(colors.border);
             });
         }
 
@@ -146,19 +164,9 @@ export default function GraficosTurnos() {
                 {
                     label: `Turnos (${periodOptions.find(p => p.value === filterPeriod)?.label})`,
                     data: dataCounts,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)', 
-                        'rgba(54, 162, 235, 0.6)', 
-                        'rgba(255, 206, 86, 0.6)', 
-                        'rgba(75, 192, 192, 0.6)', 
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                    ],
-                    borderWidth: 1,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 2,
                 },
             ],
         };
@@ -170,24 +178,55 @@ export default function GraficosTurnos() {
 
     }, [turnos, estadosTurno, filterPeriod, filterStatus]);
 
-
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: 'top',
+                display: false, // Ocultar la leyenda ya que el color indica el estado
             },
             title: {
                 display: true,
                 text: 'Estadísticas de Turnos por Estado y Período',
+                color: 'white',
+                font: {
+                    size: 16,
+                    weight: 'bold'
+                },
+                padding: {
+                    bottom: 20
+                }
             },
         },
+        scales: {
+            x: {
+                ticks: {
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    font: {
+                        size: 11
+                    }
+                },
+                grid: {
+                    color: 'rgba(102, 126, 234, 0.1)',
+                    drawBorder: false
+                }
+            },
+            y: {
+                ticks: {
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    font: {
+                        size: 11
+                    }
+                },
+                grid: {
+                    color: 'rgba(102, 126, 234, 0.1)',
+                    drawBorder: false
+                }
+            }
+        }
     };
 
-    // 🚨 USO DE CLASES CON CSS MODULES
     if (loading) return <div className={styles.graficosContainer}>Cargando gráficos...</div>;
-    // Uso de múltiples clases
     if (error) return <div className={`${styles.graficosContainer} ${styles.error}`}>{error}</div>;
 
     return (
@@ -196,7 +235,6 @@ export default function GraficosTurnos() {
             
             <div className={styles.graficosControls}>
                 
-                {/* Filtro de Período */}
                 <div className={styles.filterGroup}>
                     <label htmlFor="period-filter">Período:</label>
                     <select
@@ -213,7 +251,6 @@ export default function GraficosTurnos() {
                     </select>
                 </div>
 
-                {/* Filtro de Estado */}
                 <div className={styles.filterGroup}>
                     <label htmlFor="status-filter">Estado:</label>
                     <select
@@ -233,12 +270,11 @@ export default function GraficosTurnos() {
             </div>
 
             <div className={styles.graficoWrapper}>
-                {/* Componente de Gráfico de Barras */}
                 <Bar options={chartOptions} data={processedData} />
             </div>
 
             <div className={styles.dataSummary}>
-                <p>Total de turnos en el período seleccionado: **{processedData.datasets[0].data.reduce((sum, count) => sum + count, 0)}**</p>
+                <p>Total de turnos en el período seleccionado: <strong>{processedData.datasets[0].data.reduce((sum, count) => sum + count, 0)}</strong></p>
             </div>
         </div>
     );

@@ -152,23 +152,16 @@ useEffect(() => {
                                     <p><strong>Fecha:</strong> {new Date(seguimiento.fecha).toLocaleString()}</p>
                                 </div>
                                 {(userRole === 'Odontólogo/a' || userRole === 'Admin') && (
-                                    <div className={styles.seguimientoActions}>
-                                        {/* <button 
-                                            className={styles.editButton}
-                                            onClick={() => handleEditSeguimiento(seguimiento)}
-                                        >
-                                            Editar
-                                        </button> */}
-                                    </div>
+                                    <button 
+                                        className={styles.editButton}
+                                        onClick={() => handleEditSeguimiento(seguimiento)}
+                                        title="Editar seguimiento"
+                                    >
+                                        ✏️ Editar
+                                    </button>
                                 )}
                             </div>
                             <p className={styles.seguimientoDesc}>{seguimiento.descripcion}</p>
-                            <button 
-                                className={styles.editButton}
-                                onClick={() => handleEditSeguimiento(seguimiento)}
-                            >
-                                Editar
-                            </button>
                         </div>
                     ))
                 )}
