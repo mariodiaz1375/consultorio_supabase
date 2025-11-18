@@ -2,10 +2,10 @@ import axios from 'axios'
 
 // La baseURL ya apunta a 'http://localhost:8000/api/personal'
 const personalApi = axios.create({
-    baseURL: 'http://localhost:8000/api/personal',
-    headers: {
-        'Content-Type': 'application/json'
-    }
+    baseURL: 'http://localhost:8000/api/personal',
+    headers: {
+        'Content-Type': 'application/json'
+    }
 })
 
 // ==========================================================
@@ -14,44 +14,58 @@ const personalApi = axios.create({
 
 // Esta función está bien. Llama a: /
 export const getPersonal = async () => {
-    try {
-        const response = await personalApi.get('/');
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener los miembros del personal', error);
-        throw error;
-    }
+    try {
+        const response = await personalApi.get('/');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener los miembros del personal', error);
+        throw error;
+    }
 }
 
 // CORRECCIÓN 1: Usar backticks (`/${id}/`) para template literals
 // Llama a: /{id}/
 export const getMiembro = async (id) => {
-    try {
-        const response = await personalApi.get(`/${id}/`); 
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener el miembro del personal', error);
-        throw error;
-    }
+    try {
+        const response = await personalApi.get(`/${id}/`); 
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener el miembro del personal', error);
+        throw error;
+    }
 }
 
 // Llama a: /
 export const createMiembro = async (miembro) => {
-    try {
-        // Envía el cuerpo del miembro (incluyendo puesto_id y especialidades_ids)
-        const response = await personalApi.post('/', miembro);
-        return response.data;
-    } catch (error) {
-        console.error('Error al registrar el miembro del personal', error);
-        throw error;
-    }
+    try {
+        // Si viene username, lo transformamos a username_input para el backend
+        const dataToSend = { ...miembro };
+        if (dataToSend.username !== undefined) {
+            dataToSend.username_input = dataToSend.username;
+            delete dataToSend.username;
+        }
+        
+        // Envía el cuerpo del miembro (incluyendo puesto_id y especialidades_ids)
+        const response = await personalApi.post('/', dataToSend);
+        return response.data;
+    } catch (error) {
+        console.error('Error al registrar el miembro del personal', error);
+        throw error;
+    }
 }
 
-// CORRECCIÓN 2: Usar backticks (`/${id}/`) para template literals
+// 🆕 ACTUALIZADO: Transforma username a username_input antes de enviar
 // Llama a: /{id}/
 export const updateMiembro = async (id, miembro) => {
     try {
-        const response = await personalApi.patch(`/${id}/`, miembro); 
+        // Si viene username, lo transformamos a username_input para el backend
+        const dataToSend = { ...miembro };
+        if (dataToSend.username !== undefined) {
+            dataToSend.username_input = dataToSend.username;
+            delete dataToSend.username;
+        }
+        
+        const response = await personalApi.patch(`/${id}/`, dataToSend); 
         return response.data;
     } catch (error) {
         console.error('Error al actualizar el miembro del personal', error);
@@ -62,13 +76,13 @@ export const updateMiembro = async (id, miembro) => {
 // CORRECCIÓN 3: Usar `.delete()` y backticks (`/${id}/`)
 // Llama a: /{id}/
 export const deleteMiembro = async (id) => {
-    try {
-        const response = await personalApi.delete(`/${id}/`); 
-        return response.data; 
-    } catch (error) {
-        console.error('Error al eliminar el miembro del personal', error);
-        throw error;
-    }
+    try {
+        const response = await personalApi.delete(`/${id}/`); 
+        return response.data; 
+    } catch (error) {
+        console.error('Error al eliminar el miembro del personal', error);
+        throw error;
+    }
 }
 
 

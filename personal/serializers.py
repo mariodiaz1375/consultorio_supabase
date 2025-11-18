@@ -21,6 +21,9 @@ class Personal1Serializer(serializers.ModelSerializer):
     puesto_info = PuestosSerializer(source='puesto', read_only=True)
     especialidades_info = EspecialidadesSerializer(source='especialidades', many=True, read_only=True)
     
+    # 🆕 NUEVO: Campo para mostrar el username del usuario asociado
+    username = serializers.SerializerMethodField(read_only=True)
+    
     # 2. CAMPOS DE ESCRITURA (POST/PUT/PATCH): Reciben los IDs.
     puesto_id = serializers.IntegerField(write_only=True, source='puesto', required=False)
     especialidades_ids = serializers.ListField(
@@ -31,33 +34,41 @@ class Personal1Serializer(serializers.ModelSerializer):
     )
     
     # 3. CAMPOS DE USUARIO (SOLO ESCRITURA): Son write_only y opcionales
-    username = serializers.CharField(write_only=True, required=False) 
-    password = serializers.CharField(write_only=True, required=False) 
+    username_input = serializers.CharField(write_only=True, required=False)
+    password = serializers.CharField(write_only=True, required=False)
     
     class Meta:
         model = Personal
         fields = (
             # Campos del modelo
-            'id', 'nombre', 'apellido', 'dni', 'fecha_alta',  # 🔄 Cambiado de fecha_nacimiento a fecha_alta
+            'id', 'nombre', 'apellido', 'dni', 'fecha_alta',
             'domicilio', 'telefono', 'email', 'matricula', 'activo', 
             'user', # Campo ForeignKey del modelo
             
             # Campos de Lectura (Nested)
             'puesto_info', 
             'especialidades_info',
+            'username',  # 🆕 Agregado para lectura
             
             # Campos de Escritura (IDs)
             'puesto_id',       
             'especialidades_ids', 
             
             # Campos de usuario
-            'username', 
+            'username_input',  # Renombrado para evitar conflicto
             'password' 
         )
-        read_only_fields = ('user', 'fecha_alta')  # 🆕 fecha_alta es solo lectura
+        read_only_fields = ('user', 'username', 'fecha_alta')
+    
+    # 🆕 NUEVO: Método para obtener el username
+    def get_username(self, obj):
+        """Devuelve el username del usuario asociado"""
+        if obj.user:
+            return obj.user.username
+        return None
 
     def create(self, validated_data):
-        username = validated_data.pop('username')
+        username = validated_data.pop('username_input', None)
         password = validated_data.pop('password')
         especialidades_data = validated_data.pop('especialidades', []) 
         puesto_id = validated_data.pop('puesto')
@@ -71,7 +82,7 @@ class Personal1Serializer(serializers.ModelSerializer):
             last_name=validated_data.get('apellido', '')
         )
         
-        # Crear el objeto Personal (fecha_alta se asigna automáticamente)
+        # Crear el objeto Personal
         personal = Personal.objects.create(user=user, puesto_id=puesto_id, **validated_data)
 
         if especialidades_data:
@@ -81,7 +92,7 @@ class Personal1Serializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         # Manejo de username y password en actualizaciones
-        username = validated_data.pop('username', None)
+        username = validated_data.pop('username_input', None)
         password = validated_data.pop('password', None)
         
         # Si se proporcionó username o password, actualizar el User asociado

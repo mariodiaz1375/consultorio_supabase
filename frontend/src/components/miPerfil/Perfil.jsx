@@ -10,20 +10,29 @@ const Perfil = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
     
     const [formData, setFormData] = useState({
         username: '',
         telefono: '',
-        email: '',
-        password: '',
+        email: ''
+    });
+
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
         confirmPassword: ''
     });
 
     const [errors, setErrors] = useState({
         username: '',
         telefono: '',
-        email: '',
-        password: '',
+        email: ''
+    });
+
+    const [passwordErrors, setPasswordErrors] = useState({
+        currentPassword: '',
+        newPassword: '',
         confirmPassword: ''
     });
 
@@ -34,13 +43,13 @@ const Perfil = () => {
     const loadUserInfo = async () => {
         try {
             const user = await getCurrentUser();
+            console.log('Usuario cargado:', user);
             setUserInfo(user);
+            
             setFormData({
-                username: user.user?.username || '',
+                username: user.username || '',
                 telefono: user.telefono || '',
-                email: user.email || '',
-                password: '',
-                confirmPassword: ''
+                email: user.email || ''
             });
         } catch (error) {
             console.error('Error al cargar información del usuario:', error);
@@ -53,10 +62,8 @@ const Perfil = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         
-        // Limpiar error del campo al escribir
         setErrors(prev => ({ ...prev, [name]: '' }));
         
-        // Validación en tiempo real para teléfono
         if (name === 'telefono') {
             const filteredValue = value.replace(/[^0-9\s\+\-\(\)]/g, '');
             setFormData(prev => ({ ...prev, [name]: filteredValue }));
@@ -66,7 +73,6 @@ const Perfil = () => {
                 setErrors(prev => ({ ...prev, telefono: 'El teléfono debe tener mínimo 7 dígitos' }));
             }
         } 
-        // Validación en tiempo real para email
         else if (name === 'email') {
             setFormData(prev => ({ ...prev, [name]: value }));
             const emailRegex = /^\S+@\S+\.\S+$/;
@@ -74,20 +80,22 @@ const Perfil = () => {
                 setErrors(prev => ({ ...prev, email: 'Formato de email inválido' }));
             }
         }
-        // Validación para contraseñas
-        else if (name === 'password' || name === 'confirmPassword') {
-            setFormData(prev => ({ ...prev, [name]: value }));
-            
-            if (name === 'password' && value && value.length < 6) {
-                setErrors(prev => ({ ...prev, password: 'La contraseña debe tener al menos 6 caracteres' }));
-            }
-            
-            if (name === 'confirmPassword' && value && value !== formData.password) {
-                setErrors(prev => ({ ...prev, confirmPassword: 'Las contraseñas no coinciden' }));
-            }
-        }
         else {
             setFormData(prev => ({ ...prev, [name]: value }));
+        }
+    };
+
+    const handlePasswordChange = (e) => {
+        const { name, value } = e.target;
+        setPasswordErrors(prev => ({ ...prev, [name]: '' }));
+        setPasswordData(prev => ({ ...prev, [name]: value }));
+
+        if (name === 'newPassword' && value && value.length < 6) {
+            setPasswordErrors(prev => ({ ...prev, newPassword: 'La contraseña debe tener al menos 6 caracteres' }));
+        }
+        
+        if (name === 'confirmPassword' && value && value !== passwordData.newPassword) {
+            setPasswordErrors(prev => ({ ...prev, confirmPassword: 'Las contraseñas no coinciden' }));
         }
     };
 
@@ -95,13 +103,11 @@ const Perfil = () => {
         const newErrors = {};
         let isValid = true;
 
-        // Validar username
         if (!formData.username.trim()) {
             newErrors.username = 'El nombre de usuario es obligatorio';
             isValid = false;
         }
 
-        // Validar teléfono
         if (!formData.telefono.trim()) {
             newErrors.telefono = 'El teléfono es obligatorio';
             isValid = false;
@@ -113,27 +119,42 @@ const Perfil = () => {
             }
         }
 
-        // Validar email
         const emailRegex = /^\S+@\S+\.\S+$/;
         if (formData.email && !emailRegex.test(formData.email)) {
             newErrors.email = 'Formato de email inválido';
             isValid = false;
         }
 
-        // Validar contraseñas si se ingresaron
-        if (formData.password || formData.confirmPassword) {
-            if (formData.password.length < 6) {
-                newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
-                isValid = false;
-            }
-            
-            if (formData.password !== formData.confirmPassword) {
-                newErrors.confirmPassword = 'Las contraseñas no coinciden';
-                isValid = false;
-            }
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    const validatePasswordForm = () => {
+        const newErrors = {};
+        let isValid = true;
+
+        if (!passwordData.currentPassword) {
+            newErrors.currentPassword = 'La contraseña actual es obligatoria';
+            isValid = false;
         }
 
-        setErrors(newErrors);
+        if (!passwordData.newPassword) {
+            newErrors.newPassword = 'La nueva contraseña es obligatoria';
+            isValid = false;
+        } else if (passwordData.newPassword.length < 6) {
+            newErrors.newPassword = 'La contraseña debe tener al menos 6 caracteres';
+            isValid = false;
+        }
+
+        if (!passwordData.confirmPassword) {
+            newErrors.confirmPassword = 'Debes confirmar la nueva contraseña';
+            isValid = false;
+        } else if (passwordData.newPassword !== passwordData.confirmPassword) {
+            newErrors.confirmPassword = 'Las contraseñas no coinciden';
+            isValid = false;
+        }
+
+        setPasswordErrors(newErrors);
         return isValid;
     };
 
@@ -160,28 +181,61 @@ const Perfil = () => {
                 email: formData.email
             };
 
-            // Solo incluir password si se ingresó uno nuevo
-            if (formData.password) {
-                dataToUpdate.password = formData.password;
-            }
-
             await updateMiembro(userInfo.id, dataToUpdate);
             
             showSuccess('Perfil actualizado correctamente');
             
-            // Recargar información del usuario
-            await loadUserInfo();
+            // Actualizar localStorage
+            const updatedUserInfo = { ...userInfo, ...dataToUpdate };
+            localStorage.setItem('user_info', JSON.stringify(updatedUserInfo));
             
-            // Limpiar campos de contraseña
-            setFormData(prev => ({
-                ...prev,
-                password: '',
-                confirmPassword: ''
-            }));
+            await loadUserInfo();
 
         } catch (error) {
             console.error('Error al actualizar perfil:', error);
             showError('No se pudo actualizar el perfil. Intenta nuevamente.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handlePasswordSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!validatePasswordForm()) {
+            showError('Por favor, corrige los errores en el formulario');
+            return;
+        }
+
+        // TODO: Aquí deberías verificar la contraseña actual con el backend
+        
+        const confirmed = await showConfirm(
+            '¿Estás seguro de que deseas cambiar tu contraseña?',
+            'Confirmar Cambio de Contraseña'
+        );
+
+        if (!confirmed) return;
+
+        setSaving(true);
+        try {
+            await updateMiembro(userInfo.id, {
+                password: passwordData.newPassword
+            });
+            
+            showSuccess('Contraseña actualizada correctamente');
+            
+            // Limpiar formulario de contraseña
+            setPasswordData({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            });
+            
+            setShowPasswordModal(false);
+
+        } catch (error) {
+            console.error('Error al cambiar contraseña:', error);
+            showError('No se pudo cambiar la contraseña. Verifica que la contraseña actual sea correcta.');
         } finally {
             setSaving(false);
         }
@@ -258,6 +312,7 @@ const Perfil = () => {
                                 name="username"
                                 value={formData.username}
                                 onChange={handleChange}
+                                placeholder="Nombre de usuario"
                                 className={errors.username ? styles.inputError : ''}
                             />
                             {errors.username && (
@@ -297,45 +352,6 @@ const Perfil = () => {
                             )}
                         </div>
 
-                        <div className={styles.divider}></div>
-
-                        <h3 className={styles.sectionTitle}>Cambiar Contraseña</h3>
-                        <p className={styles.sectionDescription}>
-                            Deja estos campos vacíos si no deseas cambiar tu contraseña
-                        </p>
-
-                        <div className={styles.formGroup}>
-                            <label htmlFor="password">Nueva Contraseña</label>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                placeholder="Mínimo 6 caracteres"
-                                className={errors.password ? styles.inputError : ''}
-                            />
-                            {errors.password && (
-                                <span className={styles.errorMessage}>{errors.password}</span>
-                            )}
-                        </div>
-
-                        <div className={styles.formGroup}>
-                            <label htmlFor="confirmPassword">Confirmar Nueva Contraseña</label>
-                            <input
-                                type="password"
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                placeholder="Repite la contraseña"
-                                className={errors.confirmPassword ? styles.inputError : ''}
-                            />
-                            {errors.confirmPassword && (
-                                <span className={styles.errorMessage}>{errors.confirmPassword}</span>
-                            )}
-                        </div>
-
                         <button 
                             type="submit" 
                             className={styles.submitButton}
@@ -343,9 +359,130 @@ const Perfil = () => {
                         >
                             {saving ? 'Guardando...' : 'Guardar Cambios'}
                         </button>
+
+                        <div className={styles.divider}></div>
+
+                        <button 
+                            type="button"
+                            className={styles.passwordButton}
+                            onClick={() => setShowPasswordModal(true)}
+                        >
+                            🔒 Cambiar Contraseña
+                        </button>
                     </form>
                 </div>
             </div>
+
+            {/* Modal de Cambio de Contraseña */}
+            {showPasswordModal && (
+                <div className={styles.modalOverlay} onClick={(e) => {
+                    // Cerrar modal si se hace clic en el overlay
+                    if (e.target === e.currentTarget) {
+                        setShowPasswordModal(false);
+                        setPasswordData({
+                            currentPassword: '',
+                            newPassword: '',
+                            confirmPassword: ''
+                        });
+                        setPasswordErrors({});
+                    }
+                }}>
+                    <div className={styles.modal}>
+                        <div className={styles.modalHeader}>
+                            <h2>🔒 Cambiar Contraseña</h2>
+                            <button 
+                                className={styles.closeButton}
+                                onClick={() => {
+                                    setShowPasswordModal(false);
+                                    setPasswordData({
+                                        currentPassword: '',
+                                        newPassword: '',
+                                        confirmPassword: ''
+                                    });
+                                    setPasswordErrors({});
+                                }}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={handlePasswordSubmit} className={styles.modalContent}>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="currentPassword">Contraseña Actual</label>
+                                <input
+                                    type="password"
+                                    id="currentPassword"
+                                    name="currentPassword"
+                                    value={passwordData.currentPassword}
+                                    onChange={handlePasswordChange}
+                                    placeholder="Ingresa tu contraseña actual"
+                                    className={passwordErrors.currentPassword ? styles.inputError : ''}
+                                />
+                                {passwordErrors.currentPassword && (
+                                    <span className={styles.errorMessage}>{passwordErrors.currentPassword}</span>
+                                )}
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="newPassword">Nueva Contraseña</label>
+                                <input
+                                    type="password"
+                                    id="newPassword"
+                                    name="newPassword"
+                                    value={passwordData.newPassword}
+                                    onChange={handlePasswordChange}
+                                    placeholder="Mínimo 6 caracteres"
+                                    className={passwordErrors.newPassword ? styles.inputError : ''}
+                                />
+                                {passwordErrors.newPassword && (
+                                    <span className={styles.errorMessage}>{passwordErrors.newPassword}</span>
+                                )}
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="confirmPassword">Confirmar Nueva Contraseña</label>
+                                <input
+                                    type="password"
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    value={passwordData.confirmPassword}
+                                    onChange={handlePasswordChange}
+                                    placeholder="Repite la nueva contraseña"
+                                    className={passwordErrors.confirmPassword ? styles.inputError : ''}
+                                />
+                                {passwordErrors.confirmPassword && (
+                                    <span className={styles.errorMessage}>{passwordErrors.confirmPassword}</span>
+                                )}
+                            </div>
+
+                            <div className={styles.modalButtons}>
+                                <button 
+                                    type="button"
+                                    className={styles.cancelButton}
+                                    onClick={() => {
+                                        setShowPasswordModal(false);
+                                        setPasswordData({
+                                            currentPassword: '',
+                                            newPassword: '',
+                                            confirmPassword: ''
+                                        });
+                                        setPasswordErrors({});
+                                    }}
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    className={styles.submitButton}
+                                    disabled={saving}
+                                >
+                                    {saving ? 'Guardando...' : 'Cambiar Contraseña'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
