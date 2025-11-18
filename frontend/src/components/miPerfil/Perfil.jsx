@@ -15,7 +15,8 @@ const Perfil = () => {
     const [formData, setFormData] = useState({
         username: '',
         telefono: '',
-        email: ''
+        email: '',
+        domicilio: '' // 👈 CAMBIO 1: Añadir domicilio al estado
     });
 
     const [passwordData, setPasswordData] = useState({
@@ -27,7 +28,8 @@ const Perfil = () => {
     const [errors, setErrors] = useState({
         username: '',
         telefono: '',
-        email: ''
+        email: '',
+        domicilio: '' // 👈 CAMBIO 2: Añadir error para domicilio
     });
 
     const [passwordErrors, setPasswordErrors] = useState({
@@ -49,7 +51,8 @@ const Perfil = () => {
             setFormData({
                 username: user.username || '',
                 telefono: user.telefono || '',
-                email: user.email || ''
+                email: user.email || '',
+                domicilio: user.domicilio || '' // 👈 CAMBIO 3: Cargar domicilio
             });
         } catch (error) {
             console.error('Error al cargar información del usuario:', error);
@@ -81,10 +84,12 @@ const Perfil = () => {
             }
         }
         else {
+            // Domicilio y Username caen aquí
             setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
 
+    // (handlePasswordChange no cambia) ...
     const handlePasswordChange = (e) => {
         const { name, value } = e.target;
         setPasswordErrors(prev => ({ ...prev, [name]: '' }));
@@ -106,6 +111,12 @@ const Perfil = () => {
         if (!formData.username.trim()) {
             newErrors.username = 'El nombre de usuario es obligatorio';
             isValid = false;
+        }
+        
+        // 👈 CAMBIO 4: Validación de Domicilio (Opcional: puedes quitarlo si no es obligatorio)
+        if (!formData.domicilio.trim()) {
+             newErrors.domicilio = 'El domicilio es obligatorio';
+             isValid = false;
         }
 
         if (!formData.telefono.trim()) {
@@ -129,6 +140,7 @@ const Perfil = () => {
         return isValid;
     };
 
+    // (validatePasswordForm no cambia) ...
     const validatePasswordForm = () => {
         const newErrors = {};
         let isValid = true;
@@ -158,6 +170,7 @@ const Perfil = () => {
         return isValid;
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -176,29 +189,38 @@ const Perfil = () => {
         setSaving(true);
         try {
             const dataToUpdate = {
-                username: formData.username,
+                username_input: formData.username,
                 telefono: formData.telefono,
-                email: formData.email
+                email: formData.email,
+                domicilio: formData.domicilio // 👈 CAMBIO 5: Enviar domicilio
             };
 
             await updateMiembro(userInfo.id, dataToUpdate);
             
             showSuccess('Perfil actualizado correctamente');
             
-            // Actualizar localStorage
-            const updatedUserInfo = { ...userInfo, ...dataToUpdate };
+            const updatedUserInfo = { ...userInfo, ...dataToUpdate, username: formData.username };
             localStorage.setItem('user_info', JSON.stringify(updatedUserInfo));
             
             await loadUserInfo();
 
         } catch (error) {
             console.error('Error al actualizar perfil:', error);
-            showError('No se pudo actualizar el perfil. Intenta nuevamente.');
+            
+            let errorMsg = 'No se pudo actualizar el perfil.';
+            if (error.response?.data?.username) {
+                errorMsg = `Error: ${error.response.data.username[0]}`; 
+            } else if (error.response?.data?.detail) {
+                errorMsg = error.response.data.detail;
+            }
+            showError(errorMsg);
+            
         } finally {
             setSaving(false);
         }
     };
 
+    // (handlePasswordSubmit y formatFechaAlta no cambian) ...
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
 
@@ -206,8 +228,6 @@ const Perfil = () => {
             showError('Por favor, corrige los errores en el formulario');
             return;
         }
-
-        // TODO: Aquí deberías verificar la contraseña actual con el backend
         
         const confirmed = await showConfirm(
             '¿Estás seguro de que deseas cambiar tu contraseña?',
@@ -219,12 +239,12 @@ const Perfil = () => {
         setSaving(true);
         try {
             await updateMiembro(userInfo.id, {
+                current_password: passwordData.currentPassword,
                 password: passwordData.newPassword
             });
             
             showSuccess('Contraseña actualizada correctamente');
             
-            // Limpiar formulario de contraseña
             setPasswordData({
                 currentPassword: '',
                 newPassword: '',
@@ -235,7 +255,13 @@ const Perfil = () => {
 
         } catch (error) {
             console.error('Error al cambiar contraseña:', error);
-            showError('No se pudo cambiar la contraseña. Verifica que la contraseña actual sea correcta.');
+            let errorMsg = 'No se pudo cambiar la contraseña.';
+            if (error.response?.data?.current_password) {
+                errorMsg = error.response.data.current_password[0]; 
+            } else if (error.response?.data?.detail) {
+                errorMsg = error.response.data.detail;
+            }
+            showError(errorMsg);
         } finally {
             setSaving(false);
         }
@@ -291,10 +317,9 @@ const Perfil = () => {
                             <label>Puesto</label>
                             <p>{userInfo?.puesto_info?.nombre_puesto}</p>
                         </div>
-                        <div className={styles.infoItem}>
-                            <label>Domicilio</label>
-                            <p>{userInfo?.domicilio || 'No especificado'}</p>
-                        </div>
+                        
+                        {/* 👇 CAMBIO 6: Eliminado "Domicilio" de aquí, ya no es solo lectura */}
+                        
                     </div>
                 </div>
 
@@ -319,6 +344,24 @@ const Perfil = () => {
                                 <span className={styles.errorMessage}>{errors.username}</span>
                             )}
                         </div>
+
+                        {/* 👇 CAMBIO 7: Agregado campo input para Domicilio */}
+                        <div className={styles.formGroup}>
+                            <label htmlFor="domicilio">Domicilio</label>
+                            <input
+                                type="text"
+                                id="domicilio"
+                                name="domicilio"
+                                value={formData.domicilio}
+                                onChange={handleChange}
+                                placeholder="Tu domicilio actual"
+                                className={errors.domicilio ? styles.inputError : ''}
+                            />
+                            {errors.domicilio && (
+                                <span className={styles.errorMessage}>{errors.domicilio}</span>
+                            )}
+                        </div>
+                        {/* -------------------------------------------------- */}
 
                         <div className={styles.formGroup}>
                             <label htmlFor="telefono">Teléfono</label>
@@ -373,10 +416,9 @@ const Perfil = () => {
                 </div>
             </div>
 
-            {/* Modal de Cambio de Contraseña */}
+            {/* (Modal de contraseña no cambia) */}
             {showPasswordModal && (
                 <div className={styles.modalOverlay} onClick={(e) => {
-                    // Cerrar modal si se hace clic en el overlay
                     if (e.target === e.currentTarget) {
                         setShowPasswordModal(false);
                         setPasswordData({
