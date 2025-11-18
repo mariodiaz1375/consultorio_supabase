@@ -72,7 +72,7 @@ export default function TurnoCard({ turno, onDelete, onEdit, isSelected, onToggl
             </div>
 
             <div className={styles['turno-info']}>
-                <p className={styles['turno-fecha']}>📅 {fecha} - 🕒 {hora}</p>
+                <p className={styles['turno-fecha']}>📅 {fecha} - 🕒 {hora} - ID {turno.id}</p>
                 <p>👤 Paciente: {paciente}</p>
                 <p>🧑‍⚕️ Odontólogo: {odontologo}</p>
                 <p>{estadoIcono} {estado}</p>

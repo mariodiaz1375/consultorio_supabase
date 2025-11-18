@@ -299,7 +299,7 @@ export default function PersonalForm({
     }, [initialData]);
 
     const selectedPuesto = puestos.find(p => p.id === formData.puesto_id);
-    const isOdontologo = selectedPuesto && selectedPuesto.nombre_puesto === 'Odontólogo/a';
+    const isOdontologo = selectedPuesto && (selectedPuesto.nombre_puesto === 'Odontólogo/a' || selectedPuesto.nombre_puesto === 'Admin');
 
     // 🆕 Formatear fecha de alta para mostrar
     const formatFechaAlta = (fecha) => {
