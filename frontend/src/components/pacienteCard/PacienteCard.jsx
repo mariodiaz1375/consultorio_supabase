@@ -38,7 +38,7 @@ export default function PacienteCard({ paciente, onEditStart, onViewDetail, onDe
   return (
     <div className={styles['paciente-card']}>
       <h2 className={styles.title}>
-        {paciente.dni} {paciente.nombre} {paciente.apellido}
+        {paciente.apellido}, {paciente.nombre} (DNI: {paciente.dni})
       </h2>
       <div className={styles['button-group']}>
         <button className={styles['edit-button']} onClick={() => onEditStart(paciente)}>Editar</button>

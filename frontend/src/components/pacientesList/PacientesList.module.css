@@ -218,10 +218,125 @@
   justify-content: flex-end;
 }
 
+/* Lista de pacientes container */
+.list-conteiner {
+  margin-bottom: 30px;
+}
+
+/* Paginación */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin: 40px auto;
+  padding: 25px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e1e5e9;
+  width: fit-content;
+}
+
+.pagination-info {
+  color: #1a1f36;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0 10px;
+  min-width: 150px;
+  text-align: center;
+}
+
+.pagination-button {
+  background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(26, 31, 54, 0.3);
+  min-width: 100px;
+}
+
+.pagination-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 31, 54, 0.5);
+}
+
+.pagination-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.pagination-button:disabled {
+  background: linear-gradient(180deg, #9ca3af 0%, #6b7280 100%);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 8px;
+  margin: 0 10px;
+}
+
+.page-number {
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  color: #1a1f36;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.page-number:hover {
+  border-color: #1a1f36;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(26, 31, 54, 0.2);
+}
+
+.page-number.active {
+  background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
+  color: white;
+  border-color: #1a1f36;
+}
+
+.page-number.ellipsis {
+  border: none;
+  cursor: default;
+  color: #9ca3af;
+}
+
+.page-number.ellipsis:hover {
+  transform: none;
+  box-shadow: none;
+  border: none;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .encabezado {
     margin: 0 5% 25px 5%;
+  }
+
+  .pagination-container {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .pagination-info {
+    width: 100%;
+    order: -1;
+    margin-bottom: 10px;
   }
 }
 
