@@ -251,6 +251,22 @@ const handleManipulateList = async (listType, action, id, newName) => {
           </div>
         </div>
 
+        {/* Tarjeta Mi Perfil */}
+        <div className={styles['dashboard-card']}>
+          <div className={styles['card-header']}>
+            <h3>👤 Mi Perfil</h3>
+          </div>
+          <div className={styles['card-content']}>
+            <p>Gestión de tu cuenta y configuración</p>
+            <button 
+              className={styles['card-button']}
+              onClick={() => navigate('/perfil')}
+            >
+              Ver Perfil
+            </button>
+          </div>
+        </div>
+
          {/* Tarjeta Personal */}
         {userRole === 'Admin' && (
           <div className={styles['dashboard-card']}>

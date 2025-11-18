@@ -19,6 +19,7 @@ import AuditoriaTurnosPagina from './pages/auditoriaTurnos/AuditoriaTurnosPagina
 import { AlertProvider } from './context/AlertContext';
 import { AlertSystem } from './components/AlertSystem/AlertSystem';
 import Layout from './components/layout/Layout';
+import Perfil from './components/miPerfil/Perfil';
 
 function App() {
   return (
@@ -84,6 +85,14 @@ function App() {
               </RoleProtectedRoute>
             </ProtectedRoute>
           } />
+          
+          <Route path="/perfil" element={
+            <Layout>
+              <Perfil />
+            </Layout>
+          } />
+          
+          
         </Routes>
       </Router>
     </AlertProvider>

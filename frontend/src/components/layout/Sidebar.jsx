@@ -26,6 +26,12 @@ const Sidebar = ({ onLogout }) => {
       roles: ['Admin', 'Secretario/a', 'Odontólogo/a']
     },
     {
+      path: '/perfil',
+      icon: '👤',
+      label: 'Mi Perfil',
+      roles: ['Admin', 'Secretario/a', 'Odontólogo/a']
+    },
+    {
       path: '/pacientes',
       icon: '👥',
       label: 'Pacientes',
