@@ -1,7 +1,7 @@
 // src/components/turnosList/TurnosList.jsx
 
 import React, { useEffect, useState, useCallback } from 'react';
-import Select from 'react-select'; // 1. Importar Select
+import Select from 'react-select'; 
 import styles from './TurnosList.module.css';
 import TurnosForm from '../turnosForm/TurnosForm';
 import TurnoCard from '../turnosCard/TurnosCard'; 
@@ -27,7 +27,6 @@ const getTodayDateString = () => {
 };
 const TODAY_DATE = getTodayDateString();
 
-// 2. Estilos personalizados para el filtro (ligeramente diferentes al form para ajustarse a la barra)
 const filterSelectStyles = {
     container: (base) => ({
         ...base,
@@ -40,7 +39,7 @@ const filterSelectStyles = {
         borderColor: '#1a1f36',
         borderWidth: '2px',
         borderRadius: '8px',
-        minHeight: '43px', // Ajustar altura para coincidir con inputs
+        minHeight: '43px', 
         boxShadow: state.isFocused ? '0 0 0 3px rgba(26, 31, 54, 0.2)' : 'none',
         '&:hover': { borderColor: '#0f1419' }
     }),
@@ -79,13 +78,12 @@ export default function TurnosList() {
 
     const [filterDate, setFilterDate] = useState(TODAY_DATE);
     const [filterOdontologo, setFilterOdontologo] = useState('');
-    const [filterPaciente, setFilterPaciente] = useState(''); // Almacena el ID como string o number
+    const [filterPaciente, setFilterPaciente] = useState(''); 
     const [filterEstado, setFilterEstado] = useState('');
     const [selectedTurnos, setSelectedTurnos] = useState(new Set());
 
     const isEditing = !!editingTurno;
 
-    // 3. Memoizamos las opciones de pacientes para el filtro
     const pacienteFilterOptions = React.useMemo(() => {
         return pacientesOptions.map(p => ({
             value: p.id,
@@ -122,6 +120,7 @@ export default function TurnosList() {
         if (!confirmed) return;
 
         try {
+            // Aseguramos que se registre quién eliminó antes de borrar
             if (currentUser?.id) {
                 const updatePromises = Array.from(selectedTurnos).map(id => 
                     updateTurno(id, { modificado_por: currentUser.id })
@@ -141,7 +140,7 @@ export default function TurnosList() {
         }
     };
     
-    const CANCELADO_ESTADO_ID = '1'; // Ajustar según tu DB
+    const CANCELADO_ESTADO_ID = '1'; 
 
     const handleBulkCancel = async () => {
         if (selectedTurnos.size === 0) return;
@@ -150,7 +149,12 @@ export default function TurnosList() {
         if (!confirmed) return;
 
         try {
-            const updatePayload = { estado_turno: CANCELADO_ESTADO_ID };
+            // 🚨 CORRECCIÓN: Añadimos modificado_por al payload
+            const updatePayload = { 
+                estado_turno: CANCELADO_ESTADO_ID,
+                modificado_por: currentUser?.id // <--- Esto faltaba
+            };
+
             const updatePromises = Array.from(selectedTurnos).map(id => 
                 updateTurno(id, updatePayload)
             );
@@ -165,9 +169,8 @@ export default function TurnosList() {
         }
     };
 
-    const ATENDIDO_ESTADO_ID = '2'; // Ajustar según tu DB - verifica el ID correcto en tu base de datos
+    const ATENDIDO_ESTADO_ID = '2'; 
 
-// 2. Agregar esta función después de handleBulkCancel (línea ~173)
     const handleBulkAttended = async () => {
         if (selectedTurnos.size === 0) return;
 
@@ -175,7 +178,12 @@ export default function TurnosList() {
         if (!confirmed) return;
 
         try {
-            const updatePayload = { estado_turno: ATENDIDO_ESTADO_ID };
+            // 🚨 CORRECCIÓN: Añadimos modificado_por al payload
+            const updatePayload = { 
+                estado_turno: ATENDIDO_ESTADO_ID,
+                modificado_por: currentUser?.id // <--- Esto faltaba
+            };
+
             const updatePromises = Array.from(selectedTurnos).map(id => 
                 updateTurno(id, updatePayload)
             );
@@ -235,7 +243,6 @@ export default function TurnosList() {
     }, []);
 
     const handleManipulateHorarioList = async (action, id, newName) => {
-        // ... (Lógica de manipulación de horarios igual que antes)
         try {
             const data = { hora: newName }; 
             switch (action) {
@@ -258,7 +265,6 @@ export default function TurnosList() {
             }
             await loadHorarios();
         } catch (error) {
-            // ... manejo de errores
             showError("Error manipulando horarios");
         } finally {
             loadHorarios();
@@ -299,8 +305,7 @@ export default function TurnosList() {
             
             const nombrePaciente = paciente ? `${paciente.nombre} ${paciente.apellido}` : 'Paciente';
             const nombreOdontologo = odontologo ? `${odontologo.nombre} ${odontologo.apellido}` : 'Odontólogo';
-            const horaFormateada = horario ? horario.hora : 'N/A';
-
+            
             if (isEditing) {
                 await updateTurno(editingTurno.id, payload);
                 showSuccess(`✅ Turno actualizado: ${nombrePaciente} con ${nombreOdontologo}`);
@@ -336,7 +341,6 @@ export default function TurnosList() {
             let matches = true;
             if (filterDate) matches = matches && (turno.fecha_turno === filterDate);
             if (filterOdontologo) matches = matches && (String(turno.odontologo) === filterOdontologo);
-            // 4. Comparación robusta para el paciente (string vs number)
             if (filterPaciente) matches = matches && (String(turno.paciente) === String(filterPaciente));
             if (filterEstado) matches = matches && (String(turno.estado_turno) === filterEstado);
             return matches;
@@ -355,7 +359,6 @@ export default function TurnosList() {
         setter(e.target.value);
     };
     
-    // 5. Handler específico para el filtro de paciente
     const handlePacienteFilterChange = (selectedOption) => {
         setFilterPaciente(selectedOption ? selectedOption.value : '');
     };
@@ -458,7 +461,6 @@ export default function TurnosList() {
                         )}
                     </select>
 
-                    {/* 6. Nuevo Select de Pacientes con Buscador para Filtros */}
                     <Select
                         value={pacienteFilterOptions.find(opt => String(opt.value) === String(filterPaciente))}
                         onChange={handlePacienteFilterChange}
