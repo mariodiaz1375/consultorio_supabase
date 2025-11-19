@@ -147,12 +147,12 @@ export default function PacienteDetail({ paciente, onBack }) {
             </div>
 
             {/* Sección para futuros botones de Historia Clínica, Odontograma, etc. */}
-            <div className={styles.dashboard}>
+            {/* <div className={styles.dashboard}>
                 <h2>Dashboard Clínico</h2>
                 <button className={styles.actionButton}>Ver Historia Clínica</button>
                 <button className={styles.actionButton}>Ver Odontograma</button>
                 <button className={styles.actionButton}>Administrar Turnos</button>
-            </div>
+            </div> */}
         </div>
     );
 }

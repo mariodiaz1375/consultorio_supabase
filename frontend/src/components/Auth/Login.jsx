@@ -145,13 +145,13 @@ const Login = () => {
           </button>
         </form>
         
-        <div className="login-footer">
+        {/* <div className="login-footer">
           <p>¿Olvidaste tu contraseña? <a href="#forgot">Recuperar</a></p>
           <small>
             Credenciales por defecto: <br/>
             Usuario: nombre.apellido | Contraseña: DNI
           </small>
-        </div>
+        </div> */}
       </div>
     </div>
   );

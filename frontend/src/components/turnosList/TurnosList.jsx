@@ -165,6 +165,31 @@ export default function TurnosList() {
         }
     };
 
+    const ATENDIDO_ESTADO_ID = '2'; // Ajustar según tu DB - verifica el ID correcto en tu base de datos
+
+// 2. Agregar esta función después de handleBulkCancel (línea ~173)
+    const handleBulkAttended = async () => {
+        if (selectedTurnos.size === 0) return;
+
+        const confirmed = await showConfirm(`¿Está seguro de que desea marcar como ATENDIDO ${selectedTurnos.size} turno(s) seleccionado(s)?`);
+        if (!confirmed) return;
+
+        try {
+            const updatePayload = { estado_turno: ATENDIDO_ESTADO_ID };
+            const updatePromises = Array.from(selectedTurnos).map(id => 
+                updateTurno(id, updatePayload)
+            );
+            await Promise.all(updatePromises);
+
+            showSuccess(`${selectedTurnos.size} turno(s) marcados como atendidos correctamente.`);
+            setSelectedTurnos(new Set());
+            await loadData();
+        } catch (err) {
+            console.error("Error al marcar turnos como atendidos:", err);
+            showError("Hubo un error al marcar los turnos como atendidos. Verifique los datos.");
+        }
+    };
+
     const loadData = useCallback(async () => {
         try {
             setLoading(true);
@@ -471,6 +496,13 @@ export default function TurnosList() {
                             />
                             Seleccionar Todos
                         </label>
+                        <button 
+                            onClick={handleBulkAttended} 
+                            className={styles['attended-bulk-btn']} 
+                            disabled={selectedTurnos.size === 0}
+                        >
+                            Atendido ({selectedTurnos.size})
+                        </button>
 
                         <button 
                             onClick={handleBulkCancel} 
