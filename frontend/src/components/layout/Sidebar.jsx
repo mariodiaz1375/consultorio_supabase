@@ -96,7 +96,8 @@ const Sidebar = ({ onLogout }) => {
         {/* Header del Sidebar */}
         <div className={styles.sidebarHeader}>
           <div className={styles.logo}>
-            <span className={styles.logoIcon}>🦷</span>
+            {/* <span className={styles.logoIcon}>🦷</span> */}
+            <img src="/copia.png" alt="Logo" className={styles.logoIcon} />
             <h2>Consultorio Manjón</h2>
           </div>
         </div>
