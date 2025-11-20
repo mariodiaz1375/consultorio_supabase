@@ -98,6 +98,7 @@ const Login = () => {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
+          <img src="/copia.png" alt="Logo Consultorio Manjón" className="login-logo" />
           <h1>Consultorio Manjón</h1>
           <p>Sistema de Gestión</p>
         </div>

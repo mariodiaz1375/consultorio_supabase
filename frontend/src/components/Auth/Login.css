@@ -26,6 +26,13 @@
   50% { transform: scale(1.1) translate(-25%, -25%); }
 }
 
+.login-logo {
+  width: 125px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  opacity: 0.9;
+  filter: brightness(1.15) drop-shadow(0 4px 10px rgba(21, 35, 98, 0.35));
+}
 .login-card {
   background: rgba(255, 255, 255, 0.98);
   border-radius: 16px;
@@ -39,8 +46,9 @@
   border: 1px solid rgba(26, 31, 54, 0.1);
 }
 
+
 .login-header {
-  margin-bottom: 35px;
+  margin-bottom: 20px;
 }
 
 .login-header h1 {
