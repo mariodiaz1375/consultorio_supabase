@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './PacienteDetail.module.css';
 import HistoriaClinicaList from '../historiaClinicaList/HistoriaClinicaList';
 import { getCurrentUser } from '../../api/personal.api';
+import Odontogram from '../odontograma/Odontograma';
 
 // Función auxiliar para manejar la impresión de listas de info
 const renderArrayInfo = (array, keyName) => {
@@ -16,6 +17,7 @@ export default function PacienteDetail({ paciente, onBack }) {
     const [currentUser, setCurrentUser] = useState(null);
     const [loadingUser, setLoadingUser] = useState(true);
     const [errorUser, setErrorUser] = useState(null);
+    const [viewingOdontograma, setViewingOdontograma] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -90,6 +92,10 @@ export default function PacienteDetail({ paciente, onBack }) {
     return capitalizedWords.join(' ');
     };
 
+    const handleOpenOdontograma = () => {
+        setViewingOdontograma(!viewingOdontograma)
+    }
+
     const nombreCompletoPaciente = `${capitalizeName(paciente.nombre)} ${capitalizeName(paciente.apellido)}`;
 
     return (
@@ -147,12 +153,20 @@ export default function PacienteDetail({ paciente, onBack }) {
             </div>
 
             {/* Sección para futuros botones de Historia Clínica, Odontograma, etc. */}
-            {/* <div className={styles.dashboard}>
-                <h2>Dashboard Clínico</h2>
-                <button className={styles.actionButton}>Ver Historia Clínica</button>
-                <button className={styles.actionButton}>Ver Odontograma</button>
-                <button className={styles.actionButton}>Administrar Turnos</button>
-            </div> */}
+            <div className={styles.dashboard}>
+                <h2>Odontograma</h2>
+                <button 
+                    className={styles.actionButton}
+                    onClick={handleOpenOdontograma}
+                >
+                    {viewingOdontograma ? 'Cerrar odontograma' : 'Ver odontograma'}
+                </button>
+                <div className={styles.odontograma}>
+                    {viewingOdontograma &&
+                        <Odontogram/>}
+                </div>
+            </div>
+            
         </div>
     );
 }

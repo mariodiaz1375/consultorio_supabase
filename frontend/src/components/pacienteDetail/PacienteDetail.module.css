@@ -181,15 +181,7 @@
 
 /* Estilos específicos por tipo de botón */
 .actionButton:nth-child(2) {
-    background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
-}
-
-.actionButton:nth-child(3) {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-}
-
-.actionButton:nth-child(3):hover {
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
 }
 
 /* Responsive */
@@ -248,4 +240,9 @@
         width: 100%;
         margin: 10px 0;
     }
+}
+.odontograma {
+    align-items: center;
+    text-align: center;
+    padding: 20px;
 }
