@@ -557,9 +557,7 @@ useEffect(() => {
             
             <h4>Antecedentes</h4>
             
-            {/* ======================================================== */}
-            {/* CAMPO ANTECEDENTES (CHECKBOXES) + BOTÓN AGREGAR NUEVO */}
-            {/* ======================================================== */}
+            {(userRole === 'Admin' || userRole === 'Odontólogo/a') && (
             <div className={styles['checkbox-group']}>
                 <div className={styles['checkbox-group-header']}> 
                     <label className={styles['checkbox-group-label']}>Antecedentes</label>
@@ -588,10 +586,9 @@ useEffect(() => {
                     </div>
                 ))}
             </div>
-            
-            {/* ======================================================== */}
-            {/* CAMPO ANÁLISIS FUNCIONAL (CHECKBOXES) + BOTÓN AGREGAR NUEVO */}
-            {/* ======================================================== */}
+            )}
+
+            {(userRole === 'Admin' || userRole === 'Odontólogo/a') && (
             <div className={styles['checkbox-group']}>
                 <div className={styles['checkbox-group-header']}> 
                     <label className={styles['checkbox-group-label']}>Análisis Funcional</label>
@@ -620,6 +617,7 @@ useEffect(() => {
                     </div>
                 ))}
             </div>
+            )}
             
             <hr /> 
 
