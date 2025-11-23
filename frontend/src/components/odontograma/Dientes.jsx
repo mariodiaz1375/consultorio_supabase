@@ -1,7 +1,7 @@
 import React from 'react';
 import Tooth from './Diente';
 
-function Teeth({ start, end, x, y, handleChange }) {
+function Teeth({ start, end, x, y, handleChange, historyState }) {
     let tooths = getArray(start, end);
 
     return (
@@ -14,6 +14,7 @@ function Teeth({ start, end, x, y, handleChange }) {
                         number={i}
                         positionY={y}
                         positionX={Math.abs((i - start) * 25) + x}
+                        externalState={historyState ? historyState[i] : null}
                     />
                 )
             }

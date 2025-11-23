@@ -3,7 +3,8 @@ import styles from './PacienteDetail.module.css';
 import HistoriaClinicaList from '../historiaClinicaList/HistoriaClinicaList';
 import { getCurrentUser } from '../../api/personal.api';
 import Odontogram from '../odontograma/Odontograma';
-
+import { calcularEstadoOdontograma } from '../../utils/odontogramaMapper';
+import { getHistoriasClinicas } from '../../api/historias.api';
 // Función auxiliar para manejar la impresión de listas de info
 const renderArrayInfo = (array, keyName) => {
     if (!array || array.length === 0) {
@@ -18,6 +19,28 @@ export default function PacienteDetail({ paciente, onBack }) {
     const [loadingUser, setLoadingUser] = useState(true);
     const [errorUser, setErrorUser] = useState(null);
     const [viewingOdontograma, setViewingOdontograma] = useState(false);
+    const [odontogramaState, setOdontogramaState] = useState({});
+
+    // Cargar historias para el odontograma
+    useEffect(() => {
+        const cargarDatosOdontograma = async () => {
+            try {
+                // Obtener TODAS las historias del paciente (quizás necesites un endpoint específico para esto si son muchas)
+                const response = await getHistoriasClinicas(); 
+                // Filtrar por pacienteId si la API devuelve todo (idealmente la API filtra)
+                const historiasDelPaciente = response.filter(h => h.paciente === paciente.id);
+                
+                const estadoCalculado = calcularEstadoOdontograma(historiasDelPaciente);
+                setOdontogramaState(estadoCalculado);
+            } catch (e) {
+                console.error("Error calculando odontograma", e);
+            }
+        };
+        
+        if (paciente) {
+            cargarDatosOdontograma();
+        }
+    }, [paciente]);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -163,7 +186,7 @@ export default function PacienteDetail({ paciente, onBack }) {
                 </button>
                 <div className={styles.odontograma}>
                     {viewingOdontograma &&
-                        <Odontogram/>}
+                        <Odontogram patientHistoryState={odontogramaState}/>}
                 </div>
             </div>
             

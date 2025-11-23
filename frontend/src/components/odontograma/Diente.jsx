@@ -3,7 +3,7 @@ import useContextMenu from 'contextmenu';
 import 'contextmenu/ContextMenu.css';
 import styles from './Diente.module.css';
 
-function Tooth({ number, positionX, positionY, onChange }) {
+function Tooth({ number, positionX, positionY, onChange, externalState }) {
     const initialState = {
         Cavities: {
             center: 0,
@@ -46,6 +46,23 @@ function Tooth({ number, positionX, positionY, onChange }) {
 
     const [toothState, dispatch] = useReducer(reducer, initialState);
     const [contextMenu, useCM] = useContextMenu({ submenuSymbol: '>' });
+
+    useEffect(() => {
+        if (externalState) {
+            // Aquí forzamos el estado visual basado en lo que calculamos en el mapper
+            // Esto es un poco truco, lo ideal sería que el reducer acepte una acción 'SET_FULL_STATE'
+            // Pero por ahora, podemos simularlo o modificar el reducer:
+            if (externalState.Extract) dispatch(extract(externalState.Extract));
+            if (externalState.Crown) dispatch(crown(externalState.Crown));
+            if (externalState.Cavities) {
+                Object.keys(externalState.Cavities).forEach(zona => {
+                    if(externalState.Cavities[zona] > 0) {
+                        dispatch(carie(zona, externalState.Cavities[zona]));
+                    }
+                });
+            }
+        }
+    }, [externalState]);
 
     const firstUpdate = useRef(true);
     useEffect(() => {
