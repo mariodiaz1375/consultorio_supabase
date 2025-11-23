@@ -1,5 +1,12 @@
 .Odontogram {
   text-align: center;
   padding: 5px;
-  height: 220px;
+  /* 👇 CAMBIO: Aumentamos la altura para que quepan los dientes más grandes */
+  height: 400px; 
+  /* 👇 NUEVO: Usamos flex para asegurar el centrado horizontal si sobra espacio */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow: auto; /* Por si en pantallas muy pequeñas se desborda */
 }

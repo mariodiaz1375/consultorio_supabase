@@ -5,7 +5,8 @@ function Teeth({ start, end, x, y, handleChange }) {
     let tooths = getArray(start, end);
 
     return (
-        <g transform="scale(1.4)" id="gmain">
+        // 👇 CAMBIO: Aumentamos la escala de 1.4 a 1.8
+        <g transform="scale(1.8)" id="gmain">
             {
                 tooths.map((i) =>
                     <Tooth onChange={handleChange}
