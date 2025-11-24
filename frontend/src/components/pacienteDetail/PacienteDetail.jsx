@@ -40,7 +40,7 @@ export default function PacienteDetail({ paciente, onBack }) {
         if (paciente) {
             cargarDatosOdontograma();
         }
-    }, [paciente]);
+    }, [paciente, odontogramaState]);
 
     useEffect(() => {
         const fetchUser = async () => {

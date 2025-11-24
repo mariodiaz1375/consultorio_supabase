@@ -4,11 +4,11 @@ svg.tooth {
 }
 
 svg.tooth .to-do {
-  fill: red;
+  fill: blue;
 }
 
 svg.tooth .done {
-  fill: blue;
+  fill: red;
 }
 
 svg.tooth .active {

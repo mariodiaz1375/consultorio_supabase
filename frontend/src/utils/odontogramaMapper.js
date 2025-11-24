@@ -1,17 +1,17 @@
 // Ajusta estos IDs según tu tabla de Tratamientos en la base de datos
 export const TRATAMIENTO_IDS = {
     CARIES: 1,       // Ejemplo
-    EXTRACCION: 2,   // Ejemplo
-    CORONA: 3,       // Ejemplo
+    EXTRACCION: 7,   // Ejemplo
+    CORONA: 9,       // Ejemplo
     LIMPIEZA: 4,
-    CONDUCTO: 5,
+    CONDUCTO: 2,
 };
 
 export const CARA_IDS = {
-    VESTIBULAR: 1, // Top
-    LINGUAL: 2,    // Bottom
-    MESIAL: 3,     // Right (dependiendo del cuadrante)
-    DISTAL: 4,     // Left
+    VESTIBULAR: 3, // Top
+    LINGUAL: 4,    // Bottom
+    MESIAL: 1,     // Right (dependiendo del cuadrante)
+    DISTAL: 2,     // Left
     OCLUSAL: 5,    // Center
 };
 
@@ -44,7 +44,16 @@ export const calcularEstadoOdontograma = (historiasClinicas) => {
                 switch (detalle.tratamiento) {
                     case TRATAMIENTO_IDS.CARIES:
                         // Mapear la cara dental a la zona del SVG
-                        const zona = mapearCaraAZona(detalle.cara_dental);
+                        let zona = null
+                        if ((piezaId >= 11 && piezaId <= 18) || (piezaId >= 51 && piezaId <= 55)) {
+                            zona = mapearCaraAzona1(detalle.cara_dental);
+                        } else if ((piezaId >= 21 && piezaId <= 28) || (piezaId >= 61 && piezaId <= 65)) {
+                            zona = mapearCaraAzona2(detalle.cara_dental);
+                        } else if ((piezaId >= 31 && piezaId <= 38) || (piezaId >= 71 && piezaId <= 75)) {
+                            zona = mapearCaraAzona3(detalle.cara_dental);
+                        } else if ((piezaId >= 41 && piezaId <= 48) || (piezaId >= 81 && piezaId <= 85)) {
+                            zona = mapearCaraAzona4(detalle.cara_dental);
+                        }
                         if (zona) estadoDientes[piezaId].Cavities[zona] = valorVisual;
                         break;
                     
@@ -66,12 +75,42 @@ export const calcularEstadoOdontograma = (historiasClinicas) => {
 };
 
 // Helper para traducir ID de cara a string que usa Diente.jsx ('top', 'center', etc)
-const mapearCaraAZona = (caraId) => {
+const mapearCaraAzona1 = (caraId) => {
+    switch (caraId) {
+        case CARA_IDS.VESTIBULAR: return 'top';
+        case CARA_IDS.LINGUAL: return 'bottom';
+        case CARA_IDS.DISTAL: return 'right'; // Esto puede variar según si es izq/der
+        case CARA_IDS.MESIAL: return 'left';
+        case CARA_IDS.OCLUSAL: return 'center';
+        default: return null;
+    }
+};
+const mapearCaraAzona2 = (caraId) => {
     switch (caraId) {
         case CARA_IDS.VESTIBULAR: return 'top';
         case CARA_IDS.LINGUAL: return 'bottom';
         case CARA_IDS.DISTAL: return 'left'; // Esto puede variar según si es izq/der
         case CARA_IDS.MESIAL: return 'right';
+        case CARA_IDS.OCLUSAL: return 'center';
+        default: return null;
+    }
+};
+const mapearCaraAzona3 = (caraId) => {
+    switch (caraId) {
+        case CARA_IDS.VESTIBULAR: return 'bottom';
+        case CARA_IDS.LINGUAL: return 'top';
+        case CARA_IDS.DISTAL: return 'left'; // Esto puede variar según si es izq/der
+        case CARA_IDS.MESIAL: return 'right';
+        case CARA_IDS.OCLUSAL: return 'center';
+        default: return null;
+    }
+};
+const mapearCaraAzona4 = (caraId) => {
+    switch (caraId) {
+        case CARA_IDS.VESTIBULAR: return 'bottom';
+        case CARA_IDS.LINGUAL: return 'top';
+        case CARA_IDS.DISTAL: return 'right'; // Esto puede variar según si es izq/der
+        case CARA_IDS.MESIAL: return 'left';
         case CARA_IDS.OCLUSAL: return 'center';
         default: return null;
     }
