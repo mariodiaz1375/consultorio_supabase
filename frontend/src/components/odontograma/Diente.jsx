@@ -129,27 +129,43 @@ function Tooth({ number, positionX, positionY, onChange, externalState }) {
                     points="0,0 20,0 15,5 5,5"
                     // onContextMenu={useCM(menuConfig('top'))}
                     className={styles[getClassNamesByZone('top')]}
-                />
+                >
+                    {((number >= 11 && number <= 28) || (number >= 51 && number <= 65)) ? 
+                    (<title>Vestibular</title>) : (<title>Lingual</title>)}
+                </polygon>
                 <polygon
                     points="5,15 15,15 20,20 0,20"
                     // onContextMenu={useCM(menuConfig('top'))}
                     className={styles[getClassNamesByZone('bottom')]} // Corregido
-                />
+                >
+                    {((number >= 11 && number <= 28) || (number >= 51 && number <= 65)) ? 
+                    (<title>Lingual</title>) : (<title>Vestibular</title>)}
+                </polygon>
                 <polygon
                     points="15,5 20,0 20,20 15,15"
                     // onContextMenu={useCM(menuConfig('top'))}
                     className={styles[getClassNamesByZone('left')]} // Corregido
-                />
+                >
+                    {((number >= 11 && number <= 18) || (number >= 41 && number <= 48)
+                    || (number >= 51 && number <= 55) || (number >= 81 && number <= 85)) ? 
+                    (<title>Mesial</title>) : (<title>Distal</title>)}
+                </polygon>
                 <polygon
                     points="0,0 5,5 5,15 0,20"
                     // onContextMenu={useCM(menuConfig('top'))}
                     className={styles[getClassNamesByZone('right')]} // Corregido
-                />
+                >
+                    {((number >= 11 && number <= 18) || (number >= 41 && number <= 48)
+                    || (number >= 51 && number <= 55) || (number >= 81 && number <= 85)) ? 
+                    (<title>Distal</title>) : (<title>Mesial</title>)}
+                </polygon>
                 <polygon
                     points="5,5 15,5 15,15 5,15"
                     // onContextMenu={useCM(menuConfig('top'))}
                     className={styles[getClassNamesByZone('center')]} // Corregido
-                />
+                >
+                    <title>Oclusal / Incisal</title>
+                </polygon>
                 {drawToothActions()}
                 <text
                     x="6"

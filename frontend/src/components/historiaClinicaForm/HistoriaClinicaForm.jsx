@@ -518,7 +518,7 @@ export default function HistoriaClinicaForm({
                                     
                                     {nuevoDetalle.tratamiento !== consultaId && (
                                         (nuevoDetalle.tratamiento !== 3 && nuevoDetalle.tratamiento !== 4)
-                                            ? catalogos.piezas.slice(0, 32)
+                                            ? catalogos.piezas.filter(p => p.codigo_pd !== "Todas")
                                             : catalogos.piezas
                                     ).map(p => (
                                         <option key={p.id} value={p.id}>{p.codigo_pd}</option>
