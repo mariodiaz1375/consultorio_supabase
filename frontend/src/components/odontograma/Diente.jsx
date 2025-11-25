@@ -15,7 +15,8 @@ function Tooth({ number, positionX, positionY, onChange, externalState }) {
         Extract: 0,
         Crown: 0,
         Filter: 0,
-        Fracture: 0
+        Fracture: 0,
+        Conducto: 0
     };
 
     function reducer(toothState, action) {
@@ -30,6 +31,8 @@ function Tooth({ number, positionX, positionY, onChange, externalState }) {
                 return { ...toothState, Fracture: action.value };
             case 'carie':
                 return { ...toothState, Cavities: setCavities(toothState, action.zone, action.value) };
+            case 'conducto':
+                return { ...toothState, Conducto: action.value };
             case 'clear':
                 return initialState;
             default:
@@ -41,6 +44,7 @@ function Tooth({ number, positionX, positionY, onChange, externalState }) {
     const extract = (val) => ({ type: "extract", value: val });
     const filter = (val) => ({ type: "filter", value: val });
     const fracture = (val) => ({ type: "fracture", value: val });
+    const conducto = (val) => ({ type: "conducto", value: val });
     const carie = (z, val) => ({ type: "carie", value: val, zone: z });
     const clear = () => ({ type: "clear" });
 
@@ -54,6 +58,7 @@ function Tooth({ number, positionX, positionY, onChange, externalState }) {
             // Pero por ahora, podemos simularlo o modificar el reducer:
             if (externalState.Extract) dispatch(extract(externalState.Extract));
             if (externalState.Crown) dispatch(crown(externalState.Crown));
+            if (externalState.Conducto) dispatch(conducto(externalState.Conducto));
             if (externalState.Cavities) {
                 Object.keys(externalState.Cavities).forEach(zona => {
                     if(externalState.Cavities[zona] > 0) {
@@ -82,6 +87,7 @@ function Tooth({ number, positionX, positionY, onChange, externalState }) {
             'Cavities All': () => dispatch(carie('all', value)),
             'Absent': () => dispatch(extract(value)),
             'Crown': () => dispatch(crown(value)),
+            'Root Canal': () => dispatch(conducto(value)),
         }
     }
 
@@ -94,6 +100,7 @@ function Tooth({ number, positionX, positionY, onChange, externalState }) {
             'Crown': () => dispatch(crown(value)),
             'Filtered Out': () => dispatch(filter(value)),
             'Fractured': () => dispatch(fracture(value)),
+            'Root Canal': () => dispatch(conducto(value)),
         }
     }
 
@@ -203,20 +210,20 @@ function Tooth({ number, positionX, positionY, onChange, externalState }) {
     function drawToothActions() {
         let otherFigures = null;
         if (toothState.Extract > 0) {
-            otherFigures = <g stroke={toothState.Extract === 1 ? "red" : "blue"}>
+            otherFigures = <g stroke={toothState.Extract === 1 ? "blue" : "red"}>
                 <line x1="0" y1="0" x2="20" y2="20" strokeWidth="2" />
                 <line x1="0" y1="20" x2="20" y2="0" strokeWidth="2" />
             </g>
         }
 
         if (toothState.Fracture > 0) {
-            otherFigures = <g stroke={toothState.Fracture === 1 ? "red" : "blue"}>
+            otherFigures = <g stroke={toothState.Fracture === 1 ? "blue" : "red"}>
                 <line x1="0" y1="10" x2="20" y2="10" strokeWidth="2"></line>
             </g>
         }
 
         if (toothState.Filter > 0) {
-            otherFigures = <g stroke={toothState.Fracture === 1 ? "red" : "blue"}>
+            otherFigures = <g stroke={toothState.Fracture === 1 ? "blue" : "red"}>
                 <line x1="0" y1="20" x2="20" y2="0" strokeWidth="2" />
             </g>
         }
@@ -227,9 +234,15 @@ function Tooth({ number, positionX, positionY, onChange, externalState }) {
                 cy="10"
                 r="10"
                 fill="none"
-                stroke={toothState.Crown === 1 ? "red" : "blue"}
+                stroke={toothState.Crown === 1 ? "blue" : "red"}
                 strokeWidth="2"
             />;
+        }
+        if (toothState.Conducto > 0) {
+            otherFigures = <g stroke={toothState.Conducto === 1 ? "blue" : "red"}>
+                <line x1="7" y1="0" x2="7" y2="20" strokeWidth="1.5" />
+                <line x1="13" y1="0" x2="13" y2="20" strokeWidth="1.5" />
+            </g>
         }
 
         return otherFigures;

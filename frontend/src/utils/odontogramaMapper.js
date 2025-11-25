@@ -64,6 +64,10 @@ export const calcularEstadoOdontograma = (historiasClinicas) => {
                     case TRATAMIENTO_IDS.CORONA:
                         estadoDientes[piezaId].Crown = valorVisual;
                         break;
+
+                    case TRATAMIENTO_IDS.CONDUCTO:
+                        estadoDientes[piezaId].Conducto = valorVisual;
+                        break;
                     
                     // Agrega más casos aquí...
                 }

@@ -1,0 +1,956 @@
+[33mcommit 816745876b194673804335a13c3a1044be31a83b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 24 18:59:36 2025 -0300
+
+    se agregaron titulos a las cd del odontograma
+
+[33mcommit b2a6011b598efac9d45cfd50148169ec4e7d3205[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 24 17:23:54 2025 -0300
+
+    arreglado el odontograma
+
+[33mcommit fd1dab425075ddbf78729a69256cac1184e73820[m
+Merge: 91e87a3 5b50599
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Mon Nov 24 15:14:40 2025 -0300
+
+    odontograma con logica, todavia con fallos
+
+[33mcommit 5b50599735320cf8908d610ff1d07ed1a070b42c[m
+Author: Magalí <magalimendiolaza9@gmail.com>
+Date:   Sun Nov 23 22:02:23 2025 -0300
+
+    se cambio el fondo del login
+
+[33mcommit 91e87a3fab848c6c29c11468097b3b288bb4ad4f[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Nov 23 19:52:51 2025 -0300
+
+    iniciada la logica del odontograma, aun tiene errores
+
+[33mcommit 2454502a554fdc97699b6cf393a3f27e6614b2f7[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Nov 23 18:32:37 2025 -0300
+
+    cambios visuales en odontograma
+
+[33mcommit ba904441e4575ea64a9449575d00268d5ba18b57[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Nov 22 19:46:01 2025 -0300
+
+    se corrigio pacientes form con render cond
+
+[33mcommit c90cb532e326f3c97e6c7857ec607aee7714fdb7[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Fri Nov 21 17:19:10 2025 -0300
+
+    se creo odontograma visual, falta la logica y css
+
+[33mcommit ee4b61306aa1ef2ed9d462a20ad44c6d7b631ede[m
+Author: Magalí <magalimendiolaza9@gmail.com>
+Date:   Wed Nov 19 22:01:16 2025 -0300
+
+    se agrego el logo en el login
+
+[33mcommit 248e89b8c0989a1fd507fa6dec1bce70d4edca99[m
+Author: Magalí <magalimendiolaza9@gmail.com>
+Date:   Wed Nov 19 20:58:17 2025 -0300
+
+    se agrego el logo en el layout
+
+[33mcommit b29e40121f9cbdfc83d907d76ea0a6553ec6363a[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Nov 19 17:55:55 2025 -0300
+
+    se creo signal.py en personal, trigger activo
+
+[33mcommit 0b50fb829359f5d6abe26470ec7f367798c37905[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Wed Nov 19 16:34:19 2025 -0300
+
+    error de cambio de estado con seleccion multiple en turnos corregido
+
+[33mcommit eda0c2ea74a7264200ba332e96020e7c2bf5adda[m
+Author: marcelo_diaz <marcelodiaz1375@gmail.com>
+Date:   Wed Nov 19 12:36:14 2025 -0300
+
+    boton de atendido multiple agregado en turnos
+
+[33mcommit 215ca7be054d4da04f4c6c6946658a8636118383[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Nov 18 12:33:38 2025 -0300
+
+    se corrigio dethistclin para evitar duplicado piezas, caras
+
+[33mcommit 7bfd9738377aec747dbc36f1272da65ea53e3bf0[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Nov 18 11:16:21 2025 -0300
+
+    se agrego buscador en los select de turnos
+
+[33mcommit 5215a2a99fcbc8e608e14b26ed275b6c39359085[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Tue Nov 18 10:15:07 2025 -0300
+
+    perfil actualizado, contraseña actual incorrecta
+
+[33mcommit 55f97ee50e7686d5415dbdddd1c8c9aad2cf5ca4[m
+Author: A.Morales <alesito_azabache@hotmail.com>
+Date:   Tue Nov 18 03:48:29 2025 -0300
+
+    actualizacion CSS total, menos perfil (tuyoveja)
+
+[33mcommit 6cab0d673235391d99b0903f87e9f9dd372aee9c[m
+Merge: cef291e 34de771
+Author: A.Morales <alesito_azabache@hotmail.com>
+Date:   Tue Nov 18 03:09:32 2025 -0300
+
+    Actualización de estilos CSS
+
+[33mcommit cef291eb31554931695284b03c811a486ae3c503[m
+Author: A.Morales <alesito_azabache@hotmail.com>
+Date:   Tue Nov 18 03:05:44 2025 -0300
+
+    cambios de estilos en todas las vistas
+
+[33mcommit 34de771713a0e2a32ebeb3cb8858d9598018ee24[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Tue Nov 18 01:45:33 2025 -0300
+
+    pantalla de perfil, serializer y api de personal actualizados
+
+[33mcommit f47654dd1782238dc1aae4cf2699824b0490c6ac[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Nov 18 00:17:58 2025 -0300
+
+    se corrigio personalform y se agrego id a turnoscard
+
+[33mcommit d7d9d6e89208229ead3b0f587cfa1a053c11a10d[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Nov 18 00:06:06 2025 -0300
+
+    se arreglo css de personal igual a pacientes
+
+[33mcommit 31892ff4138b4834b30e3b25d7f74270779d4c51[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 17 23:46:26 2025 -0300
+
+    se arreglo css de pacientes
+
+[33mcommit 0d1631a2379d67dfa405a3e2e437c39f5c44aa03[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 17 23:25:28 2025 -0300
+
+    se agrego css a pacientes list, form y card
+
+[33mcommit d52724a7e5dde18f2bbca0b52ac0aefb1181cf5f[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Mon Nov 17 22:35:50 2025 -0300
+
+    pantalla de perfil implementada con algunos errores
+
+[33mcommit 830ae4098e24972440422973b0bb07615a80958c[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 17 21:57:22 2025 -0300
+
+    se corrigio histclinform, terminado
+
+[33mcommit 78db38fa9646eddc8f5410f8725f49e698e37223[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 17 21:05:59 2025 -0300
+
+    se actualizo personaldetail y histclinform
+
+[33mcommit ecd5c354da6ed332daf6bbf1575355b16f955fac[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Mon Nov 17 20:18:51 2025 -0300
+
+    fecha del personal actualizada a fecha de alta
+
+[33mcommit 9be65de6b282e08dffe8a04c93620bfcad1cfc3a[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Mon Nov 17 17:50:47 2025 -0300
+
+    actualizadas auditoria de pagos y de turnos
+
+[33mcommit e1c33122fab6dc6d2649fe89ca20bea592cc0336[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 17 17:20:01 2025 -0300
+
+    se corrigio un poco histclinform, faltan cosas
+
+[33mcommit 4cce5b2017bc4b506414e74ab8f4bdcde4dc46ec[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 17 16:25:23 2025 -0300
+
+    detalles hc condiciona piezas segun trat
+
+[33mcommit 97c9dcae9c175de930fe792641d59cdda97c1f16[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 17 14:22:49 2025 -0300
+
+    se agregaron condicionales para editar o agregar seguimiento hc.finalizado
+
+[33mcommit 7b83537a211e84f5dd78dde8eca2ccce2d3c7bb6[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 17 13:45:04 2025 -0300
+
+    se pusi id hc en tabla y css wrap a los grafitos
+
+[33mcommit d29a39859ab0400475893dcfb7328a09d1efe8cd[m
+Author: A.Morales <alesito_azabache@hotmail.com>
+Date:   Mon Nov 17 12:38:24 2025 -0300
+
+    Alertas, side-bar y estilos
+
+[33mcommit 6af65d8a088e313984c9de6cb935d5fd7c208b27[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 16 19:52:25 2025 -0300
+
+    paginacion de historias clinicas implementada
+
+[33mcommit 4ca929cf08aa5716d85407e88af75808ea35c9c3[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 16 19:00:43 2025 -0300
+
+    se agregaron filtros a HistoriaClinicaList
+
+[33mcommit 4b67979229d6d48d52ba1a9fcbac8500c36734a3[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 16 18:30:25 2025 -0300
+
+    se corrigio personalForm para editar
+
+[33mcommit 46a2ab3299565a08ce165c40571d953af0cad8ed[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Nov 16 17:27:40 2025 -0300
+
+    paginacion y filtros corregidos en auditoria de turnos
+
+[33mcommit d44784ce2923b29f7bbfdba23d7ec84441e92c8b[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Nov 16 12:57:16 2025 -0300
+
+    pantalla de auditoria de turnos implementada
+
+[33mcommit b5ca48e111020c1d4248a477efd6b48cf634b542[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Nov 16 03:00:12 2025 -0300
+
+    renderizado condicional en dashboard
+
+[33mcommit cb7c1db4a8766154b7e7df815b13b1f0beaf0ce8[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Nov 16 02:42:25 2025 -0300
+
+    backend de auditoria de turnos actualizado
+
+[33mcommit 73f11a2b0b7d801a5e6449acb11f9177c5eb46e6[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 16 01:20:12 2025 -0300
+
+    se agrego render conicional a personalform
+
+[33mcommit 7e55b9898dac4ff287636c8ad697d77a915bb134[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Nov 15 23:01:44 2025 -0300
+
+    se replico lo de pacientes en personal, arreglar api para editar
+
+[33mcommit 5a4c0633eff90aa9b99e2e33705a52e095f60d5f[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sat Nov 15 21:48:06 2025 -0300
+
+    auditoria de turnos agregada en el backend
+
+[33mcommit df0e53dde1a06c825aede5bea2436da61c2aad49[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sat Nov 15 18:56:21 2025 -0300
+
+    se cambio bd a mysql
+
+[33mcommit ecab30e65e3f374bdaa7d3a71a97b1f993f811b3[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sat Nov 15 18:04:10 2025 -0300
+
+    se corrigio el css de los graficos y dashboard
+
+[33mcommit 5d9c425244203589c5a77056863496399b8750c6[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Nov 15 15:04:22 2025 -0300
+
+    se agregaron graficos de turnos y tratamientos
+
+[33mcommit b38ff06627b3eca66a59f7594d660369a27419bf[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sat Nov 15 02:44:38 2025 -0300
+
+    pantalla de auditar pagos implementada xd
+
+[33mcommit cdcb61d2a31edb9668d1274168a5b9a2f71edf2f[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Nov 15 02:03:36 2025 -0300
+
+    se arreglo el formulario de pacientes
+
+[33mcommit 2403ecb0aa8591664c6c5ac949398a4ad97cce27[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Fri Nov 14 23:14:59 2025 -0300
+
+    boton de auditar pagos en dashboard agregado
+
+[33mcommit 00b883d10260679e1b14d3227d1d05b02ea7dbc0[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Fri Nov 14 21:57:27 2025 -0300
+
+    app pagos y api pagos actualizados
+
+[33mcommit 82128900ecb734a903c466a443a0ef2870dd7def[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Fri Nov 14 21:14:11 2025 -0300
+
+    error de usuario en auditoria de pagos sulucionado
+
+[33mcommit 771ad982605494f430284aa7f3e624068e4df769[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Fri Nov 14 20:14:29 2025 -0300
+
+    tabla de auditoria para pagos agregada en modelo
+
+[33mcommit b241f24e07d1161db581b6797074ec4548fa34ac[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Thu Nov 13 22:44:52 2025 -0300
+
+    se agrego boton Administrar tratamientos en dashboard, crud funcionando
+
+[33mcommit 0e7e71a9b26cbbbcf5d8482d64c56ba04881101e[m
+Author: marcelo_diaz <marcelodiaz1375@gmail.com>
+Date:   Thu Nov 13 15:46:34 2025 -0300
+
+    css en botones
+
+[33mcommit 712f8995dc2d4448cc01eb2456d3e6d3c30ebec1[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Thu Nov 13 02:07:41 2025 -0300
+
+    confirm agregado en PagosModal
+
+[33mcommit 5a36d61e46249d41ffbdf13f166344ec0110100e[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Thu Nov 13 01:13:33 2025 -0300
+
+    se corrigio useEffect en HistoriaClinicaDetail
+
+[33mcommit 689c57bccd0620e20111acb69ebd7f37d0e6ad5d[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Thu Nov 13 01:07:25 2025 -0300
+
+    se arreglo la actualizacion de seguimientos
+
+[33mcommit 4010b77f15108d537196baca3faefa8cdcf1e1c4[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Nov 12 19:39:06 2025 -0300
+
+    se agregaron condicionales por userRoles para botones de hist clin
+
+[33mcommit 6b4f3b5aa76f9689bfb6285d03fcc16275796ac5[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Nov 12 18:32:05 2025 -0300
+
+    pagos funcionando xd
+
+[33mcommit 83eec9b2ec76e23a5d62b9ee46cb0f4aeb49bd0e[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Nov 12 12:57:57 2025 -0300
+
+    se bloqueando los select de detalles segun tratamientos
+
+[33mcommit d8e1ab1efbd0979e253b00d65ac975468dbdec49[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Wed Nov 12 02:25:58 2025 -0300
+
+    modal de pagos funcionando
+
+[33mcommit be8009975b838ca9d952211806fa04ece3425d5b[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Nov 12 00:48:47 2025 -0300
+
+    se cambio histclinform, ahora puede actualizar y editar un hist clin
+
+[33mcommit 45613a72dd9182d0612041c7360eed7066cf0352[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Tue Nov 11 23:58:56 2025 -0300
+
+    api de pagos funcionando
+
+[33mcommit d327e2a76e6c343a51c9f44c65aab2d392c3072d[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Tue Nov 11 01:41:34 2025 -0300
+
+    cambios en backend de pagos
+
+[33mcommit 06512b8bfda31795a48beac444cb8cc1e0e7f5df[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Nov 11 00:34:53 2025 -0300
+
+    se agrego modo update a serializer.hc, no funciona aun
+
+[33mcommit 843bf55c7279fb0f0de4c8e46b4d3814186ba695[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 10 23:55:11 2025 -0300
+
+    se arreglo handleFinalizarHC y useEffect
+
+[33mcommit 69494fbc91bc1a6c8b52ce36459fac9377f637fc[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 10 22:07:41 2025 -0300
+
+    funcionando lista agregar o editar detalles
+
+[33mcommit 21b40416a87f6dae4a2f5a490fc8a5119d9d451b[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Mon Nov 10 21:12:44 2025 -0300
+
+    backend de pagos actualizado
+
+[33mcommit 34c5e67a6627757f06f47057975954de6b8cb6e8[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 10 19:12:06 2025 -0300
+
+    falta terminar con los botones de historia clinica
+
+[33mcommit f18b2fac9d0588b309ad59da44252971fa21449c[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 10 18:52:29 2025 -0300
+
+    falta editar HistoriaClinicaForm.jsx
+
+[33mcommit 0969c84c37c71b73d154640240fc6e8804342015[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 10 15:36:52 2025 -0300
+
+    se agregaron condicionales en detalles de la tabla de histclin
+
+[33mcommit e1dab4736c728e7b59c2190db63efa2cc6bab5ed[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 9 19:57:40 2025 -0300
+
+    funcionando historiaDetail, faltar agregar la vista de editar
+
+[33mcommit 540756ef060e78baf05526ba7610562b75f07ea9[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 9 18:57:26 2025 -0300
+
+    se modifico el model y serializer de seguimientoHC para agregar odontologo
+
+[33mcommit b160b64258fc39fe21c7f64a73fb828ded97de84[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 9 16:50:12 2025 -0300
+
+    se guarda el usuario logueado al crear histCLin
+
+[33mcommit 587aa863ffd53fa0ab43756b0ebba27b8d154d76[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 9 15:55:03 2025 -0300
+
+    se puede crear una historia clinica y agregar detalles
+
+[33mcommit 80c8a57543aa456c5d31dc4eab02170401cd7d54[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Thu Nov 6 00:14:55 2025 -0300
+
+    se crearon historiasForm e historiasList, arreglar api
+
+[33mcommit c2d41b8579ace4cfae94ab90c3b78a55a87a283d[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Nov 5 20:58:50 2025 -0300
+
+    creada api en react para histclin
+
+[33mcommit 343c50fcdcc77d27fcec70c52358b4fe8c35a160[m[33m ([m[1;32mdev1[m[33m)[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Nov 3 20:04:16 2025 -0300
+
+    linea de prueba en urls.hc
+
+[33mcommit 58a7e0f85354431f4f7b2b2e5fa7159e37274f75[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 2 22:03:13 2025 -0300
+
+    se crearon views, serializers y urls para histclin
+
+[33mcommit cad90188f618e48e6eb970f26801d6d729a21265[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 2 21:37:11 2025 -0300
+
+    se crearon migraciones con cambios en models.hc
+
+[33mcommit 870536cfc91584d54c2d4f7d91174de41a0e2e54[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 2 17:32:25 2025 -0300
+
+    se modifico boton limpiar filtros con respecto a filtro bloqueado
+
+[33mcommit e22df7d3ebee32289d59e3d9ca9b839b9474be55[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Nov 2 16:18:34 2025 -0300
+
+    se agregaron placeholder personalizados para listManager
+
+[33mcommit 0819ba58da194c42ad5aa81879b3fb022ff77f8a[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Thu Oct 30 22:34:34 2025 -0300
+
+    se agregaron metodos para editar, eliminar, actualizar un horario
+
+[33mcommit 4078c3cdfb93746f43f998636d886b06a3622367[m
+Author: marcelo_diaz <marcelodiaz1375@gmail.com>
+Date:   Thu Oct 30 16:23:13 2025 -0300
+
+    turnos ordenados y bloqueo de fin de semana
+
+[33mcommit f4dec736ce381b2467511b0c4dcbfeea514734f6[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Oct 29 23:39:12 2025 -0300
+
+    se corrigio borrado listmanager desde dashboard y fechaDeHoy es el inicio del filtro por fecha
+
+[33mcommit d33097685011b83f4519dbcd743c979641f9a8f5[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Oct 29 22:19:09 2025 -0300
+
+    funcionando checkboxes y se agrgaron iconos para los estados
+
+[33mcommit 9acfc12a08c95eda600c9621f7613d7d8711c6af[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Oct 29 20:54:34 2025 -0300
+
+    nuevo checkbox en turnosCard, sin funcionalidad aun
+
+[33mcommit 51ac5c4f48348a0b063858d9814d20ef52905a54[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Oct 29 11:59:55 2025 -0300
+
+    se verifica duplicado en listmanager y se corrigio css
+
+[33mcommit dd909584d7b2cb106ab78c950683c5c120cdbeae[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Oct 29 02:18:06 2025 -0300
+
+    se agregaron al dashboard la administracion de datos con listmanager
+
+[33mcommit 1ea9652a427411de9d3a3e74f4ae35859f5a10b3[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Oct 28 23:56:52 2025 -0300
+
+    se modularizo PacientesForm sacando ListManagerContent
+
+[33mcommit cd6eaa243449db807004123c3db56aa1a9b19daa[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Tue Oct 28 12:40:33 2025 -0300
+
+    filtro por estado de turno agregado
+
+[33mcommit d68ca89ca79a4c667b212cba9d2e569ed2c964d0[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Tue Oct 28 01:44:35 2025 -0300
+
+    Estado de turno agregado con valor por defecto
+
+[33mcommit 31fae8656c50ab2c5408fe994e1805db99d3cda4[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Oct 27 23:42:49 2025 -0300
+
+    volvieron los estados y edit de turnos, falta agregar a la edicion
+
+[33mcommit 36c544ceee2954a2e8a2667eddb4920d1a50c4e9[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Oct 27 00:55:26 2025 -0300
+
+    se agrego filtrado segun rol logueado en turnos
+
+[33mcommit ffd37849e610a0dd7f8c774a62afb0f7883c0910[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Oct 26 02:13:13 2025 -0300
+
+    se agregaron los filtros para lista de turnos
+
+[33mcommit c98a4ff1e0e6182b8c042ccf2a65c0ccf1a31172[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Oct 25 22:57:51 2025 -0300
+
+    se agrego el filtro de pacientes para PacienteForm
+
+[33mcommit 9d0e7b06c88758551269c6e74783d24914f92b2e[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Oct 25 22:42:15 2025 -0300
+
+    se cambio boton editar por eliminar, funcionando
+
+[33mcommit 5b5b2a8b8286ca92e0ca638d9fe768ab7c38c51d[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Oct 25 19:04:56 2025 -0300
+
+    se agrego el filtro de horarios disponibles para crear turnos
+
+[33mcommit 786b4d56402138e53ee3c13089e21be4869a75b9[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Oct 25 17:29:25 2025 -0300
+
+    se crearon archivos jsx para turnos, falta corregir errores
+
+[33mcommit c075a746a1489c2bec00319fbbcf43b89b083110[m
+Author: Mario <mariodiaz1375@gmail.com>
+Date:   Fri Oct 24 18:04:58 2025 -0300
+
+    se crearon archivos turnos.api.js TurnosForm, TurnosPagina
+
+[33mcommit cee8c9b921b59bf147cb11af32b104cb10017e4e[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Oct 20 23:08:08 2025 -0300
+
+    creado backend para turnos, revisar null en turnos.horario_turno
+
+[33mcommit 4506dbbf917b5f3ff45e7275a879f3673ef76d34[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Oct 20 21:17:42 2025 -0300
+
+    se agregaron tablas DiasSemana y HorariosFijos a Trunos.models.py
+
+[33mcommit e56da02a152b1c1bc12557140f561485b16da538[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Oct 20 19:51:22 2025 -0300
+
+    se agrego useEffect a PacientesForm para renderizar cuando cambien las listas maestras
+
+[33mcommit 7235885a04e2056ecc95cba7373b47fad1ea221f[m
+Author: Mario <mariodiaz1375@gmail.com>
+Date:   Mon Oct 20 16:07:10 2025 -0300
+
+    se agrego required al campo de obra social
+
+[33mcommit 0fe859fa857a2bd1c23a4616cf7e4c67791cd3ba[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Oct 19 20:09:44 2025 -0300
+
+    Se corrigio metodo delete os y se cambio pacientesForm
+
+[33mcommit 6621594d307434ddad9959929b650e57f2c91f9c[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Oct 19 17:02:18 2025 -0300
+
+    modal para os, analisis fun y antece funcionando, corregir metodo delete
+
+[33mcommit ddf3515525e4a77108bdbc898a691bb1a39eb83c[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Oct 18 19:55:42 2025 -0300
+
+    se agregaron botones + a PacientesForm y se creo modal, corregir error
+
+[33mcommit 6999f0f40659e29a1e754cc080e722cbfa87e8a6[m
+Merge: c5265b0 dbc853b
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Oct 18 16:44:02 2025 -0300
+
+    se amuestra la edad en detallesPaciente
+
+[33mcommit dbc853ba5999b61fd968070ef39453b6cce5afd3[m
+Author: marcelo_diaz <marcelodiaz1375@gmail.com>
+Date:   Sat Oct 18 16:36:54 2025 -0300
+
+    edad agregada en pacientes detail
+
+[33mcommit 9356bd9713f8433d1c064d5cb5681b234de103dd[m
+Author: Mario <mariodiaz1375@gmail.com>
+Date:   Thu Oct 16 16:02:43 2025 -0300
+
+    se cambiaron analisis y antecedentes a checkboxes
+
+[33mcommit 24640b0e94ffbeb6428ce3a205d52e5eb151ddca[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Thu Oct 16 12:56:39 2025 -0300
+
+    verificacion de dni unico agregada
+
+[33mcommit 21c833599292ae326cd2ede98298616e4fbeca5f[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Thu Oct 16 12:01:24 2025 -0300
+
+    formulario pacientes actualizado con campos obligatorios
+
+[33mcommit c5265b00fc272fe280c369c456ed7333dc9678d6[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Thu Oct 16 11:01:24 2025 -0300
+
+    se cambio a puede ser nulo email y direccion, se acomodaron detalles de paciente
+
+[33mcommit c76b7cad89a45c03c6d5a750a7ec95ca5f2c6a3a[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Thu Oct 16 02:38:39 2025 -0300
+
+    control de inputs en formulario de pacientes
+
+[33mcommit 4baf30f4ecdac9454e5689cc546d3ed794ab5e7e[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Oct 15 23:23:25 2025 -0300
+
+    se agrego switch pacientes y funcion al boton desactivar/activa
+
+[33mcommit 705e952d0526cd153588dadcc4902b1c00c349c3[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Oct 14 23:25:41 2025 -0300
+
+    se agrego pantalla PacienteDetail y funcionando
+
+[33mcommit e9ec816471f6ebcbb590597d6ee32724d8497b5d[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Oct 14 00:34:30 2025 -0300
+
+    se agrego barra de busqueda a pacienteslist
+
+[33mcommit b1ee5b97512c185973e9cc4bc3e5b2e50d112bca[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Oct 13 23:23:50 2025 -0300
+
+    se cambio el formulario pacientes para editar o actualizar
+
+[33mcommit 761fab8e8180c9164c5df9f4f2c3174767968ae3[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Oct 12 18:56:41 2025 -0300
+
+    se agrego metodo update en serializer para actualizar paciente desde el formulario
+
+[33mcommit a9b171cf42054ddf20da6ac64f9ac730cea56f9f[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Oct 12 18:10:56 2025 -0300
+
+    se creo el boton editar paciente, despliega formulario, funcionando
+
+[33mcommit f1d8117b46c4ad4beabe1dfd1b695e5abd33886e[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Oct 12 16:48:45 2025 -0300
+
+    obras sociales agregadas a formulario pacientes
+
+[33mcommit e17a86bcdaf237e0c69a94c7a03573b611338ff8[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Oct 12 02:21:53 2025 -0300
+
+    agregadas obras sociales en serializers, views y urls
+
+[33mcommit d71214f8f5bb8716ea32a338a1ef4ddb1bf9caa3[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Oct 12 01:04:58 2025 -0300
+
+    formulario de pacientes funcionando
+
+[33mcommit cd38a930d7a850e4dcd30a6472722a962cce518a[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Oct 11 18:17:47 2025 -0300
+
+    formulario para pacientes implementado de forma visual, no funcional
+
+[33mcommit 619c93d4f7cee817c1fe6b9356197e299e0a1e3e[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Oct 11 16:34:07 2025 -0300
+
+    solucionado rol de usuarios e implementado roleprotected
+
+[33mcommit a460551f874119378eaaf0beb1f0099b416ef845[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Thu Oct 9 13:06:13 2025 -0300
+
+    arreglo con puesto y especialidad
+
+[33mcommit 72d105c2c0f1b225c7f426ae2fb482e42094ed87[m
+Author: Mario <mariodiaz1375@gmail.com>
+Date:   Thu Sep 25 17:02:37 2025 -0300
+
+    formulario de miembros personal con css
+
+[33mcommit 338c70999b6dd702938daeaa949bd13554e5d64b[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Thu Sep 25 13:10:38 2025 -0300
+
+    se creo formulario personal, se modifico serializer
+
+[33mcommit 184345a60d8b32092435bb638aff85797c6118dd[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Thu Sep 25 11:27:47 2025 -0300
+
+    funcionan pacientes y personal en el fronted, falta filtrar con permisos de usuario
+
+[33mcommit dc252b7f2602b691bc1d07fc3b24cdf6af344836[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Sep 24 23:38:07 2025 -0300
+
+    se conecto frontend con backend, por ahora funciona la lista de pacientes, login y dashboard
+
+[33mcommit 84a05e5e058127a808313fd1b5d732446bae0264[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Wed Sep 24 20:45:34 2025 -0300
+
+    se cambio personal.models para crear usuarios
+
+[33mcommit e67ed2b665190df5ccb8f99af43e68e10edb56fe[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Sep 23 21:26:16 2025 -0300
+
+    se acomodo el css de pacientesList y se creo archivo en pages
+
+[33mcommit 0b608f2d6f7f9e5df1b370cf7694a10343533591[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Sep 23 13:06:26 2025 -0300
+
+    se agrego css a PacientesList.jsx
+
+[33mcommit b3eef662f23995d6d5d2b607af1d66898643591f[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Sep 22 19:04:06 2025 -0300
+
+    se crearon tarjetas basicas de pacientes, funcionando
+
+[33mcommit 3c091f36df1471c8eaa6f43640bc7e0556098479[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Sep 22 18:23:30 2025 -0300
+
+    se creo funcion pacienteslist en pacienteslist.jsx
+
+[33mcommit 36c57a356a4f6b548d106b1e2646165918474848[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Sep 22 17:50:50 2025 -0300
+
+    se creo la carpeta frontend con react
+
+[33mcommit b40c823564c47cc90d49a8fcfc8d383cdaf7751c[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Fri Sep 19 10:20:31 2025 -0300
+
+    se agregaron metodos str en modelos de hist clin
+
+[33mcommit 06f86512637e19866587c08fd7f003b10e5586c9[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Fri Sep 19 00:06:31 2025 -0300
+
+    modelo obras sociales agregado
+
+[33mcommit 22c65fc16ce4ee5a6c56eb490813276555e07ec7[m
+Author: Mario <mariodiaz1375@gmail.com>
+Date:   Tue Sep 16 16:50:20 2025 -0300
+
+    se arreglo el archivo urls de personal
+
+[33mcommit d61fd8107aac7253f1d88d5e7487df82a56f22e0[m
+Author: Mario <mariodiaz1375@gmail.com>
+Date:   Tue Sep 16 16:31:17 2025 -0300
+
+    se cambio la base de datos y quedo funcionando
+
+[33mcommit a5de766940b8792325c0e4eb70b6f3e984832ffa[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Sep 15 16:09:07 2025 -0300
+
+    se crearon los urls de pagos
+
+[33mcommit 4832679b02b121c3a533b514b05cd82f09ff91f9[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Sep 15 15:40:46 2025 -0300
+
+    se configuro pagos.admin y pagos.views
+
+[33mcommit d0fe57b3872280693967b4d30a914c7fab5f4863[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Sep 15 15:07:42 2025 -0300
+
+    se cambio zona horaria y se creo la clase en serializers de pagos
+
+[33mcommit 97facc1d900a18412f97d7151b0476b70608cf59[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Sep 15 14:48:53 2025 -0300
+
+    se agrego a requirements.txt python-dateutil
+
+[33mcommit 9836ce1f23f250b7b748798d188efec3a3fc9193[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Sep 15 14:47:25 2025 -0300
+
+    se crearon los modelos de pagos
+
+[33mcommit b95fd1cf9a6bac7f5f5834d67b4a9bf009fad606[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Sep 15 13:49:45 2025 -0300
+
+    se crearon archivos serializers y urls en pagos
+
+[33mcommit dc5c827ed5135203b65e3ce5935bc0b525106135[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Mon Sep 15 13:42:11 2025 -0300
+
+    se creo la app pagos
+
+[33mcommit 0f464f89df81cc6a1bdde9e7e2f20c0f4dcf2e1e[m
+Author: Marcelo_Diaz <marcelodiaz1375@gmail.com>
+Date:   Sun Sep 14 18:44:40 2025 -0300
+
+    app turnos actualizada
+
+[33mcommit 3459f5c97ac94f1f85a32ca9be9732c436d8edd6[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Sep 14 16:53:44 2025 -0300
+
+    se corrigio tabla tratamientos, funcionando
+
+[33mcommit 6951ecae604f2450dec77128df03b74adc28e8a3[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sun Sep 14 16:18:16 2025 -0300
+
+    se crearon vistas, urls y serializers de hist_clin, registrado en admin
+
+[33mcommit a6465c8ae8de96f96d5f6e4dc99e335d7a28eca7[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Sep 13 18:15:29 2025 -0300
+
+    se agregaron los modelos de la app hist clin
+
+[33mcommit eee51c13bdad4dab9841393f11d8827565714381[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Sep 13 13:10:13 2025 -0300
+
+    se crearon las apps turnos e historias_clinicas
+
+[33mcommit 796c5ee45de4a87c144fc0d0fd5ea907ffc6842d[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Sat Sep 13 12:13:23 2025 -0300
+
+    se agrego property a la edad de pacientes
+
+[33mcommit 7f34f8d08a7a6359df2d35f062f80412ee64300a[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Fri Sep 12 19:15:53 2025 -0300
+
+    generos y edad agregados en pacientes
+
+[33mcommit 3e03bbf4521b11996c81a4565b3475a6c35a9410[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Sep 9 22:19:26 2025 -0300
+
+    se agregaron vistas y urls para pacientes y personal, se cargaron algunos datos
+
+[33mcommit 83c5a5426e8a8e9088bfdf2b1fc49fccc1b592d3[m
+Author: mario <mariodiaz1375@gmail.com>
+Date:   Tue Sep 9 12:15:29 2025 -0300
+
+    se modifico settings para supabase, se hicieron las migraciones
+
+[33mcommit 1df330dbe4a52be574432c5de63ac4fd51b94b37[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Thu Sep 4 22:35:39 2025 -0300
+
+    actualizada app personal y class meta en personal y pacientes
+
+[33mcommit c44205ff8c45722ad42bda880ec55b3531b61c4d[m
+Author: Marcelo Diaz <marcelodiaz1375@gmail.com>
+Date:   Thu Sep 4 21:45:09 2025 -0300
+
+    nuevo repo iniciado con gitignore
