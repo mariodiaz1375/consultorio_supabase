@@ -15,7 +15,17 @@ const getTodayDateString = () => {
     return `${year}-${month}-${day}`;
 };
 
-const TODAY_DATE = getTodayDateString(); 
+const TODAY_DATE = getTodayDateString();
+
+const getCurrentTimeString = () => {
+    const today = new Date();
+    const hours = String(today.getHours()).padStart(2, '0');
+    const minutes = String(today.getMinutes()).padStart(2, '0');
+    const seconds = String(today.getSeconds()).padStart(2, '0');
+    
+    return `${hours}:${minutes}:${seconds}`;
+};
+const ACTUAL_TIME = getCurrentTimeString();
 
 const initialFormData = {
     paciente: '',
@@ -97,11 +107,19 @@ export default function TurnosForm({
             )
             .map(turno => turno.horario_turno); 
 
-        return horariosFijos.filter(horario => 
-            !horariosOcupadosIDs.includes(horario.id)
-        );
-
+        return horariosFijos.filter(horario => {
+        // Si es hoy, filtrar solo horarios futuros
+            if (fecha_turno === TODAY_DATE) {
+                return horario.hora > ACTUAL_TIME && 
+                    !horariosOcupadosIDs.includes(horario.id);
+            }
+            // Si es otra fecha, mostrar todos los horarios disponibles
+            return !horariosOcupadosIDs.includes(horario.id);
+        });
+        
     }, [formData, horariosFijos, turnosExistentes, isEditing, initialData]);
+
+    
 
     // Cargar datos iniciales para edición
     useEffect(() => {
@@ -256,7 +274,7 @@ export default function TurnosForm({
                 
                         {horariosDisponibles.map(horario => (
                         <option key={horario.id} value={horario.id}>
-                            {horario.hora} 
+                            {horario.hora}
                         </option>
                     ))}
                 </select>
