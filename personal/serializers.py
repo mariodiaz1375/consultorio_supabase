@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from .models import Personal, Puestos, Especialidades
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Serializer para Puestos (no cambia)
 class PuestosSerializer(serializers.ModelSerializer):
@@ -131,3 +136,91 @@ class Personal1Serializer(serializers.ModelSerializer):
         
         instance.save()
         return instance
+    
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    """Serializer para solicitar el reseteo de contraseña"""
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        """Verifica que el email exista en la base de datos"""
+        try:
+            user = User.objects.get(email=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('No existe un usuario con este correo electrónico.')
+        return value
+
+    def save(self):
+        """Envía el email con el enlace de recuperación"""
+        email = self.validated_data['email']
+        user = User.objects.get(email=email)
+        
+        # Generar token y uid
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        
+        # Construir URL de recuperación
+        reset_url = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}/"
+        
+        # Enviar email
+        subject = 'Recuperación de Contraseña - Consultorio Manjón'
+        message = f"""
+Hola {user.first_name or user.username},
+
+Has solicitado restablecer tu contraseña para el Sistema de Gestión del Consultorio Manjón.
+
+Haz clic en el siguiente enlace para crear una nueva contraseña:
+{reset_url}
+
+Este enlace expirará en 24 horas.
+
+Si no solicitaste este cambio, ignora este correo.
+
+Saludos,
+Equipo del Consultorio Manjón
+        """
+        
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+        
+        return {'message': 'Se ha enviado un correo con instrucciones para recuperar tu contraseña.'}
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    """Serializer para confirmar el cambio de contraseña"""
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField(write_only=True, min_length=6)
+    confirm_password = serializers.CharField(write_only=True, min_length=6)
+
+    def validate(self, data):
+        """Valida que las contraseñas coincidan"""
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError({
+                'confirm_password': 'Las contraseñas no coinciden.'
+            })
+        
+        # Validar token y uid
+        try:
+            uid = force_str(urlsafe_base64_decode(data['uid']))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            raise serializers.ValidationError({'uid': 'Enlace inválido.'})
+        
+        if not default_token_generator.check_token(user, data['token']):
+            raise serializers.ValidationError({'token': 'El enlace ha expirado o es inválido.'})
+        
+        data['user'] = user
+        return data
+
+    def save(self):
+        """Guarda la nueva contraseña"""
+        user = self.validated_data['user']
+        user.set_password(self.validated_data['new_password'])
+        user.save()
+        return {'message': 'Contraseña actualizada exitosamente.'}

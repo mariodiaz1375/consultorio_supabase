@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Personal
 from .serializers import Personal1Serializer
-from rest_framework import generics
+from rest_framework import generics, status
 from .models import Puestos, Especialidades
-from .serializers import PuestosSerializer, EspecialidadesSerializer
+from .serializers import PuestosSerializer, EspecialidadesSerializer, PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 
 
 class PersonalList(APIView):
@@ -75,3 +75,32 @@ class PersonalMeView(generics.RetrieveAPIView):
         except Personal.DoesNotExist:
             from rest_framework.exceptions import NotFound
             raise NotFound("No se encontró un registro de Personal asociado a este usuario.")
+        
+class PasswordResetRequestView(APIView):
+    """
+    Vista para solicitar el reseteo de contraseña.
+    Envía un email con el enlace de recuperación.
+    """
+    permission_classes = []  # Permitir acceso sin autenticación
+
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            result = serializer.save()
+            return Response(result, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordResetConfirmView(APIView):
+    """
+    Vista para confirmar el reseteo de contraseña.
+    Valida el token y actualiza la contraseña.
+    """
+    permission_classes = []  # Permitir acceso sin autenticación
+
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        if serializer.is_valid():
+            result = serializer.save()
+            return Response(result, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

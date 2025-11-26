@@ -20,6 +20,8 @@ import { AlertProvider } from './context/AlertContext';
 import { AlertSystem } from './components/AlertSystem/AlertSystem';
 import Layout from './components/layout/Layout';
 import Perfil from './components/miPerfil/Perfil';
+import ForgotPassword from './components/Auth/ForgotPassword';
+import ResetPassword from './components/Auth/ResetPassword';
 
 function App() {
   return (
@@ -30,7 +32,8 @@ function App() {
           {/* Ruta pública - Login sin Layout */}
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Login />} />
-          
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
           {/* Rutas protegidas - CON Layout (Sidebar) */}
           <Route path="/dashboard" element={
             <ProtectedRoute>

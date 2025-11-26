@@ -190,3 +190,14 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'consultorio.manjon@gmail.com'
+EMAIL_HOST_PASSWORD = 'ufkl bfaj lrrj mbbj'
+DEFAULT_FROM_EMAIL = 'tu-email@gmail.com'
+
+# URL base de tu frontend (para los enlaces de recuperación)
+FRONTEND_URL = 'http://localhost:3000'
