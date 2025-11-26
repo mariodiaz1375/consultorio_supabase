@@ -96,7 +96,8 @@ class DetallesHC(models.Model):
         unique_together = ('historia_clinica', 'tratamiento', 'pieza_dental', 'cara_dental')
 
     def __str__(self):
-        return f'{self.historia_clinica.paciente} | {self.tratamiento.nombre_trat} en {self.pieza_dental.codigo_pd}'
+        codigo_pieza = self.pieza_dental.codigo_pd if self.pieza_dental else 'SIN PIEZA ASIGNADA'
+        return f'{self.historia_clinica.paciente} | {self.tratamiento.nombre_trat} en {codigo_pieza}'
 
 
 class SeguimientoHC(models.Model):
