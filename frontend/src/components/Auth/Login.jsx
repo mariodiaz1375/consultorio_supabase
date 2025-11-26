@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAlert } from '../../hooks/useAlert';
 import LiquidEther from './LiquidEther'; // Importar el componente
@@ -10,8 +10,14 @@ const Login = () => {
     password: ''
   });
   const [loading, setLoading] = useState(false);
+  const [showBackground, setShowBackground] = useState(false);
   const navigate = useNavigate();
   const { showSuccess, showError, showWarning } = useAlert();
+
+  useEffect(() => {
+    setShowBackground(true);
+  }, []);
+
 
   const handleChange = (e) => {
     setCredentials({
@@ -98,32 +104,35 @@ const Login = () => {
   return (
     <div className="login-container">
       {/* Fondo Fluido */}
-      <div style={{ 
-        position: 'absolute', 
-        top: 0, 
-        left: 0, 
-        width: '100%', 
-        height: '100%', 
-        zIndex: 0 
-      }}>
-        <LiquidEther
-          colors={['#5227FF', '#FF9FFC', '#B19EEF']}
-          mouseForce={20}
-          cursorSize={100}
-          isViscous={false}
-          viscous={30}
-          iterationsViscous={32}
-          iterationsPoisson={32}
-          resolution={0.5}
-          isBounce={false}
-          autoDemo={true}
-          autoSpeed={0.5}
-          autoIntensity={2.2}
-          takeoverDuration={0.25}
-          autoResumeDelay={3000}
-          autoRampDuration={0.6}
-        />
-      </div>
+      {showBackground && (
+        <div style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '100%', 
+          zIndex: 0 
+        }}>
+          <LiquidEther
+            colors={['#5227FF', '#FF9FFC', '#B19EEF']}
+            mouseForce={20}
+            cursorSize={100}
+            isViscous={false}
+            viscous={30}
+            iterationsViscous={32}
+            iterationsPoisson={32}
+            resolution={0.5}
+            isBounce={false}
+            autoDemo={true}
+            autoSpeed={0.5}
+            autoIntensity={2.2}
+            takeoverDuration={0.25}
+            autoResumeDelay={3000}
+            autoRampDuration={0.6}
+          />
+        </div>
+      )}
+      
       <div className="login-card">
         <div className="login-header">
           <img src="/copia.png" alt="Logo Consultorio Manjón" className="login-logo" />

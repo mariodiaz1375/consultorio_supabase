@@ -997,11 +997,7 @@ export default function LiquidEther({
         webglRef.current = null;
       }
     };
-  }, [
-    mouseForce, cursorSize, isViscous, viscous, iterationsViscous,
-    iterationsPoisson, dt, BFECC, resolution, isBounce, colors,
-    autoDemo, autoSpeed, autoIntensity, takeoverDuration, autoResumeDelay, autoRampDuration
-  ]);
+  }, []);
 
   return (
     <div 
