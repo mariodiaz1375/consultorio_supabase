@@ -136,10 +136,12 @@ export default function HistoriaClinicaList({ pacienteId, nombrePaciente, odonto
 
         // Filtro por fecha hasta
         if (filtros.fechaHasta) {
+            const fechaDeCorte = new Date(filtros.fechaHasta);
+            fechaDeCorte.setDate(fechaDeCorte.getDate() + 1);
+            fechaDeCorte.setHours(23, 59, 59, 999);
             historiasFiltradas = historiasFiltradas.filter(hc => {
                 const fechaInicio = new Date(hc.fecha_inicio);
-                const fechaHasta = new Date(filtros.fechaHasta);
-                return fechaInicio <= fechaHasta;
+                return fechaInicio <= fechaDeCorte;
             });
         }
 
