@@ -4,6 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
+
+from django.utils.dateparse import parse_date
+from datetime import datetime, time
+from django.utils import timezone
 # --- IMPORTAR PAGINADOR ---
 from rest_framework.pagination import PageNumberPagination
 from .models import Pagos, TiposPagos, AuditoriaPagos
@@ -106,17 +110,45 @@ class AuditoriaPagosList(APIView):
         if accion:
             auditorias = auditorias.filter(accion=accion)
         
-        # --- CORRECCIÓN AQUÍ ---
+        # # --- CORRECCIÓN AQUÍ ---
+        # fecha_desde = request.query_params.get('fecha_desde', None)
+        # fecha_hasta = request.query_params.get('fecha_hasta', None)
+        
+        # if fecha_desde:
+        #     # gte (mayor o igual) ya funciona bien con 'date'
+        #     auditorias = auditorias.filter(fecha_accion__date__gte=fecha_desde)
+        
+        # if fecha_hasta:
+        #     # 👇 CAMBIO: Usar '__date__lte' en lugar de '__lte'
+        #     auditorias = auditorias.filter(fecha_accion__date__lte=fecha_hasta)
+
+        # 👇👇👇 --- CORRECCIÓN MYSQL AQUÍ --- 👇👇👇
+        
         fecha_desde = request.query_params.get('fecha_desde', None)
         fecha_hasta = request.query_params.get('fecha_hasta', None)
         
+        # Lógica manual de rangos para evitar usar __date en MySQL
         if fecha_desde:
-            # gte (mayor o igual) ya funciona bien con 'date'
-            auditorias = auditorias.filter(fecha_accion__date__gte=fecha_desde)
+            date_obj = parse_date(fecha_desde)
+            if date_obj:
+                # Desde el inicio del día (00:00:00)
+                start_dt = datetime.combine(date_obj, time.min)
+                if timezone.is_naive(start_dt):
+                    start_dt = timezone.make_aware(start_dt)
+                
+                # Usamos __gte (mayor o igual al datetime completo)
+                auditorias = auditorias.filter(fecha_accion__gte=start_dt)
         
         if fecha_hasta:
-            # 👇 CAMBIO: Usar '__date__lte' en lugar de '__lte'
-            auditorias = auditorias.filter(fecha_accion__date__lte=fecha_hasta)
+            date_obj = parse_date(fecha_hasta)
+            if date_obj:
+                # Hasta el final del día (23:59:59.999999)
+                end_dt = datetime.combine(date_obj, time.max)
+                if timezone.is_naive(end_dt):
+                    end_dt = timezone.make_aware(end_dt)
+                
+                # Usamos __lte (menor o igual al datetime completo)
+                auditorias = auditorias.filter(fecha_accion__lte=end_dt)
         
         # (Lógica de paginación no cambia)
         if self.paginator:

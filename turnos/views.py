@@ -5,6 +5,10 @@ from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 # 👇 --- IMPORTAR PAGINADOR ---
 from rest_framework.pagination import PageNumberPagination 
+
+from django.utils.dateparse import parse_date
+from datetime import datetime, time
+from django.utils import timezone
 # -----------------------------
 from .models import Turnos, EstadosTurnos, HorarioFijo, DiaSemana, AuditoriaTurnos
 from .serializers import (
@@ -145,9 +149,29 @@ class AuditoriaTurnosList(APIView):
             if accion:
                 auditorias = auditorias.filter(accion=accion)
             
+            # fecha_accion = request.query_params.get('fecha_accion', None)
+            # if fecha_accion:
+            #     auditorias = auditorias.filter(fecha_accion__date=fecha_accion)
+
+            # ✅ NUEVO FILTRO (Compatible con MySQL y Postgres):
             fecha_accion = request.query_params.get('fecha_accion', None)
             if fecha_accion:
-                auditorias = auditorias.filter(fecha_accion__date=fecha_accion)
+                # 1. Convertir el texto '2023-11-27' a objeto fecha
+                date_obj = parse_date(fecha_accion)
+                
+                if date_obj:
+                    # 2. Crear inicio y fin del día
+                    start_of_day = datetime.combine(date_obj, time.min) # 00:00:00
+                    end_of_day = datetime.combine(date_obj, time.max)   # 23:59:59
+
+                    # 3. Hacerlos "conscientes" de la zona horaria (si usas USE_TZ=True)
+                    if timezone.is_naive(start_of_day):
+                        start_of_day = timezone.make_aware(start_of_day)
+                    if timezone.is_naive(end_of_day):
+                        end_of_day = timezone.make_aware(end_of_day)
+
+                    # 4. Filtrar por rango (BETWEEN en SQL)
+                    auditorias = auditorias.filter(fecha_accion__range=(start_of_day, end_of_day))
             
             fecha_turno = request.query_params.get('fecha_turno', None)
             if fecha_turno:
