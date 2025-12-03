@@ -91,20 +91,19 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'postgres',  # nombre de tu base de datos
-#         'USER': 'postgres.tfzjvhgwpfnqpxcnnegt',
-#         'PASSWORD': os.environ.get("SUPABASE_PASS"),
-#         'HOST': os.environ.get("SUPABASE_HOST"),
-#         'PORT': '6543',
-#         'OPTIONS': {
-#             'sslmode': 'require',
-#         },
-#     }
-# }
-
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',  # nombre de tu base de datos
+        'USER': 'postgres.tfzjvhgwpfnqpxcnnegt',
+        'PASSWORD': os.environ.get("SUPABASE_PASS"),
+        'HOST': os.environ.get("SUPABASE_HOST"),
+        'PORT': '6543',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
+    }
+}
 
 
 # DATABASES = {
@@ -123,16 +122,16 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # }
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'consultorio',
-        'USER': 'root',
-        'PASSWORD': 'Hl21375',
-        'HOST': 'localhost',
-        'PORT': '3306'
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'consultorio',
+#         'USER': 'root',
+#         'PASSWORD': 'Hl21375',
+#         'HOST': 'localhost',
+#         'PORT': '3306'
+#     }
+# }
 
 
 # Password validation

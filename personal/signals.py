@@ -16,3 +16,15 @@ def sincronizar_estado_activo(sender, instance, **kwargs):
         # Sincronizar el estado: activo del Personal -> is_active del User
         instance.user.is_active = instance.activo
         instance.user.save()
+
+
+@receiver(pre_save, sender=Personal)
+def sincronizar_email(sender, instance, **kwargs):
+    """
+    sincroniza el email del miembro del personal con su correspondiente usuario
+    """
+    # Verificar que el Personal tenga un User asociado
+    if instance.user:
+        # Sincronizar el estado: activo del Personal -> is_active del User
+        instance.user.email = instance.email
+        instance.user.save()
