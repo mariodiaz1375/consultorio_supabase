@@ -78,6 +78,19 @@ export default function PersonalList() {
         return exists;
     };
 
+    const checkEmailUniqueness = async (email) => {
+        const emailString = String(email); 
+
+        const exists = personal.some(miembro => 
+            String(miembro.email) === emailString &&
+            (editingMiembro ? miembro.id !== editingMiembro.id : true) 
+        );
+        
+        console.log(`Verificando email: ${emailString}. Resultado: ${exists ? 'Duplicado' : 'Único'}`);
+
+        return exists;
+    };
+
     const handleViewDetail = (miembro) => {
         setShowForm(false);
         setEditingMiembro(null); 
@@ -288,6 +301,7 @@ export default function PersonalList() {
                             initialData={editingMiembro}
                             isEditing={isEditing}
                             checkDniUniqueness={checkDniUniqueness}
+                            checkEmailUniqueness={checkEmailUniqueness}
                             onFormChange={handleFormChange}
                         />
                     </div>

@@ -25,6 +25,7 @@ export default function PersonalForm({
     initialData = null,
     isEditing = false,
     checkDniUniqueness,
+    checkEmailUniqueness,
     onFormChange,
 }) {
     const getInitialState = (data) => {
@@ -209,6 +210,27 @@ export default function PersonalForm({
             hasError = true;
         }
         setEmailError(currentEmailError);
+        
+        if (formData.email && formData.email.trim() && checkEmailUniqueness) {
+            const originalEmail = initialData ? initialData.email : null;
+            const isEmailChanged = formData.email !== originalEmail;
+            
+            if (!isEditing || isEmailChanged) {
+                try {
+                    const emailExists = await checkEmailUniqueness(formData.email);
+                    if (emailExists) {
+                        currentEmailError = 'Ya existe un miembro registrado con este email.';
+                        hasError = true;
+                        setEmailError(currentEmailError);
+                    }
+                } catch (error) {
+                    console.error("Error al verificar la unicidad del email:", error);
+                    currentEmailError = 'Error al verificar la unicidad del email. Intente de nuevo.';
+                    hasError = true;
+                    setEmailError(currentEmailError);
+                }
+            }
+        }
 
         if (!isEditing) {
             if (!formData.username || !formData.username.trim()) {
